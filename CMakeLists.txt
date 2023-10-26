@@ -16,7 +16,7 @@ set(BA_SOURCE_FILES)
 
 if(NOT BA_DISABLE_HACKS)
     if(WIN32)
-        set(BA_SOURCE_FILES Hacks/Windows.c)
+        set(BA_SOURCE_FILES source/Hacks/Windows.c)
     endif()
 endif()
 
