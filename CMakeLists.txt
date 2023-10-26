@@ -12,6 +12,14 @@ elseif(BA_ALLOW_DEBUG_LOGS)
     add_compile_definitions(BA_ALLOW_DEBUG_LOGS)
 endif()
 
+set(BA_SOURCE_FILES)
+
+if(NOT BA_DISABLE_HACKS)
+    if(WIN32)
+        set(BA_SOURCE_FILES Hacks/Windows.c)
+    endif()
+endif()
+
 add_library(BaconAPI STATIC
         source/ArgumentHandler.c
         source/Logger.c
@@ -21,6 +29,7 @@ add_library(BaconAPI STATIC
         source/String.c
         source/Storage/DynamicArray.c
         source/Storage/DynamicDictionary.c
-        source/Debugging/Assert.c)
+        source/Debugging/Assert.c
+        ${BA_SOURCE_FILES})
 
 target_include_directories(BaconAPI PUBLIC include)
