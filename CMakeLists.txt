@@ -32,4 +32,8 @@ add_library(BaconAPI STATIC
         source/Debugging/Assert.c
         ${BA_SOURCE_FILES})
 
+if(BA_ALLOW_DEBUG_LOGS)
+    target_compile_definitions(BaconAPI PUBLIC BA_ALLOW_DEBUG_LOGS)
+endif()
+
 target_include_directories(BaconAPI PUBLIC include)
