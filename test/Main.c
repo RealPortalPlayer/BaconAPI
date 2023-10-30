@@ -27,17 +27,12 @@ void BooleanFormat(char** buffer, va_list list) {
 }
 
 int main(void) {
-    char** fakeArguments = malloc(sizeof(char*) * 10);
+    char** fakeArguments = malloc(sizeof(char*) * 9);
     char values[] = "qwertyui--asdf";
     int secondIndex = 0;
     
-    fakeArguments[1] = malloc(sizeof(char) * strlen(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING));
-
     printf("--- Initializing fake arguments. Ignore any assert triggers as this isn't part of the API test\n");
-    ASSERT(fakeArguments[1] != NULL);
-    strcpy(fakeArguments[1], BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING);
-    
-    for (int i = 2; i < 9; i++) {
+    for (int i = 1; i < 8; i++) {
         fakeArguments[i] = malloc(sizeof(char) * 3);
 
         ASSERT(fakeArguments[i] != NULL);
@@ -46,9 +41,9 @@ int main(void) {
         secondIndex += 2;
     }
     
-    fakeArguments[9] = NULL;
+    fakeArguments[8] = NULL;
 
-    BA_ArgumentHandler_Initialize(9, fakeArguments);
+    BA_ArgumentHandler_Initialize(8, fakeArguments);
     printf("--- Done initializing, testing API\n");
     {
         BA_DynamicArray array;
@@ -271,12 +266,12 @@ int main(void) {
 
     {
         printf("--- ArgumentHandler\n");
-        ASSERT(BA_ArgumentHandler_GetCount() == 9);
+        ASSERT(BA_ArgumentHandler_GetCount() == 8);
         ASSERT(BA_ArgumentHandler_GetVector() == fakeArguments);
-        ASSERT(BA_ArgumentHandler_GetIndex("qw", BA_BOOLEAN_FALSE) == 2);
-        ASSERT(BA_ArgumentHandler_GetIndex("er", BA_BOOLEAN_FALSE) == 3);
+        ASSERT(BA_ArgumentHandler_GetIndex("qw", BA_BOOLEAN_FALSE) == 1);
+        ASSERT(BA_ArgumentHandler_GetIndex("er", BA_BOOLEAN_FALSE) == 2);
         ASSERT(BA_ArgumentHandler_GetIndex("as", BA_BOOLEAN_FALSE) == -1);
-        ASSERT(BA_ArgumentHandler_GetIndex("as", BA_BOOLEAN_TRUE) == 7);
+        ASSERT(BA_ArgumentHandler_GetIndex("as", BA_BOOLEAN_TRUE) == 6);
         ASSERT(strcmp(BA_ArgumentHandler_GetValue("qw", BA_BOOLEAN_FALSE), "er") == 0);
         ASSERT(BA_ArgumentHandler_GetValue("as", BA_BOOLEAN_FALSE) == NULL);
         ASSERT(strcmp(BA_ArgumentHandler_GetValue("as", BA_BOOLEAN_TRUE), "df") == 0);

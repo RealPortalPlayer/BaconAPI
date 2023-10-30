@@ -24,7 +24,7 @@ BA_Boolean BA_ANSI_IsEnabled(void) {
     static int enabled = -1;
 
     if (enabled == -1)
-        enabled = BA_ArgumentHandler_ContainsArgumentOrShort(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING, BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING_SHORT, BA_BOOLEAN_FALSE);
+        enabled = !BA_ArgumentHandler_ContainsArgumentOrShort(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING, BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING_SHORT, BA_BOOLEAN_FALSE);
 
     return enabled;
 }
