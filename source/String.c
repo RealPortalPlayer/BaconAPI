@@ -468,41 +468,20 @@ do {                                                        \
 } while (0)
                 
                 switch (va_arg(arguments, BA_String_SafeFormatTypes)) {
-                    case BA_STRING_SAFE_FORMAT_TYPE_STRING:
-                        BA_String_Append(&newBuffer, va_arg(arguments, char*));
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_INTEGER:
-                        BA_STRING_CONVERT_AND_APPEND(int, "%d");
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_DOUBLE:
-                        BA_STRING_CONVERT_AND_APPEND(double, "%lf");
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_CHARACTER:
-                        BA_String_AppendCharacter(&newBuffer, (char) va_arg(arguments, int));
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_LONG:
-                        BA_STRING_CONVERT_AND_APPEND(long, "%li");
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_LONG:
-                        BA_STRING_CONVERT_AND_APPEND(long long, "%lli");
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED:
-                        BA_STRING_CONVERT_AND_APPEND(unsigned, "%u");
-                        break;
-
-                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_DOUBLE:
-                        BA_STRING_CONVERT_AND_APPEND(long double, "%Lf");
-                        break;
-
-                    default:
-                        // FIXME: Specify which type
-                        BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
+                    case BA_STRING_SAFE_FORMAT_TYPE_STRING: BA_String_Append(&newBuffer, va_arg(arguments, char*)); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_INTEGER: BA_STRING_CONVERT_AND_APPEND(int, "%d"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_DOUBLE: BA_STRING_CONVERT_AND_APPEND(double, "%lf"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_CHARACTER: BA_String_AppendCharacter(&newBuffer, (char) va_arg(arguments, int)); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG: BA_STRING_CONVERT_AND_APPEND(long, "%li"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_LONG: BA_STRING_CONVERT_AND_APPEND(long long, "%lli"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_SHORT: BA_STRING_CONVERT_AND_APPEND(int, "%hi"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED: BA_STRING_CONVERT_AND_APPEND(unsigned, "%u"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_DOUBLE: BA_STRING_CONVERT_AND_APPEND(long double, "%Lf"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_CHARACTER: BA_STRING_CONVERT_AND_APPEND(unsigned int, "%c"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG: BA_STRING_CONVERT_AND_APPEND(unsigned long, "%lu"); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG: BA_STRING_CONVERT_AND_APPEND(unsigned long long, "%llu"); break;
+                    // FIXME: Specify which type
+                    default: BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
                 }
 
 #undef BA_STRING_CONVERT_AND_APPEND
