@@ -348,14 +348,15 @@ int main(void) {
         } else
             printf("!!! Unable to find test.txt, skipping BA_String_ReadFile, BA_String_GetLine\n");
 
-        ASSERT(strcmp(BA_String_Append(&string, " %s %s %s %s %s %s"), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! %s %s %s %s %s %s") == 0);
-        ASSERT(strcmp(BA_String_FormatSafe(&string, 5,
+        ASSERT(strcmp(BA_String_Append(&string, " %s %s %s %s %s %s %s"), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! %s %s %s %s %s %s %s") == 0);
+        ASSERT(strcmp(BA_String_FormatSafe(&string, 6,
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_STRING("That's good to hear!"),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_INTEGER(10),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_DOUBLE(12.0),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_CHARACTER('h'),
-                                           BA_STRING_FORMAT_SAFE_ARGUMENT_LONG(10000000000000)),
-                      "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 10000000000000 %s") == 0);
+                                           BA_STRING_FORMAT_SAFE_ARGUMENT_LONG(10000000000000),
+                                           BA_STRING_FORMAT_SAFE_ARGUMENT_LONG_LONG(1000000000000000000)),
+                      "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 10000000000000 1000000000000000000 %s") == 0);
     }
 
     printf("+++ Success\n");

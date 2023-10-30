@@ -488,6 +488,10 @@ do {                                                        \
                         BA_STRING_CONVERT_AND_APPEND(long, "%li");
                         break;
 
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_LONG:
+                        BA_STRING_CONVERT_AND_APPEND(long long, "%lli");
+                        break;
+
                     default:
                         // FIXME: Specify which type
                         BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
