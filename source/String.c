@@ -496,6 +496,10 @@ do {                                                        \
                         BA_STRING_CONVERT_AND_APPEND(unsigned, "%u");
                         break;
 
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG_DOUBLE:
+                        BA_STRING_CONVERT_AND_APPEND(long double, "%Lf");
+                        break;
+
                     default:
                         // FIXME: Specify which type
                         BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
