@@ -492,6 +492,10 @@ do {                                                        \
                         BA_STRING_CONVERT_AND_APPEND(long long, "%lli");
                         break;
 
+                    case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED:
+                        BA_STRING_CONVERT_AND_APPEND(unsigned, "%u");
+                        break;
+
                     default:
                         // FIXME: Specify which type
                         BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
