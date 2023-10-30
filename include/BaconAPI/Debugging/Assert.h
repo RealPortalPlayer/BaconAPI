@@ -26,5 +26,5 @@ do {                          \
     }                         \
 } while (BA_BOOLEAN_FALSE)
 
-#define BA_ASSERT_ALWAYS(message) BA_ASSERT(BA_BOOLEAN_FALSE, message)
+#define BA_ASSERT_ALWAYS(...) BA_ASSERT(BA_BOOLEAN_FALSE, __VA_ARGS__)
 #define BA_ASSERT_NOT_IMPLEMENTED() BA_ASSERT_ALWAYS("This function is currently not implemented\n")

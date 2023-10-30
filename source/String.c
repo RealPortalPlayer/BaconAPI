@@ -492,8 +492,7 @@ do {                                                        \
                             break;
                         }
 
-                        // FIXME: Specify which type
-                        BA_ASSERT_ALWAYS("Specified type is unrecognized\n");
+                        BA_ASSERT_ALWAYS("Specified type is unrecognized: %i\n", identifier);
                     }
                 }
 
