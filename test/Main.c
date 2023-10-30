@@ -121,49 +121,49 @@ int main(void) {
 
         printf("--- DynamicDictionary\n");
         ASSERT(BA_DynamicDictionary_Create(&dictionary, 10));
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &elementValue, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &elementValue, sizeof(int)) == NULL);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element, sizeof(int)) == 0);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &elementValue, sizeof(int)) == 0);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &elementValue, sizeof(int)) == &element);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &element, sizeof(int)) == &elementValue);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == 0);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == 0);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == &element);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element, sizeof(int)) == &elementValue);
         ASSERT(BA_DynamicDictionary_AddElementToLast(&dictionary, &element2, &element2Value));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element2, sizeof(int)) == 1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &element2Value, sizeof(int)) == 1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &element2Value, sizeof(int)) == &element2);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &element2, sizeof(int)) == &element2Value);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == 1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == 1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &element2Value, sizeof(int)) == &element2);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element2, sizeof(int)) == &element2Value);
         ASSERT(BA_DynamicDictionary_RemoveFirstElement(&dictionary));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &elementValue, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &elementValue, sizeof(int)) == NULL);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(BA_DynamicDictionary_RemoveLastElement(&dictionary));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element2, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &element2Value, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &element2Value, sizeof(int)) == NULL);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &element2, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &element2Value, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element2, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element2, &element2Value));
         ASSERT(BA_DynamicDictionary_RemoveElementViaKey(&dictionary, &element, sizeof(int)));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &elementValue, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &elementValue, sizeof(int)) == NULL);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(BA_DynamicDictionary_RemoveElementViaValue(&dictionary, &element2Value, sizeof(int)));
         ASSERT(dictionary.keys.used == dictionary.values.used);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(dictionary, &element2, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(dictionary, &element2Value, sizeof(int)) == -1);
-        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(dictionary, &element2Value, sizeof(int)) == NULL);
-        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(dictionary, &element2, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == -1);
+        ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &element2Value, sizeof(int)) == NULL);
+        ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element2, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element2, &element2Value));
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element2, &element2Value));
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element2, &element2Value));
@@ -171,15 +171,15 @@ int main(void) {
         BA_DynamicDictionary found;
 
         ASSERT(BA_DynamicDictionary_Create(&found, 10));
-        BA_DynamicDictionary_GetElementsKeyViaValue(dictionary, &found, &element2Value, sizeof(int));
+        BA_DynamicDictionary_GetElementsKeyViaValue(&dictionary, &found, &element2Value, sizeof(int));
         ASSERT(found.keys.used == 3);
         ASSERT(found.keys.used == found.values.used);
 
         for (int i = 0; i < found.keys.used - 1; i++)
             ASSERT(found.keys.internalArray[i] == found.keys.internalArray[i + 1]);
 
-        ASSERT(BA_DYNAMICDICTIONARY_GET_KEY(int, dictionary, &element2Value, sizeof(int)) == &element2);
-        ASSERT(BA_DYNAMICDICTIONARY_GET_VALUE(int, dictionary, &element2, sizeof(int)) == &element2Value);
+        ASSERT(BA_DYNAMICDICTIONARY_GET_KEY(int, &dictionary, &element2Value, sizeof(int)) == &element2);
+        ASSERT(BA_DYNAMICDICTIONARY_GET_VALUE(int, &dictionary, &element2, sizeof(int)) == &element2Value);
         
         dictionary.frozen = BA_BOOLEAN_TRUE;
 
