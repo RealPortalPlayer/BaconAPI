@@ -457,6 +457,15 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
                 }
 
                 usedArguments++;
+
+#define BA_STRING_CONVERT_AND_APPEND(type, formatSpecifier) \
+do {                                                        \
+    type value = va_arg(arguments, type);                   \
+    size_t bufferSize = snprintf(NULL, 0, formatSpecifier, value); \
+    char buffer[bufferSize];                                \
+    snprintf(buffer, bufferSize + 1, formatSpecifier, value); \
+    BA_String_Append(&newBuffer, buffer);                   \
+} while (0)
                 
                 switch (va_arg(arguments, BA_String_SafeFormatTypes)) {
                     case BA_STRING_SAFE_FORMAT_TYPE_STRING:
@@ -464,29 +473,19 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
                         break;
 
                     case BA_STRING_SAFE_FORMAT_TYPE_INTEGER:
-                    {
-                        int value = va_arg(arguments, int);
-                        size_t bufferSize = snprintf(NULL, 0, "%d", value);
-                        char buffer[bufferSize];
-
-                        snprintf(buffer, bufferSize + 1, "%d", value);
-                        BA_String_Append(&newBuffer, buffer);
+                        BA_STRING_CONVERT_AND_APPEND(int, "%d");
                         break;
-                    }
 
                     case BA_STRING_SAFE_FORMAT_TYPE_DOUBLE:
-                    {
-                        double value = va_arg(arguments, double);
-                        size_t bufferSize = snprintf(NULL, 0, "%lf", value);
-                        char buffer[bufferSize];
-
-                        snprintf(buffer, bufferSize + 1, "%lf", value);
-                        BA_String_Append(&newBuffer, buffer);
+                        BA_STRING_CONVERT_AND_APPEND(double, "%lf");
                         break;
-                    }
 
                     case BA_STRING_SAFE_FORMAT_TYPE_CHARACTER:
                         BA_String_AppendCharacter(&newBuffer, (char) va_arg(arguments, int));
+                        break;
+
+                    case BA_STRING_SAFE_FORMAT_TYPE_LONG:
+                        BA_STRING_CONVERT_AND_APPEND(long, "%li");
                         break;
 
                     default:
@@ -494,6 +493,8 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
                         BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
                 }
 
+#undef BA_STRING_CONVERT_AND_APPEND
+                
                 continue;
             }
 
