@@ -2,7 +2,6 @@
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include <string.h>
-#include <stdlib.h>
 
 #include "BaconAPI/Storage/DynamicDictionary.h"
 
@@ -61,22 +60,60 @@ BA_Boolean BA_DynamicDictionary_RemoveElementAt(BA_DynamicDictionary* dictionary
            BA_DynamicArray_RemoveElementAt(&dictionary->values, index);
 }
 
-BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictionary, void* key, size_t elementSize) {
+BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictionary, void* key, size_t elementSize, BA_Boolean repeat) {
     if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
         return BA_BOOLEAN_FALSE;
 
-    int index = BA_DynamicDictionary_GetElementIndexFromKey(dictionary, key, elementSize);
+    BA_Boolean removedOne = BA_BOOLEAN_FALSE;
 
-    return index != -1 ? BA_DynamicDictionary_RemoveElementAt(dictionary, index) : BA_BOOLEAN_FALSE;
+    for (int i = 0; i < dictionary->keys.used; i++) {
+        int elementIndex = BA_DynamicDictionary_GetElementIndexFromKey(dictionary, key, elementSize);
+
+        if (elementIndex == -1) {
+            if (!repeat)
+                return BA_BOOLEAN_FALSE;
+
+            continue;
+        }
+
+        BA_DynamicDictionary_RemoveElementAt(dictionary, elementIndex);
+
+        if (!repeat)
+            return BA_BOOLEAN_TRUE;
+        
+        i--;
+        removedOne = BA_BOOLEAN_TRUE;
+    }
+    
+    return removedOne;
 }
 
-BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, void* value, size_t elementSize) {
+BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, void* value, size_t elementSize, BA_Boolean repeat) {
     if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
         return BA_BOOLEAN_FALSE;
 
-    int index = BA_DynamicDictionary_GetElementIndexFromValue(dictionary, value, elementSize);
+    BA_Boolean removedOne = BA_BOOLEAN_FALSE;
 
-    return index != -1 ? BA_DynamicDictionary_RemoveElementAt(dictionary, index) : BA_BOOLEAN_FALSE;
+    for (int i = 0; i < dictionary->keys.used; i++) {
+        int elementIndex = BA_DynamicDictionary_GetElementIndexFromValue(dictionary, value, elementSize);
+
+        if (elementIndex == -1) {
+            if (!repeat)
+                return BA_BOOLEAN_FALSE;
+
+            continue;
+        }
+
+        BA_DynamicDictionary_RemoveElementAt(dictionary, elementIndex);
+
+        if (!repeat)
+            return BA_BOOLEAN_TRUE;
+
+        i--;
+        removedOne = BA_BOOLEAN_TRUE;
+    }
+
+    return removedOne;
 }
 
 int BA_DynamicDictionary_GetElementIndexFromKey(const BA_DynamicDictionary* dictionary, void* key, size_t elementSize) {
