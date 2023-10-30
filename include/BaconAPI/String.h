@@ -160,8 +160,8 @@ ssize_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter)
  * @endcode
  */
 char* BA_String_FormatSafe(char** target, int amountOfFormatters, ...);
-
 char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_list arguments);
+char* BA_String_CreateEmpty(void);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_STRING_FORMAT_SAFE_ARGUMENT_STRING(value) BA_STRING_SAFE_FORMAT_TYPE_STRING, value

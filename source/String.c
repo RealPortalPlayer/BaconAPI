@@ -251,7 +251,7 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     
     BA_DynamicArray_Create(dynamicArray, 100);
     
-    char* string = malloc(sizeof(char));
+    char* string = BA_String_CreateEmpty();
     int matchCount = 0;
     size_t splitByLength = strlen(splitBy);
     size_t targetLength = strlen(target);
@@ -264,22 +264,18 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
         return NULL;
     }
     
-    string[0] = '\0';
-
     for (; i < targetLength; i++) {
         if (matchCount == splitByLength) {
             BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
             
             matchCount = 0;
-            string = malloc(sizeof(char));
+            string = BA_String_CreateEmpty();
 
             if (string == NULL) {
                 free(dynamicArray->internalArray);
                 free(dynamicArray);
-                return NULL;
+                return NULL;   
             }
-            
-            string[0] = '\0';
         }
         
         if (target[i] != splitBy[matchCount]) {
@@ -300,7 +296,7 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray_AddElementToLast(dynamicArray, string);
 
     if (i == targetLength && characterMatched) {
-        string = malloc(sizeof(char));
+        string = BA_String_CreateEmpty();
 
         if (string == NULL) {
             free(dynamicArray->internalArray);
@@ -308,8 +304,6 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
             return NULL;
         }
         
-        string[0] = '\0';
-
         BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
     }
     
@@ -358,12 +352,10 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     ssize_t splitStringLength = (int) strlen(currentSplitString);
 
     if (line != NULL) {
-        buffer = malloc(sizeof(char));
+        buffer = BA_String_CreateEmpty();
                 
         if (buffer == NULL)
             return -2;
-
-        buffer[0] = '\0';
     }
     
     while (!feof(file)) {
@@ -422,13 +414,11 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
     if (originalTargetSize == 0 || amountOfFormatters <= 0)
         return *target;
 
-    char* newBuffer = malloc(sizeof(char));
+    char* newBuffer = BA_String_CreateEmpty();
 
     if (newBuffer == NULL)
         return NULL;
-
-    newBuffer[0] = '\0';
-
+    
     BA_Boolean percentageFound = BA_BOOLEAN_FALSE;
     int usedArguments = 0;
     
@@ -500,5 +490,15 @@ do {                                                        \
 
     *target = newBuffer;
     return *target;
+}
+
+char* BA_String_CreateEmpty(void) {
+    char* string = malloc(sizeof(char));
+
+    if (string == NULL)
+        return NULL;
+    
+    string[0] = '\0';
+    return string;
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
