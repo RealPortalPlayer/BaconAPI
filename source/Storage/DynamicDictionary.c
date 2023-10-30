@@ -2,6 +2,7 @@
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "BaconAPI/Storage/DynamicDictionary.h"
 
@@ -128,5 +129,12 @@ void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dic
 
         BA_DynamicDictionary_AddElementToLast(results, dictionary->keys.internalArray[index], value);
     }
+}
+
+BA_Boolean BA_DynamicDictionary_Shrink(BA_DynamicDictionary* dictionary) {
+    return dictionary->keys.size != dictionary->keys.used &&
+           !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&       
+           BA_DynamicArray_Shrink(&dictionary->keys) &&
+           BA_DynamicArray_Shrink(&dictionary->values);
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

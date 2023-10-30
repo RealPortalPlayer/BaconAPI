@@ -53,6 +53,7 @@ BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictio
 BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, void* value, size_t elementSize);
 void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* value, size_t elementSize);
 void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* key, size_t elementSize);
+BA_Boolean BA_DynamicDictionary_Shrink(BA_DynamicDictionary* dictionary);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_DYNAMICDICTIONARY_GET_KEY(type, dictionary, value, elementSize) ((type*) BA_DynamicDictionary_GetElementKeyViaValue((dictionary), (value), (elementSize)))

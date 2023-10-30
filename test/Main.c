@@ -99,6 +99,8 @@ int main(void) {
         ASSERT(array.used == 11);
         ASSERT(array.size == 20);
         ASSERT(array.calledReallocate == 1);
+        ASSERT(BA_DynamicArray_Shrink(&array));
+        ASSERT(array.size == array.used);
 
         array.frozen = BA_BOOLEAN_TRUE;
 
@@ -108,6 +110,7 @@ int main(void) {
         ASSERT(!BA_DynamicArray_RemoveLastElement(&array));
         ASSERT(!BA_DynamicArray_RemoveElementAt(&array, 0));
         ASSERT(!BA_DynamicArray_RemoveMatchedElement(&array, &element2, sizeof(int), BA_BOOLEAN_FALSE));
+        ASSERT(!BA_DynamicArray_Shrink(&array));
         free(array.internalArray);
     }
 
@@ -118,7 +121,6 @@ int main(void) {
         int element2 = 30;
         int element2Value = 40;
 
-
         printf("--- DynamicDictionary\n");
         ASSERT(BA_DynamicDictionary_Create(&dictionary, 10));
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
@@ -126,18 +128,21 @@ int main(void) {
         ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == 0);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == 0);
         ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &elementValue, sizeof(int)) == &element);
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element, sizeof(int)) == &elementValue);
         ASSERT(BA_DynamicDictionary_AddElementToLast(&dictionary, &element2, &element2Value));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == 1);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == 1);
         ASSERT(BA_DynamicDictionary_GetElementKeyViaValue(&dictionary, &element2Value, sizeof(int)) == &element2);
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element2, sizeof(int)) == &element2Value);
         ASSERT(BA_DynamicDictionary_RemoveFirstElement(&dictionary));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == -1);
@@ -145,6 +150,7 @@ int main(void) {
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(BA_DynamicDictionary_RemoveLastElement(&dictionary));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == -1);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == -1);
@@ -152,6 +158,7 @@ int main(void) {
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &element2, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element2, &element2Value));
         ASSERT(BA_DynamicDictionary_RemoveElementViaKey(&dictionary, &element, sizeof(int)));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element, sizeof(int)) == -1);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &elementValue, sizeof(int)) == -1);
@@ -159,6 +166,7 @@ int main(void) {
         ASSERT(BA_DynamicDictionary_GetElementValueViaKey(&dictionary, &elementValue, sizeof(int)) == NULL);
         ASSERT(BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(BA_DynamicDictionary_RemoveElementViaValue(&dictionary, &element2Value, sizeof(int)));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
         ASSERT(dictionary.keys.used == dictionary.values.used);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromKey(&dictionary, &element2, sizeof(int)) == -1);
         ASSERT(BA_DynamicDictionary_GetElementIndexFromValue(&dictionary, &element2Value, sizeof(int)) == -1);
@@ -180,16 +188,50 @@ int main(void) {
 
         ASSERT(BA_DYNAMICDICTIONARY_GET_KEY(int, &dictionary, &element2Value, sizeof(int)) == &element2);
         ASSERT(BA_DYNAMICDICTIONARY_GET_VALUE(int, &dictionary, &element2, sizeof(int)) == &element2Value);
+        ASSERT(BA_DynamicDictionary_Shrink(&dictionary));
+        ASSERT(dictionary.keys.size == dictionary.values.size);
+        ASSERT(dictionary.keys.used == dictionary.values.used);
         
         dictionary.frozen = BA_BOOLEAN_TRUE;
 
         ASSERT(!BA_DynamicDictionary_AddElementToStart(&dictionary, &element, &elementValue));
         ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+        
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+        
         ASSERT(!BA_DynamicDictionary_AddElementToLast(&dictionary, &element2, &element2Value));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+
         ASSERT(!BA_DynamicDictionary_RemoveFirstElement(&dictionary));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+
         ASSERT(!BA_DynamicDictionary_RemoveLastElement(&dictionary));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+
         ASSERT(!BA_DynamicDictionary_RemoveElementViaKey(&dictionary, &element, sizeof(int)));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+
         ASSERT(!BA_DynamicDictionary_RemoveElementViaValue(&dictionary, &element2Value, sizeof(int)));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
+
+        dictionary.keys.frozen = BA_BOOLEAN_FALSE;
+        dictionary.values.frozen = BA_BOOLEAN_FALSE;
+
+        ASSERT(!BA_DynamicDictionary_Shrink(&dictionary));
+        ASSERT(dictionary.keys.frozen == dictionary.values.frozen);
         free(found.keys.internalArray);
         free(found.values.internalArray);
     }

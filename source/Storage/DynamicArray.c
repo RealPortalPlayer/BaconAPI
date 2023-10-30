@@ -131,4 +131,19 @@ BA_Boolean BA_DynamicArray_RemoveMatchedElement(BA_DynamicArray* array, void* el
 
     return removedOne;
 }
+
+BA_Boolean BA_DynamicArray_Shrink(BA_DynamicArray* array) {
+    if (array->size == array->used || array->frozen)
+        return BA_BOOLEAN_FALSE;
+    
+    array->size = array->used;
+    
+    void** newArray = realloc(array->internalArray, array->size);
+
+    if (newArray == NULL)
+        return BA_BOOLEAN_FALSE;
+    
+    array->internalArray = newArray;
+    return BA_BOOLEAN_TRUE;
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
