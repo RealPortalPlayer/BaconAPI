@@ -25,6 +25,9 @@ char** BA_ArgumentHandler_GetVector(void) {
 }
 
 static int BA_ArgumentHandler_GetArgumentIndexImplementation(const char* argument) {
+    if (baArgumentHandlerArgumentVector == NULL)
+        return -1;
+    
     for (int i = 1; i < baArgumentHandlerAddedArgumentsCount; i++) {
         if (strcmp(baArgumentHandlerArgumentVector[i], argument) != 0)
             continue;
