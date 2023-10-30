@@ -18,6 +18,11 @@ typedef struct {
     BA_Boolean frozen;
 } BA_DynamicDictionary;
 
+int BA_DynamicDictionary_GetElementIndexFromKey(BA_DynamicDictionary dictionary, void* key, size_t elementSize);
+int BA_DynamicDictionary_GetElementIndexFromValue(BA_DynamicDictionary dictionary, void* value, size_t elementSize);
+void* BA_DynamicDictionary_GetElementKeyViaValue(BA_DynamicDictionary dictionary, void* value, size_t elementSize);
+void* BA_DynamicDictionary_GetElementValueViaKey(BA_DynamicDictionary dictionary, void* key, size_t elementSize);
+
 BA_Boolean BA_DynamicDictionary_Create(BA_DynamicDictionary* dictionary, size_t size);
 BA_Boolean BA_DynamicDictionary_AddElementToStart(BA_DynamicDictionary* dictionary, void* key, void* value);
 BA_Boolean BA_DynamicDictionary_AddElementToLast(BA_DynamicDictionary* dictionary, void* key, void* value);
@@ -46,15 +51,11 @@ BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictio
   * @note This doesn't free any memory, you have to do that yourself to prevent memory leaks.
   */
 BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, void* value, size_t elementSize);
-int BA_DynamicDictionary_GetElementIndexFromKey(BA_DynamicDictionary dictionary, void* key, size_t elementSize);
-int BA_DynamicDictionary_GetElementIndexFromValue(BA_DynamicDictionary dictionary, void* value, size_t elementSize);
-void* BA_DynamicDictionary_GetElementKeyViaValue(BA_DynamicDictionary dictionary, void* value, size_t elementSize);
-void* BA_DynamicDictionary_GetElementValueViaKey(BA_DynamicDictionary dictionary, void* key, size_t elementSize);
 void BA_DynamicDictionary_GetElementsKeyViaValue(BA_DynamicDictionary dictionary, BA_DynamicDictionary* results, void* value, size_t elementSize);
 void BA_DynamicDictionary_GetElementsValueViaKey(BA_DynamicDictionary dictionary, BA_DynamicDictionary* results, void* key, size_t elementSize);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
-#define BA_DYNAMICDICTIONARY_GET_KEY(type, dictionary, value, elementSize) ((type*) BA_DynamicDictionary_GetElementIndexFromValue(&(dictionary), (value), (elementSize)))
-#define BA_DYNAMICDICTIONARY_GET_KEY_PTR(type, dictionary, value, elementSize) ((type*) BA_DynamicDictionary_GetElementIndexFromValue((dictionary), (value), (elementSize)))
-#define BA_DYNAMICDICTIONARY_GET_VALUE(type, dictionary, key, elementSize) ((type*) BA_DynamicDictionary_GetElementIndexFromKey(&(dictionary), (key), (elementSize)))
-#define BA_DYNAMICDICTIONARY_GET_VALUE_PTR(type, dictionary, key, elementSize) ((type*) BA_DynamicDictionary_GetElementIndexFromKey((dictionary), (key), (elementSize)))
+#define BA_DYNAMICDICTIONARY_GET_KEY(type, dictionary, value, elementSize) ((type*) BA_DynamicDictionary_GetElementKeyViaValue((dictionary), (value), (elementSize)))
+#define BA_DYNAMICDICTIONARY_GET_KEY_PTR(type, dictionary, value, elementSize) ((type*) BA_DynamicDictionary_GetElementKeyViaValue(*(dictionary), (value), (elementSize)))
+#define BA_DYNAMICDICTIONARY_GET_VALUE(type, dictionary, key, elementSize) ((type*) BA_DynamicDictionary_GetElementValueViaKey((dictionary), (key), (elementSize)))
+#define BA_DYNAMICDICTIONARY_GET_VALUE_PTR(type, dictionary, key, elementSize) ((type*) BA_DynamicDictionary_GetElementValueViaKey(*(dictionary), (key), (elementSize)))

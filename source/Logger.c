@@ -24,11 +24,11 @@
 #endif
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-static BA_Logger_LogLevels secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
-static BA_Thread_Lock secLoggerLock;
+static BA_Logger_LogLevels baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
+static BA_Thread_Lock baLoggerLock;
 
 BA_Logger_LogLevels BA_Logger_GetLogLevel(void) {
-    return secLoggerCurrentLogLevel;
+    return baLoggerCurrentLogLevel;
 }
 
 void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel, const char* message, ...) {
@@ -51,7 +51,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                 abort();
             }
 
-            if (!BA_Thread_CreateLock(&secLoggerLock)) {
+            if (!BA_Thread_CreateLock(&baLoggerLock)) {
                 printf("Failed to initialize logger lock: %s (%i)\n", strerror(errno), errno);
                 abort();
             }
@@ -64,24 +64,24 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                 if (BA_ArgumentHandler_GetInformationWithShort(BA_BUILTINARGUMENTS_LOG_LEVEL,
                                                                 BA_BUILTINARGUMENTS_LOG_LEVEL_SHORT, 0, &results) != 0) {
                     if (BA_String_Equals(*results.value, "null", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_NULL;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_NULL;
 #ifdef BA_ALLOW_DEBUG_LOGS
                     else if (BA_String_Equals(*results.value, "trace", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "trc", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_TRACE;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_TRACE;
                     else if (BA_String_Equals(*results.value, "debug", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "dbg", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_DEBUG;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_DEBUG;
 #endif
                     else if (BA_String_Equals(*results.value, "warn", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "wrn", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_WARN;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_WARN;
                     else if (BA_String_Equals(*results.value, "error", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "err", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_ERROR;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_ERROR;
                     else if (BA_String_Equals(*results.value, "fatal", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "ftl", BA_BOOLEAN_TRUE))
-                        secLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_FATAL;
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_FATAL;
                     else if (!BA_String_Equals(*results.value, "info", BA_BOOLEAN_TRUE) &&
                              !BA_String_Equals(*results.value, "inf", BA_BOOLEAN_TRUE) &&
                              BA_Logger_IsLevelEnabled(BA_LOGGER_LOG_LEVEL_ERROR)) {
@@ -96,10 +96,10 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
         }
     }
 
-    BA_Thread_UseLock(&secLoggerLock);
+    BA_Thread_UseLock(&baLoggerLock);
 
     if (!BA_Logger_IsLevelEnabled(logLevel)) {
-        BA_Thread_Unlock(&secLoggerLock);
+        BA_Thread_Unlock(&baLoggerLock);
         return;
     }
 
@@ -131,7 +131,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
     antiRecursiveLog = BA_BOOLEAN_FALSE;
 
-    BA_Thread_Unlock(&secLoggerLock);
+    BA_Thread_Unlock(&baLoggerLock);
 }
 
 void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
@@ -207,7 +207,7 @@ void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
 }
 
 BA_Boolean BA_Logger_IsLevelEnabled(BA_Logger_LogLevels logLevel) {
-    return secLoggerCurrentLogLevel != BA_LOGGER_LOG_LEVEL_NULL && logLevel <= secLoggerCurrentLogLevel;
+    return baLoggerCurrentLogLevel != BA_LOGGER_LOG_LEVEL_NULL && logLevel <= baLoggerCurrentLogLevel;
 }
 
 void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {
@@ -219,6 +219,6 @@ void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {
     if (dontChangeLogLevels)
         return;
 
-    secLoggerCurrentLogLevel = logLevel;
+    baLoggerCurrentLogLevel = logLevel;
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

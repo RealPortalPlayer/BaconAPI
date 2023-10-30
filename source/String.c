@@ -246,6 +246,9 @@ char* BA_String_FormatPremadeList(char** target, va_list arguments) {
 BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray* dynamicArray = malloc(sizeof(BA_DynamicArray));
 
+    if (dynamicArray == NULL)
+        return NULL;
+    
     BA_DynamicArray_Create(dynamicArray, 100);
     
     char* string = malloc(sizeof(char));
@@ -254,6 +257,12 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     size_t targetLength = strlen(target);
     int i = 0;
     BA_Boolean characterMatched = BA_BOOLEAN_FALSE;
+
+    if (string == NULL) {
+        free(dynamicArray->internalArray);
+        free(dynamicArray);
+        return NULL;
+    }
     
     string[0] = '\0';
 
@@ -263,6 +272,13 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
             
             matchCount = 0;
             string = malloc(sizeof(char));
+
+            if (string == NULL) {
+                free(dynamicArray->internalArray);
+                free(dynamicArray);
+                return NULL;
+            }
+            
             string[0] = '\0';
         }
         
@@ -285,6 +301,13 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
 
     if (i == targetLength && characterMatched) {
         string = malloc(sizeof(char));
+
+        if (string == NULL) {
+            free(dynamicArray->internalArray);
+            free(dynamicArray);
+            return NULL;
+        }
+        
         string[0] = '\0';
 
         BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
@@ -434,7 +457,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
                 }
 
                 usedArguments++;
-
+                
                 switch (va_arg(arguments, BA_String_SafeFormatTypes)) {
                     case BA_STRING_SAFE_FORMAT_TYPE_STRING:
                         BA_String_Append(&newBuffer, va_arg(arguments, char*));

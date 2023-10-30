@@ -51,6 +51,7 @@ BA_Boolean BA_DynamicArray_Create(BA_DynamicArray* array, size_t size) {
     array->used = 0;
     array->size = size;
     array->frozen = BA_BOOLEAN_FALSE;
+    array->calledReallocate = 0;
     return BA_BOOLEAN_TRUE;
 }
 
@@ -104,20 +105,28 @@ BA_Boolean BA_DynamicArray_RemoveElementAt(BA_DynamicArray* array, unsigned inde
 }
 
 BA_Boolean BA_DynamicArray_RemoveMatchedElement(BA_DynamicArray* array, void* element, size_t elementSize, BA_Boolean repeat) {
+    if (array->frozen)
+        return BA_BOOLEAN_FALSE;
+    
     BA_Boolean removedOne = BA_BOOLEAN_FALSE;
 
     for (int i = 0; i < array->used; i++) {
         int elementId = BA_DynamicArray_GetIndexForElement(array, element, elementSize);
 
-        if (elementId == -1)
+        if (elementId == -1) {
+            if (!repeat)
+                return BA_BOOLEAN_FALSE;
+
             continue;
+        }
 
-        BA_DynamicArray_RemoveElementAt(array, i);
+        BA_DynamicArray_RemoveElementAt(array, elementId);
 
-        if (repeat)
-            continue;
+        if (!repeat)
+            return BA_BOOLEAN_TRUE;
 
-        return BA_BOOLEAN_TRUE;
+        i--;
+        removedOne = BA_BOOLEAN_TRUE;
     }
 
     return removedOne;

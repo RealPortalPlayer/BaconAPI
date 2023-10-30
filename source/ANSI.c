@@ -8,7 +8,7 @@
 #include "BaconAPI/Internal/Boolean.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-static const char* secAnsiCodesCharArray[BA_ANSI_CODE_SIZE] = {
+static const char* baAnsiCodesCharArray[BA_ANSI_CODE_SIZE] = {
     "\033[1m", "\033[4m", "\033[5m", "\033[7m",
     "\033[m",
     "\033[0;30m", "\033[0;31m", "\033[0;32m", "\033[0;33m",
@@ -24,12 +24,12 @@ BA_Boolean BA_ANSI_IsEnabled(void) {
     static int enabled = -1;
 
     if (enabled == -1)
-        enabled = !BA_ArgumentHandler_ContainsArgumentOrShort(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING, BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING_SHORT, BA_BOOLEAN_FALSE);
+        enabled = BA_ArgumentHandler_ContainsArgumentOrShort(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING, BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING_SHORT, BA_BOOLEAN_FALSE);
 
     return enabled;
 }
 
 const char* BA_ANSI_ConvertCodeToString(BA_ANSI_Codes ansi) {
-    return BA_ANSI_IsEnabled() && ansi < BA_ANSI_CODE_SIZE ? secAnsiCodesCharArray[ansi] : "";
+    return BA_ANSI_IsEnabled() && ansi < BA_ANSI_CODE_SIZE ? baAnsiCodesCharArray[ansi] : "";
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

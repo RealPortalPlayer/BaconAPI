@@ -37,3 +37,5 @@ if(BA_ALLOW_DEBUG_LOGS)
 endif()
 
 target_include_directories(BaconAPI PUBLIC include)
+
+add_subdirectory(test)
