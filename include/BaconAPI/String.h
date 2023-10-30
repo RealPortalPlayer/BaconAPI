@@ -15,7 +15,7 @@
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 typedef enum {
-    BA_STRING_SAFE_FORMAT_TYPE_STRING,
+    BA_STRING_SAFE_FORMAT_TYPE_STRING = 1000,
     BA_STRING_SAFE_FORMAT_TYPE_INTEGER,
     BA_STRING_SAFE_FORMAT_TYPE_DOUBLE,
     BA_STRING_SAFE_FORMAT_TYPE_CHARACTER,
@@ -44,6 +44,8 @@ typedef enum {
     BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_INTEGER = BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG,
     BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG_INTEGER = BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG
 } BA_String_SafeFormatTypes;
+
+typedef void (*BA_String_CustomSafeFormatAction)(char** buffer, va_list list);
 
 BA_Boolean BA_String_Contains(const char* string, const char* compare, BA_Boolean caseless);
 BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean caseless);
@@ -162,6 +164,7 @@ ssize_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter)
 char* BA_String_FormatSafe(char** target, int amountOfFormatters, ...);
 char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_list arguments);
 char* BA_String_CreateEmpty(void);
+BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafeFormatAction actionFunction);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_STRING_FORMAT_SAFE_ARGUMENT_STRING(value) BA_STRING_SAFE_FORMAT_TYPE_STRING, value

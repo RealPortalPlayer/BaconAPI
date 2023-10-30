@@ -22,6 +22,10 @@ do {                  \
     printf("\n");     \
 } while (0)
 
+void BooleanFormat(char** buffer, va_list list) {
+    BA_String_Append(buffer, va_arg(list, int) ? "true" : "false");
+}
+
 int main(void) {
     char** fakeArguments = malloc(sizeof(char*) * 10);
     char values[] = "qwertyui--asdf";
@@ -341,6 +345,7 @@ int main(void) {
                 
                 while ((length = BA_String_GetLine(file, &line, NULL)) != -1) {
                     ASSERT(length != -2);
+                    ASSERT(line != NULL);
                     printf("### line -> %s\n", line);
                     free(line);
                 }
@@ -348,7 +353,7 @@ int main(void) {
         } else
             printf("!!! Unable to find test.txt, skipping BA_String_ReadFile, BA_String_GetLine\n");
 
-        ASSERT(strcmp(BA_String_Append(&string, " %s %s %s %s %s %s %s %s %s %s %s %s"), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! %s %s %s %s %s %s %s %s %s %s %s %s") == 0);
+        ASSERT(strcmp(BA_String_Append(&string, " %s %s %s %s %s %s %s %s %s %s %s %s %s %s"), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! %s %s %s %s %s %s %s %s %s %s %s %s %s %s") == 0);
         ASSERT(strcmp(BA_String_FormatSafe(&string, 11,
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_STRING("That's good to hear!"),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_INTEGER(10),
@@ -361,7 +366,9 @@ int main(void) {
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_UNSIGNED_CHARACTER('h'),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_UNSIGNED_LONG(10000000000000),
                                            BA_STRING_FORMAT_SAFE_ARGUMENT_UNSIGNED_LONG_LONG(1000000000000000000)),
-                      "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 10000000000000 1000000000000000000 100 200.000000 h 10000000000000 1000000000000000000 %s") == 0);
+                      "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 10000000000000 1000000000000000000 100 200.000000 h 10000000000000 1000000000000000000 %s %s %s") == 0);
+        ASSERT(BA_String_AddCustomSafeFormatter(1, BooleanFormat));
+        ASSERT(strcmp(BA_String_FormatSafe(&string, 2, 1, 1, 1, 0), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 10000000000000 1000000000000000000 100 200.000000 h 10000000000000 1000000000000000000 true false %s") == 0);
     }
 
     printf("+++ Success\n");

@@ -14,7 +14,7 @@ static BA_Boolean BA_DynamicDictionary_UpdateFrozenState(BA_DynamicDictionary* d
 
 BA_Boolean BA_DynamicDictionary_Create(BA_DynamicDictionary* dictionary, size_t size) {
     BA_Boolean returnValue = BA_DynamicArray_Create(&dictionary->keys, size) &&
-                              BA_DynamicArray_Create(&dictionary->values, size);
+                             BA_DynamicArray_Create(&dictionary->values, size);
 
     dictionary->frozen = BA_BOOLEAN_FALSE;
     return returnValue;

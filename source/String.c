@@ -14,8 +14,12 @@
 
 #include "BaconAPI/String.h"
 #include "BaconAPI/Debugging/Assert.h"
+#include "BaconAPI/Storage/DynamicDictionary.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
+static BA_DynamicDictionary baStringCustomFormatters;
+static BA_Boolean baStringInitializedCustomFormatters = BA_BOOLEAN_FALSE;
+
 char* BA_String_Copy(const char* duplicateFrom) {
     char* string = malloc(sizeof(char) * (strlen(duplicateFrom) + 1));
 
@@ -409,6 +413,13 @@ char* BA_String_FormatSafe(char** target, int amountOfFormatters, ...) {
 }
 
 char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_list arguments) {
+    if (!baStringInitializedCustomFormatters) {
+        if (!BA_DynamicDictionary_Create(&baStringCustomFormatters, 10))
+            return NULL;
+
+        baStringInitializedCustomFormatters = BA_BOOLEAN_TRUE;
+    }
+    
     size_t originalTargetSize = strlen(*target);
 
     if (originalTargetSize == 0 || amountOfFormatters <= 0)
@@ -456,8 +467,10 @@ do {                                                        \
     snprintf(buffer, bufferSize + 1, formatSpecifier, value); \
     BA_String_Append(&newBuffer, buffer);                   \
 } while (0)
+
+                BA_String_SafeFormatTypes identifier = va_arg(arguments, BA_String_SafeFormatTypes);
                 
-                switch (va_arg(arguments, BA_String_SafeFormatTypes)) {
+                switch (identifier) {
                     case BA_STRING_SAFE_FORMAT_TYPE_STRING: BA_String_Append(&newBuffer, va_arg(arguments, char*)); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_INTEGER: BA_STRING_CONVERT_AND_APPEND(int, "%d"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_DOUBLE: BA_STRING_CONVERT_AND_APPEND(double, "%lf"); break;
@@ -470,8 +483,18 @@ do {                                                        \
                     case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_CHARACTER: BA_STRING_CONVERT_AND_APPEND(unsigned int, "%c"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG: BA_STRING_CONVERT_AND_APPEND(unsigned long, "%lu"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG: BA_STRING_CONVERT_AND_APPEND(unsigned long long, "%llu"); break;
-                    // FIXME: Specify which type
-                    default: BA_ASSERT_ALWAYS("Type not supported in this engine version\n");
+                    default:
+                    {
+                        BA_String_CustomSafeFormatAction actionFunction = (BA_String_CustomSafeFormatAction) BA_DYNAMICDICTIONARY_GET_VALUE(BA_String_CustomSafeFormatAction, &baStringCustomFormatters, &identifier, sizeof(int));
+
+                        if (actionFunction != NULL) {
+                            actionFunction(&newBuffer, arguments);
+                            break;
+                        }
+
+                        // FIXME: Specify which type
+                        BA_ASSERT_ALWAYS("Specified type is unrecognized\n");
+                    }
                 }
 
 #undef BA_STRING_CONVERT_AND_APPEND
@@ -500,5 +523,24 @@ char* BA_String_CreateEmpty(void) {
     
     string[0] = '\0';
     return string;
+}
+
+BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafeFormatAction actionFunction) {
+    if (!baStringInitializedCustomFormatters) {
+        if (!BA_DynamicDictionary_Create(&baStringCustomFormatters, 10))
+            return BA_BOOLEAN_FALSE;
+        
+        baStringInitializedCustomFormatters = BA_BOOLEAN_TRUE;
+    }
+    
+    int* identifierPointer = malloc(sizeof(int));
+
+    if (identifierPointer == NULL)
+        return BA_BOOLEAN_FALSE;
+    
+    *identifierPointer = identifier;
+
+    BA_DynamicDictionary_AddElementToLast(&baStringCustomFormatters, identifierPointer, actionFunction);
+    return BA_BOOLEAN_TRUE;
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
