@@ -45,7 +45,7 @@ typedef enum {
     BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG_INTEGER = BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG
 } BA_String_SafeFormatTypes;
 
-typedef void (*BA_String_CustomSafeFormatAction)(char** buffer, va_list list);
+typedef void (*BA_String_CustomSafeFormatAction)(char** buffer, void** argument);
 
 BA_Boolean BA_String_Contains(const char* string, const char* compare, BA_Boolean caseless);
 BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean caseless);

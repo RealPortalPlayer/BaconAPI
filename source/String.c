@@ -489,7 +489,9 @@ do {                                                        \
                         BA_String_CustomSafeFormatAction actionFunction = (BA_String_CustomSafeFormatAction) BA_DYNAMICDICTIONARY_GET_VALUE(BA_String_CustomSafeFormatAction, &baStringCustomFormatters, &identifier, sizeof(int));
 
                         if (actionFunction != NULL) {
-                            actionFunction(&newBuffer, arguments);
+                            void* argument = va_arg(arguments, void*);
+                            
+                            actionFunction(&newBuffer, &argument);
                             break;
                         }
 
