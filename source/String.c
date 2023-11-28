@@ -432,6 +432,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
     
     BA_Boolean percentageFound = BA_BOOLEAN_FALSE;
     int usedArguments = 0;
+    int lastSuccessfulIdentifier = 0;
     
     for (int i = 0; i < originalTargetSize; i++) {
         char character = (*target)[i];
@@ -492,12 +493,13 @@ do {                                                        \
                             break;
                         }
 
-                        BA_ASSERT_ALWAYS("Specified type is unrecognized: %i\n", identifier);
+                        BA_ASSERT_ALWAYS("Specified type is unrecognized:\nIdentifier: %i\nPrevious identifier: %i\n", identifier, lastSuccessfulIdentifier);
                     }
                 }
-
-#undef BA_STRING_CONVERT_AND_APPEND
                 
+#undef BA_STRING_CONVERT_AND_APPEND
+
+                lastSuccessfulIdentifier = identifier;
                 continue;
             }
 
