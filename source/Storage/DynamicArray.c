@@ -10,11 +10,12 @@
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_Boolean BA_DynamicArray_ReallocateArray(BA_DynamicArray* array) {
-    if (array->size != (size_t) array->used)
+    if (array->size != (size_t) array->used) {
+        BA_ASSERT(array->size > (size_t) array->used, "Invalid array state\n");
         return BA_BOOLEAN_TRUE;
+    }
 
     BA_LOGGER_TRACE("Ran out of free space, expanding array\nThis is expensive, so you should try avoiding it\n");
-    BA_ASSERT((int) array->size >= array->used, "Invalid array state\n");
 
     array->size *= 2;
     array->calledReallocate++;
