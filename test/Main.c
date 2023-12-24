@@ -32,12 +32,14 @@ int main(void) {
     int secondIndex = 0;
     
     printf("--- Initializing fake arguments. Ignore any assert triggers as this isn't part of the API test\n");
+    
     for (int i = 1; i < 8; i++) {
         fakeArguments[i] = malloc(sizeof(char) * 3);
-
+        
         ASSERT(fakeArguments[i] != NULL);
         memcpy(fakeArguments[i], values + secondIndex, 2);
         
+        fakeArguments[i][2] = '\0';
         secondIndex += 2;
     }
     
