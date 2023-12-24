@@ -22,16 +22,16 @@ BA_Thread BA_Thread_GetCurrent(void) {
 #endif
 }
 
-BA_Boolean BA_Thread_Create(BA_Thread* thread, void (*threadFunction)(void)) {
+BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, BA_Thread_ArgumentType argument) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-    int result = pthread_create(thread, NULL, (void* (*)(void*)) threadFunction, NULL);
+    int result = pthread_create(thread, NULL, threadFunction, argument);
 
     if (result != 0)
         errno = result;
 
     return result == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
-    *thread = (BA_Thread) CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadFunction, NULL, 0, NULL);
+    *thread = (BA_Thread) CreateThread(NULL, 0, threadFunction, NULL, 0, NULL);
     return *thread != NULL;
 #endif
 }

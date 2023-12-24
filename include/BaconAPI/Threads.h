@@ -16,16 +16,20 @@ BA_CPLUSPLUS_SUPPORT_GUARD_START()
 
 typedef pthread_t BA_Thread;
 typedef pthread_mutex_t BA_Thread_Lock;
+typedef void* BA_Thread_ArgumentType;
+typedef void* (*BA_Thread_Function)(BA_Thread_ArgumentType);
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
 
 typedef HANDLE BA_Thread;
 typedef HANDLE BA_Thread_Lock;
+typedef LPVOID BA_Thread_ArgumentType;
+typedef LPTHREAD_START_ROUTINE BA_Thread_Function;
 #endif
 
 BA_Thread BA_Thread_GetCurrent(void);
 
-BA_Boolean BA_Thread_Create(BA_Thread* thread, void (*threadFunction)(void));
+BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, BA_Thread_ArgumentType argument);
 BA_Boolean BA_Thread_Join(BA_Thread thread);
 BA_Boolean BA_Thread_CreateLock(BA_Thread_Lock* lock);
 BA_Boolean BA_Thread_UseLock(BA_Thread_Lock* lock);
