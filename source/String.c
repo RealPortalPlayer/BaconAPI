@@ -43,21 +43,15 @@ char* BA_String_Append(char** target, const char* stringToAppend) {
 }
 
 char* BA_String_Prepend(char** target, const char* stringToPrepend) {
-    size_t targetLength = strlen(*target);
-    size_t stringToPrependLength = strlen(stringToPrepend);
-    char* reallocatedString = realloc(*target, sizeof(char) * (targetLength + stringToPrependLength));
-    
-    if (reallocatedString == NULL)
+    char* copiedStringToPrepend = BA_String_Copy(stringToPrepend);
+
+    if (copiedStringToPrepend == NULL)
         return NULL;
     
-    *target = reallocatedString;
-
-    for (size_t i = targetLength; i > 0 ; i--)
-        (*target)[i + stringToPrependLength - 1] = (*target)[i - 1];
-
-    memcpy(*target, stringToPrepend, stringToPrependLength);
+    BA_String_Append(&copiedStringToPrepend, *target);
+    free(*target);
     
-    (*target)[targetLength + stringToPrependLength] = 0;
+    *target = copiedStringToPrepend;
     return *target;
 }
 
