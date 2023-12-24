@@ -5,7 +5,7 @@
 #include "BaconAPI/Internal/Boolean.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-    static FARPROC BA_WindowsHacks_GetFunction_advapi32(const char* functionName) {
+static FARPROC BA_WindowsHacks_GetFunction_advapi32(const char* functionName) {
     static HANDLE requiredLibrary = NULL;
     static BA_Boolean initialized = BA_BOOLEAN_FALSE;
 
@@ -26,11 +26,11 @@ WINBOOL WINAPI BA_WindowsHacks_CheckTokenMembership(HANDLE tokenHandle, PSID sec
         function = BA_WindowsHacks_GetFunction_advapi32("CheckTokenMembership");
     }
 
-    return function != NULL ? function(tokenHandle, securityIdentifier, isMember) : FALSE;
+    return function != NULL && function(tokenHandle, securityIdentifier, isMember);
 }
 
-BOOL WINAPI BA_WindowsHacks_AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY identifierAuthority, BYTE subAuthorityCount, DWORD subAuthority0, DWORD subAuthority1, DWORD subAuthority2, DWORD subAuthority3, DWORD subAuthority4, DWORD subAuthority5, DWORD subAuthority6, DWORD subAuthority7, PSID* securityIdentifier) {
-    static BOOL (WINAPI *function)(PSID_IDENTIFIER_AUTHORITY, BYTE, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, PSID*) = NULL;
+WINBOOL WINAPI BA_WindowsHacks_AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY identifierAuthority, BYTE subAuthorityCount, DWORD subAuthority0, DWORD subAuthority1, DWORD subAuthority2, DWORD subAuthority3, DWORD subAuthority4, DWORD subAuthority5, DWORD subAuthority6, DWORD subAuthority7, PSID* securityIdentifier) {
+    static WINBOOL (WINAPI *function)(PSID_IDENTIFIER_AUTHORITY, BYTE, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, PSID*) = NULL;
     static BA_Boolean initialized = BA_BOOLEAN_FALSE;
 
     if (function == NULL && !initialized) {
@@ -38,6 +38,6 @@ BOOL WINAPI BA_WindowsHacks_AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY i
         function = (WINBOOL (WINAPI *)(PSID_IDENTIFIER_AUTHORITY, BYTE, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, PSID*)) BA_WindowsHacks_GetFunction_advapi32("AllocateAndInitializeSid");
     }
 
-    return function != NULL ? function(identifierAuthority, subAuthorityCount, subAuthority0, subAuthority1, subAuthority2, subAuthority3, subAuthority4, subAuthority5, subAuthority6, subAuthority7, securityIdentifier) : FALSE;
+    return function != NULL && function(identifierAuthority, subAuthorityCount, subAuthority0, subAuthority1, subAuthority2, subAuthority3, subAuthority4, subAuthority5, subAuthority6, subAuthority7, securityIdentifier);
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

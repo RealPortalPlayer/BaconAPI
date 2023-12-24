@@ -80,7 +80,7 @@ BA_Boolean BA_DynamicArray_AddElementToLast(BA_DynamicArray* array, void* elemen
 }
 
 BA_Boolean BA_DynamicArray_RemoveFirstElement(BA_DynamicArray* array) {
-    return array->used != 0 && !array->frozen ? BA_DynamicArray_RemoveElementAt(array, 0) : BA_BOOLEAN_FALSE;
+    return array->used != 0 && !array->frozen && BA_DynamicArray_RemoveElementAt(array, 0);
 }
 
 BA_Boolean BA_DynamicArray_RemoveLastElement(BA_DynamicArray* array) {

@@ -19,7 +19,7 @@
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 #ifndef BA_DISABLE_HACKS
 WINBOOL WINAPI BA_WindowsHacks_CheckTokenMembership(HANDLE tokenHandle, PSID securityIdentifier, PBOOL isMember);
-BOOL WINAPI BA_WindowsHacks_AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY identifierAuthority, BYTE subAuthorityCount, DWORD subAuthority0, DWORD subAuthority1, DWORD subAuthority2, DWORD subAuthority3, DWORD subAuthority4, DWORD subAuthority5, DWORD subAuthority6, DWORD subAuthority7, PSID* securityIdentifier);
+WINBOOL WINAPI BA_WindowsHacks_AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY identifierAuthority, BYTE subAuthorityCount, DWORD subAuthority0, DWORD subAuthority1, DWORD subAuthority2, DWORD subAuthority3, DWORD subAuthority4, DWORD subAuthority5, DWORD subAuthority6, DWORD subAuthority7, PSID* securityIdentifier);
 #else
 #   define BA_WindowsHacks_CheckTokenMembership CheckTokenMembership
 #   define BA_WindowsHacks_AllocateAndInitializeSid AllocateAndInitializeSid
