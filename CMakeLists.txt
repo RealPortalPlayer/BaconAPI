@@ -6,6 +6,8 @@ set(CMAKE_C_STANDARD 11)
 option(BA_ALLOW_DEBUG_LOGS "Always allow debug logs, even for release builds" OFF)
 option(BA_DISABLE_HACKS "Disable operating system specific hacks" OFF)
 
+include(cmake/Strip.cmake)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     add_compile_definitions(DEBUG BA_ALLOW_DEBUG_LOGS)
 elseif(BA_ALLOW_DEBUG_LOGS)
