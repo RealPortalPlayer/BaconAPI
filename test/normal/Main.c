@@ -6,9 +6,9 @@
 #include <BaconAPI/Storage/DynamicDictionary.h>
 #include <BaconAPI/ANSI.h>
 #include <string.h>
-#include <BaconAPI/BuiltInArguments.h>
 #include <BaconAPI/ArgumentHandler.h>
 #include <BaconAPI/String.h>
+#include <BaconAPI/Number.h>
 
 #include "../TestHeader.h"
 
@@ -358,5 +358,32 @@ int main(void) {
         ASSERT(strcmp(BA_String_FormatSafe(&string, 2, 1, 1, 1, 0), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 100000 10000000000000 100 200.000000 h 100000 10000000000000 true false %s") == 0);
     }
 
+    {
+        printf("--- Number\n");
+        
+#define NUMBER_FUNCTION(to, string, result, error, endPointerResult) \
+do {                                                                 \
+    char* endPointer;                                                \
+    BA_Boolean isError;                                              \
+    ASSERT(BA_Number_StringTo ## to(string, &endPointer, &isError) == result); \
+    ASSERT(isError == error);                                        \
+    ASSERT(strcmp(endPointer, endPointerResult) == 0);               \
+} while (BA_BOOLEAN_FALSE)
+        
+#define NUMBER_FUNCTION_TEST(to) \
+do {                             \
+        NUMBER_FUNCTION(to, "1", 1, BA_BOOLEAN_FALSE, ""); \
+        NUMBER_FUNCTION(to, "test", 0, BA_BOOLEAN_TRUE, "test"); \
+        NUMBER_FUNCTION(to, "1test", 0, BA_BOOLEAN_TRUE, "test"); \
+} while (0)
+        
+        NUMBER_FUNCTION_TEST(Character);
+        NUMBER_FUNCTION_TEST(UnsignedCharacter);
+        NUMBER_FUNCTION_TEST(Short);
+        NUMBER_FUNCTION_TEST(UnsignedShort);
+        NUMBER_FUNCTION_TEST(Integer);
+        NUMBER_FUNCTION_TEST(Unsigned);
+    }
+    
     printf("+++ Success\n");
 }

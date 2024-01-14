@@ -32,7 +32,8 @@ add_library(BaconAPI STATIC
         source/Storage/DynamicArray.c
         source/Storage/DynamicDictionary.c
         source/Debugging/Assert.c
-        ${BA_SOURCE_FILES})
+        ${BA_SOURCE_FILES}
+        source/Number.c)
 
 if(BA_ALLOW_DEBUG_LOGS)
     target_compile_definitions(BaconAPI PUBLIC BA_ALLOW_DEBUG_LOGS)
