@@ -11,8 +11,6 @@
 #include "BaconAPI/Internal/CPlusPlusSupport.h"
 #include "BaconAPI/Internal/Boolean.h"
 
-// TODO: float/double
-
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 char BA_Number_StringToCharacter(const char* string, char** endPointer, BA_Boolean* isError);
 unsigned char BA_Number_StringToUnsignedCharacter(char const* string, char** endPointer, BA_Boolean* isError);
