@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(BaconAPI C)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 99)
 
 option(BA_ALLOW_DEBUG_LOGS "Always allow debug logs, even for release builds" OFF)
 option(BA_DISABLE_HACKS "Disable operating system specific hacks" OFF)

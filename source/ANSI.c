@@ -6,9 +6,10 @@
 #include "BaconAPI/ArgumentHandler.h"
 #include "BaconAPI/BuiltInArguments.h"
 #include "BaconAPI/Internal/Boolean.h"
+#include "BaconAPI/Debugging/StaticAssert.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-static const char* baAnsiCodesCharacterArray[BA_ANSI_CODE_SIZE] = {
+static const char* baAnsiCodesCharacterArray[] = {
     "\033[1m", "\033[4m", "\033[5m", "\033[7m",
     "\033[m",
     "\033[0;30m", "\033[0;31m", "\033[0;32m", "\033[0;33m",
@@ -19,6 +20,8 @@ static const char* baAnsiCodesCharacterArray[BA_ANSI_CODE_SIZE] = {
     "\033[0;42m", "\033[0;43m", "\033[0;44m", "\033[0;45m",
     "\033[0;46m", "\033[0;47m", "\033[0;49m"
 };
+
+BA_STATIC_ASSERT_LOOKUP_TABLE_CHECK(baAnsiCodesCharacterArray, BA_ANSI_CODE_SIZE);
 
 BA_Boolean BA_ANSI_IsEnabled(void) {
     static int enabled = -1;
