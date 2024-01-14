@@ -12,12 +12,12 @@
 #include "BaconAPI/Internal/Boolean.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-char BA_Number_StringToCharacter(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
-unsigned char BA_Number_StringToUnsignedCharacter(char const* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
-short BA_Number_StringToShort(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
-unsigned short BA_Number_StringToUnsignedShort(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
-int BA_Number_StringToInteger(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
-unsigned BA_Number_StringToUnsigned(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage);
+char BA_Number_StringToCharacter(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, char defaultValue);
+unsigned char BA_Number_StringToUnsignedCharacter(char const* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, unsigned char defaultValue);
+short BA_Number_StringToShort(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, short defaultValue);
+unsigned short BA_Number_StringToUnsignedShort(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, unsigned short defaultValue);
+int BA_Number_StringToInteger(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, int defaultValue);
+unsigned BA_Number_StringToUnsigned(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, unsigned defaultValue);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_NUMBER_MIN(number, minimum) ((number) > (minimum) ? (number) : (minimum))

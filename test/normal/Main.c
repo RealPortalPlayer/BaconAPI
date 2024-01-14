@@ -365,7 +365,7 @@ int main(void) {
 do {                                                                 \
     char* endPointer;                                                \
     BA_Boolean isError;                                              \
-    ASSERT(BA_Number_StringTo ## to(string, &endPointer, &isError, NULL) == result); \
+    ASSERT(BA_Number_StringTo ## to(string, &endPointer, &isError, NULL, 0) == result); \
     ASSERT(isError == error);                                        \
     ASSERT(strcmp(endPointer, endPointerResult) == 0);               \
 } while (BA_BOOLEAN_FALSE)

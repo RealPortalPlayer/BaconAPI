@@ -7,7 +7,7 @@
 #include "BaconAPI/Number.h"
 
 #define BA_NUMBER_STRING_CONVERT(type, to, min, max) \
-type BA_Number_StringTo ## to(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage) { \
+type BA_Number_StringTo ## to(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, type defaultValue) { \
     char* pointer;                                   \
     long parsedValue = strtol(string, &pointer, 0);  \
     BA_Boolean errored = pointer[0] != '\0' || parsedValue < min || parsedValue > max; \
@@ -17,7 +17,7 @@ type BA_Number_StringTo ## to(const char* string, char** endPointer, BA_Boolean*
         *isError = errored;                          \
     if (errored && errorMessage != NULL)             \
         BA_LOGGER_ERROR("%s", errorMessage);         \
-    return !errored ? (type) parsedValue : 0;        \
+    return !errored ? (type) parsedValue : defaultValue; \
 }
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
