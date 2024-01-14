@@ -1,4 +1,4 @@
-// Copyright (c) 2022, 2023, PortalPlayer <email@portalplayer.xyz>
+// Copyright (c) 2022, 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include <stdio.h>
@@ -11,7 +11,7 @@
 #include "BaconAPI/Internal/CPlusPlusSupport.h"
 #include "BaconAPI/ArgumentHandler.h"
 #include "BaconAPI/BuiltInArguments.h"
-#include "BaconAPI/Threads.h"
+#include "BaconAPI/Thread.h"
 #include "BaconAPI/String.h"
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
@@ -52,7 +52,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
             }
 
             if (!BA_Thread_CreateLock(&baLoggerLock)) {
-                printf("Failed to initialize logger lock: %s (%i)\n", strerror(errno), errno);
+                printf("Failed to initialize logger lock: %i\n", errno);
                 abort();
             }
 
@@ -73,6 +73,9 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                              BA_String_Equals(*results.value, "dbg", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_DEBUG;
 #endif
+                    else if (BA_String_Equals(*results.value, "info", BA_BOOLEAN_TRUE) ||
+                             BA_String_Equals(*results.value, "inf", BA_BOOLEAN_TRUE))
+                        baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
                     else if (BA_String_Equals(*results.value, "warn", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "wrn", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_WARN;
@@ -82,9 +85,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                     else if (BA_String_Equals(*results.value, "fatal", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "ftl", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_FATAL;
-                    else if (!BA_String_Equals(*results.value, "info", BA_BOOLEAN_TRUE) &&
-                             !BA_String_Equals(*results.value, "inf", BA_BOOLEAN_TRUE) &&
-                             BA_Logger_IsLevelEnabled(BA_LOGGER_LOG_LEVEL_ERROR)) {
+                    else if (BA_Logger_IsLevelEnabled(BA_LOGGER_LOG_LEVEL_ERROR)) {
                         BA_Logger_LogHeader(stderr, BA_LOGGER_LOG_LEVEL_ERROR);
                         printf("Invalid log type: %s\n", *results.value);
                     }

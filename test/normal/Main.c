@@ -1,10 +1,8 @@
-// Copyright (c) 2023, PortalPlayer <email@portalplayer.xyz>
+// Copyright (c) 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
-#include <stdio.h>
 #include <BaconAPI/Storage/DynamicArray.h>
 #include <BaconAPI/Internal/Boolean.h>
-#include <stdlib.h>
 #include <BaconAPI/Storage/DynamicDictionary.h>
 #include <BaconAPI/ANSI.h>
 #include <string.h>
@@ -12,15 +10,7 @@
 #include <BaconAPI/ArgumentHandler.h>
 #include <BaconAPI/String.h>
 
-#define ASSERT(check) \
-do {                  \
-    printf("%s", #check); \
-    if (!(check)) {   \
-        printf(": FAIL\n"); \
-        abort();      \
-    }                 \
-    printf("\n");     \
-} while (0)
+#include "../TestHeader.h"
 
 void BooleanFormat(char** buffer, void** argument) {
     BA_String_Append(buffer, *((int*) argument) ? "true" : "false");

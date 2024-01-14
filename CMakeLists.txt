@@ -27,7 +27,7 @@ add_library(BaconAPI STATIC
         source/Logger.c
         source/ANSI.c
         source/User.c
-        source/Threads.c
+        source/Thread.c
         source/String.c
         source/Storage/DynamicArray.c
         source/Storage/DynamicDictionary.c
@@ -40,4 +40,5 @@ endif()
 
 target_include_directories(BaconAPI PUBLIC include)
 
-add_subdirectory(test)
+add_subdirectory(test/normal)
+add_subdirectory(test/threads)
