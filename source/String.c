@@ -1,4 +1,4 @@
-// Copyright (c) 2023, PortalPlayer <email@portalplayer.xyz>
+// Copyright (c) 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include "BaconAPI/Internal/OperatingSystem.h"
@@ -257,6 +257,10 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_Boolean characterMatched = BA_BOOLEAN_FALSE;
 
     if (string == NULL) {
+        destroy:
+        for (int j = 0; j < dynamicArray->used; j++)
+            free(dynamicArray->internalArray[i]);
+
         free(dynamicArray->internalArray);
         free(dynamicArray);
         return NULL;
@@ -269,11 +273,8 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
             matchCount = 0;
             string = BA_String_CreateEmpty();
 
-            if (string == NULL) {
-                free(dynamicArray->internalArray);
-                free(dynamicArray);
-                return NULL;   
-            }
+            if (string == NULL)
+                goto destroy;
         }
         
         if (target[i] != splitBy[matchCount]) {
@@ -296,11 +297,8 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     if (i == targetLength && characterMatched) {
         string = BA_String_CreateEmpty();
 
-        if (string == NULL) {
-            free(dynamicArray->internalArray);
-            free(dynamicArray);
-            return NULL;
-        }
+        if (string == NULL)
+            goto destroy;
         
         BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
     }
@@ -379,10 +377,8 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
         BA_String_Append(&buffer, BA_String_Copy(contents));
     }
 
-    if (buffer[0] != '\0') {
-        if (line != NULL)
-            *line = buffer;
-        
+    if (line != NULL && buffer[0] != '\0') {
+        *line = buffer;
         return length;
     }
     
