@@ -20,6 +20,14 @@ BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_DynamicDictionary baStringCustomFormatters;
 static BA_Boolean baStringInitializedCustomFormatters = BA_BOOLEAN_FALSE;
 
+#define BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength) \
+char stackString[stringLength + 1];                                     \
+char stackCompare[compareLength + 1];                                   \
+memcpy(stackString, string, stringLength);                              \
+memcpy(stackCompare, compare, compareLength);                           \
+stackString[stringLength + 1] = '\0';                                   \
+stackCompare[compareLength + 1] = '\0'
+
 char* BA_String_Copy(const char* duplicateFrom) {
     char* string = malloc(sizeof(char) * (strlen(duplicateFrom) + 1));
 
@@ -59,67 +67,33 @@ BA_Boolean BA_String_StartsWith(const char* string, const char* compare, BA_Bool
     if (string == compare)
         return BA_BOOLEAN_TRUE;
 
-    size_t stringLength = strlen(string);
     size_t compareLength = strlen(compare);
+
+    if (strlen(string) < compareLength)
+        return BA_BOOLEAN_FALSE;
+
+    if (!caseless)
+        return strncmp(string, compare, compareLength) == 0;
     
-    if (stringLength < compareLength)
-        return BA_BOOLEAN_FALSE;
-
-    for (size_t i = 0; i < compareLength; i++) {
-        char character1 = string[i];
-        char character2 = compare[i];
-
-        if (caseless) {
-            character1 = (char) tolower(character1);
-            character2 = (char) tolower(character2);
-        }
-
-        if (i < stringLength && character1 == character2)
-            continue;
-
-        return BA_BOOLEAN_FALSE;
-    }
-
-    return BA_BOOLEAN_TRUE;
+    BA_STRING_GET_STACK_STRING_COMPARE(compareLength, compareLength);
+    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), compareLength) == 0;
 }
 
 BA_Boolean BA_String_EndsWith(const char* string, const char* compare, BA_Boolean caseless) {
     if (string == compare)
         return BA_BOOLEAN_TRUE;
-
+    
     size_t stringLength = strlen(string);
     size_t compareLength = strlen(compare);
-    
+
     if (stringLength < compareLength)
         return BA_BOOLEAN_FALSE;
+    
+    if (!caseless)
+        return strncmp(string + (stringLength - compareLength), compare, compareLength) == 0;
 
-    while (stringLength != 0 && compareLength != 0) {
-        char character1 = string[stringLength];
-        char character2 = compare[compareLength];
-
-        if (caseless) {
-            character1 = (char) tolower(character1);
-            character2 = (char) tolower(character2);
-        }
-
-        if (character1 == character2) {
-            stringLength--;
-            compareLength--;
-            continue;
-        }
-
-        return BA_BOOLEAN_FALSE;
-    }
-
-    char finalCharacter1 = string[stringLength];
-    char finalCharacter2 = compare[compareLength];
-
-    if (caseless) {
-        finalCharacter1 = (char) tolower(finalCharacter1);
-        finalCharacter2 = (char) tolower(finalCharacter2);
-    }
-
-    return finalCharacter1 == finalCharacter2;
+    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength);
+    return strncmp(BA_String_ToLower(stackString + (stringLength - compareLength)), BA_String_ToLower(stackCompare), compareLength) == 0;
 }
 
 char* BA_String_ToLower(char* string) {
@@ -141,38 +115,26 @@ BA_Boolean BA_String_Contains(const char* string, const char* compare, BA_Boolea
         return BA_BOOLEAN_TRUE;
 
     size_t stringLength = strlen(string);
+    size_t compareLength = strlen(compare);
     
-    if (stringLength < strlen(compare))
+    if (stringLength < compareLength)
         return BA_BOOLEAN_FALSE;
 
-    BA_Boolean started = BA_BOOLEAN_FALSE;
-    size_t compareIndex = 0;
+    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength);
 
-    for (size_t i = 0; i < stringLength; i++) {
-        char character1 = string[i];
-        char character2 = compare[compareIndex];
-
-        if (character2 == '\0')
-            return BA_BOOLEAN_TRUE;
-
-        if (caseless) {
-            character1 = (char) tolower(character1);
-            character2 = (char) tolower(character2);
-        }
-
-        if (character1 == character2) {
-            started = BA_BOOLEAN_TRUE;
-            compareIndex++;
+    if (caseless) {
+        memcpy(stackString, BA_String_ToLower(stackString), stringLength);
+        memcpy(stackCompare, BA_String_ToLower(stackCompare), compareLength);
+    }
+    
+    for (int i = 0; i < stringLength; i++) {
+        if (strncmp(stackString + i, stackCompare, compareLength) != 0)
             continue;
-        }
-
-        if (!started)
-            continue;
-
-        return BA_BOOLEAN_FALSE;
+        
+        return BA_BOOLEAN_TRUE;
     }
 
-    return started;
+    return BA_BOOLEAN_FALSE;
 }
 
 BA_Boolean BA_String_ContainsCharacter(const char* string, char compare, BA_Boolean caseless) {
@@ -185,17 +147,13 @@ BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean 
     if (!caseless)
         return strcmp(string, compare) == 0;
 
-    size_t i = 0;
-    size_t compareLength = strlen(compare);
-    
-    for (; i < strlen(string); i++) {
-        if (tolower(string[i]) == tolower(compare[i]))
-            continue;
+    size_t stringLength = strlen(string);
 
+    if (stringLength != strlen(compare))
         return BA_BOOLEAN_FALSE;
-    }
-
-    return i == compareLength;
+    
+    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, stringLength);
+    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), stringLength);
 }
 
 char* BA_String_AppendCharacter(char** target, char character) {
@@ -226,15 +184,15 @@ char* BA_String_FormatPremadeList(char** target, va_list arguments) {
 
     va_copy(argumentsCopy, arguments);
 
-    size_t newSize = vsnprintf(NULL, 0, *target, arguments);
-    char* newBuffer = malloc(sizeof(char) * newSize + 1);
+    size_t newLength = vsnprintf(NULL, 0, *target, arguments) + 1;
+    char* newBuffer = malloc(sizeof(char) * newLength);
 
     if (newBuffer == NULL) {
         va_end(argumentsCopy);
         return NULL;
     }
     
-    vsnprintf(newBuffer, newSize + 1, *target, argumentsCopy);
+    vsnprintf(newBuffer, newLength, *target, argumentsCopy);
     va_end(argumentsCopy);
 
     *target = newBuffer;
@@ -243,64 +201,43 @@ char* BA_String_FormatPremadeList(char** target, va_list arguments) {
 
 BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray* dynamicArray = malloc(sizeof(BA_DynamicArray));
+    size_t targetLength = strlen(target);
+    size_t splitByLength = strlen(splitBy);
+    const char* target2 = target;
 
     if (dynamicArray == NULL)
         return NULL;
-    
+
     BA_DynamicArray_Create(dynamicArray, 100);
     
-    char* string = BA_String_CreateEmpty();
-    int matchCount = 0;
-    size_t splitByLength = strlen(splitBy);
-    size_t targetLength = strlen(target);
-    int i = 0;
-    BA_Boolean characterMatched = BA_BOOLEAN_FALSE;
-
-    if (string == NULL) {
-        destroy:
-        for (int j = 0; j < dynamicArray->used; j++)
-            free(dynamicArray->internalArray[i]);
-
-        free(dynamicArray->internalArray);
-        free(dynamicArray);
-        return NULL;
-    }
+    if (targetLength < splitByLength)
+        return dynamicArray;
     
-    for (; i < targetLength; i++) {
-        if (matchCount == splitByLength) {
-            BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
-            
-            matchCount = 0;
-            string = BA_String_CreateEmpty();
+    for (int i = 0, j = 0; i <= targetLength; i++) {
+        if (strncmp(target + i, splitBy, splitByLength) != 0) {
+            j++;
 
-            if (string == NULL)
-                goto destroy;
+            if (i != targetLength)
+                continue;
         }
         
-        if (target[i] != splitBy[matchCount]) {
-            for (int j = 0; j < matchCount; j++)
-                BA_String_AppendCharacter(&string, splitBy[j]);
-            
-            matchCount = 0;
-            characterMatched = BA_BOOLEAN_FALSE;
-
-            BA_String_AppendCharacter(&string, target[i]);
-            continue;
-        }
-
-        characterMatched = BA_BOOLEAN_TRUE;
-        matchCount++;
-    }
-
-    BA_DynamicArray_AddElementToLast(dynamicArray, string);
-
-    if (i == targetLength && characterMatched) {
-        string = BA_String_CreateEmpty();
-
-        if (string == NULL)
-            goto destroy;
+        char* string = malloc(sizeof(char) * (j != 0 ? j : 1));
         
-        BA_DynamicArray_AddElementToLast(dynamicArray, (void*) string);
+        if (string == NULL) {
+            for (int k = 0; k < dynamicArray->used; k++)
+                free(dynamicArray->internalArray[k]);
+
+            free(dynamicArray->internalArray);
+            return NULL;
+        };
+
+        string[j] = '\0';
+        
+        memcpy(string, target2, j);
+        BA_DynamicArray_AddElementToLast(dynamicArray, string);
+        
+        target2 += j + splitByLength;
+        j = 0;
     }
     
     return dynamicArray;
