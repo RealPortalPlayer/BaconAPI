@@ -114,12 +114,8 @@ BA_Boolean BA_DynamicArray_RemoveMatchedElement(BA_DynamicArray* array, void* el
     for (int i = 0; i < array->used; i++) {
         int elementIndex = BA_DynamicArray_GetIndexForElement(array, element, elementSize);
 
-        if (elementIndex == -1) {
-            if (!repeat)
-                return BA_BOOLEAN_FALSE;
-
-            continue;
-        }
+        if (elementIndex == -1)
+            return removedOne;
 
         BA_DynamicArray_RemoveElementAt(array, elementIndex);
 
