@@ -9,31 +9,39 @@
 #include <BaconAPI/ArgumentHandler.h>
 #include <BaconAPI/String.h>
 #include <BaconAPI/Number.h>
+#include <BaconAPI/Debugging/StaticAssert.h>
 
 #include "../TestHeader.h"
+
+#define FAKE_ARGUMENTS_AMOUNT 7
+#define VALUES_LENGTH 14
+#define VALUES_SPLIT_LENGTH 2
 
 void BooleanFormat(char** buffer, void** argument) {
     BA_String_Append(buffer, *((int*) argument) ? "true" : "false");
 }
 
 int main(void) {
-    char** fakeArguments = malloc(sizeof(char*) * 9);
+    char** fakeArguments = malloc(sizeof(char*) * FAKE_ARGUMENTS_AMOUNT + 2);
     char values[] = "qwertyui--asdf";
     int secondIndex = 0;
+
+    BA_STATIC_ASSERT(sizeof(values) == VALUES_LENGTH + 1, "Values length does not match");
+    BA_STATIC_ASSERT(VALUES_LENGTH / VALUES_SPLIT_LENGTH == FAKE_ARGUMENTS_AMOUNT, "String is not dividable into equal parts");
     
     printf("--- Initializing fake arguments. Ignore any assert triggers as this isn't part of the API test\n");
     
-    for (int i = 1; i < 8; i++) {
-        fakeArguments[i] = malloc(sizeof(char) * 3);
+    for (int i = 1; i < FAKE_ARGUMENTS_AMOUNT + 1; i++) {
+        fakeArguments[i] = malloc(sizeof(char) * VALUES_SPLIT_LENGTH + 1);
         
         ASSERT(fakeArguments[i] != NULL);
-        memcpy(fakeArguments[i], values + secondIndex, 2);
+        memcpy(fakeArguments[i], values + secondIndex, VALUES_SPLIT_LENGTH);
         
-        fakeArguments[i][2] = '\0';
-        secondIndex += 2;
+        fakeArguments[i][VALUES_SPLIT_LENGTH] = '\0';
+        secondIndex += VALUES_SPLIT_LENGTH;
     }
     
-    fakeArguments[8] = NULL;
+    fakeArguments[FAKE_ARGUMENTS_AMOUNT + 1] = NULL;
 
     BA_ArgumentHandler_Initialize(8, fakeArguments);
     printf("--- Done initializing, testing API\n");
