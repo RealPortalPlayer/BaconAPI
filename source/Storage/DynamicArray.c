@@ -1,4 +1,4 @@
-// Copyright (c) 2022, 2023, PortalPlayer <email@portalplayer.xyz>
+// Copyright (c) 2022, 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include <stdlib.h>
@@ -57,11 +57,9 @@ BA_Boolean BA_DynamicArray_Create(BA_DynamicArray* array, size_t size) {
 }
 
 BA_Boolean BA_DynamicArray_AddElementToStart(BA_DynamicArray* array, void* element) {
-    if (array->frozen)
+    if (array->frozen || !BA_DynamicArray_ReallocateArray(array))
         return BA_BOOLEAN_FALSE;
-
-    BA_DynamicArray_ReallocateArray(array);
-
+    
     for (int id = array->used; id >= 0; id--)
         array->internalArray[id + 1] = array->internalArray[id];
 
@@ -71,11 +69,9 @@ BA_Boolean BA_DynamicArray_AddElementToStart(BA_DynamicArray* array, void* eleme
 }
 
 BA_Boolean BA_DynamicArray_AddElementToLast(BA_DynamicArray* array, void* element) {
-    if (array->frozen)
+    if (array->frozen || !BA_DynamicArray_ReallocateArray(array))
         return BA_BOOLEAN_FALSE;
-
-    BA_DynamicArray_ReallocateArray(array);
-
+    
     array->internalArray[array->used++] = element;
     return BA_BOOLEAN_TRUE;
 }
@@ -93,11 +89,9 @@ BA_Boolean BA_DynamicArray_RemoveLastElement(BA_DynamicArray* array) {
 }
 
 BA_Boolean BA_DynamicArray_RemoveElementAt(BA_DynamicArray* array, unsigned index) {
-    if ((int) index >= array->used || array->frozen)
+    if ((int) index >= array->used || array->frozen || !BA_DynamicArray_ReallocateArray(array))
         return BA_BOOLEAN_FALSE;
-
-    BA_DynamicArray_ReallocateArray(array);
-
+    
     for (unsigned int id = index; (int) id < array->used; id++)
         array->internalArray[id] = array->internalArray[id + 1];
 
