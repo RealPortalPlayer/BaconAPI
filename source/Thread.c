@@ -27,7 +27,7 @@ BA_Thread BA_Thread_GetCurrent(void) {
 #endif
 }
 
-int BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument) {
+BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument) {
     if (baThreadLimit == baThreadCreated)
         return BA_BOOLEAN_FALSE;
     
@@ -45,7 +45,7 @@ int BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void*
     return BA_BOOLEAN_TRUE;
 }
 
-int BA_Thread_Join(BA_Thread thread, void* returnValue) {
+BA_Boolean BA_Thread_Join(BA_Thread thread, void* returnValue) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     if (pthread_join(thread, returnValue) != 0)
         return BA_BOOLEAN_FALSE;
@@ -60,7 +60,7 @@ int BA_Thread_Join(BA_Thread thread, void* returnValue) {
     return BA_BOOLEAN_TRUE;
 }
 
-int BA_Thread_CreateLock(BA_Thread_Lock* lock) {
+BA_Boolean BA_Thread_CreateLock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_mutex_init(lock, NULL) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
@@ -69,7 +69,7 @@ int BA_Thread_CreateLock(BA_Thread_Lock* lock) {
 #endif
 }
 
-int BA_Thread_UseLock(BA_Thread_Lock* lock) {
+BA_Boolean BA_Thread_UseLock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_mutex_lock(lock) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
@@ -77,7 +77,7 @@ int BA_Thread_UseLock(BA_Thread_Lock* lock) {
 #endif
 }
 
-int BA_Thread_Unlock(BA_Thread_Lock* lock) {
+BA_Boolean BA_Thread_Unlock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_mutex_unlock((pthread_mutex_t*) lock) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
@@ -85,7 +85,7 @@ int BA_Thread_Unlock(BA_Thread_Lock* lock) {
 #endif
 }
 
-int BA_Thread_DestroyLock(BA_Thread_Lock* lock) {
+BA_Boolean BA_Thread_DestroyLock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_mutex_destroy((pthread_mutex_t*) lock) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
@@ -105,9 +105,9 @@ int BA_Thread_GetAmount(void) {
     return baThreadCreated;
 }
 
-int BA_Thread_Kill(BA_Thread thread) {
+BA_Boolean BA_Thread_Kill(BA_Thread thread) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-    return pthread_cancel(thread);
+    return pthread_cancel(thread) == 0;
 #else
     return TerminateThread(thread, 0) != 0;
 #endif
