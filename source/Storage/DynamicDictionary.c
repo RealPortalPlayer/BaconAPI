@@ -21,42 +21,32 @@ BA_Boolean BA_DynamicDictionary_Create(BA_DynamicDictionary* dictionary, size_t 
 }
 
 BA_Boolean BA_DynamicDictionary_AddElementToStart(BA_DynamicDictionary* dictionary, void* key, void* value) {
-    if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
-        return BA_BOOLEAN_FALSE;
-
-    return BA_DynamicArray_AddElementToStart(&dictionary->keys, key) &&
+    return !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&
+           BA_DynamicArray_AddElementToStart(&dictionary->keys, key) &&
            BA_DynamicArray_AddElementToStart(&dictionary->values, value);
 }
 
 BA_Boolean BA_DynamicDictionary_AddElementToLast(BA_DynamicDictionary* dictionary, void* key, void* value) {
-    if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
-        return BA_BOOLEAN_FALSE;
-
-    return BA_DynamicArray_AddElementToLast(&dictionary->keys, key) &&
+    return !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&
+           BA_DynamicArray_AddElementToLast(&dictionary->keys, key) &&
            BA_DynamicArray_AddElementToLast(&dictionary->values, value);
 }
 
 BA_Boolean BA_DynamicDictionary_RemoveFirstElement(BA_DynamicDictionary* dictionary) {
-    if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
-        return BA_BOOLEAN_FALSE;
-
-    return BA_DynamicArray_RemoveFirstElement(&dictionary->keys) &&
+    return !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&
+           BA_DynamicArray_RemoveFirstElement(&dictionary->keys) &&
            BA_DynamicArray_RemoveFirstElement(&dictionary->values);
 }
 
 BA_Boolean BA_DynamicDictionary_RemoveLastElement(BA_DynamicDictionary* dictionary) {
-    if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
-        return BA_BOOLEAN_FALSE;
-
-    return BA_DynamicArray_RemoveLastElement(&dictionary->keys) &&
+    return !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&
+           BA_DynamicArray_RemoveLastElement(&dictionary->keys) &&
            BA_DynamicArray_RemoveLastElement(&dictionary->values);
 }
 
 BA_Boolean BA_DynamicDictionary_RemoveElementAt(BA_DynamicDictionary* dictionary, unsigned index) {
-    if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
-        return BA_BOOLEAN_FALSE;
-
-    return BA_DynamicArray_RemoveElementAt(&dictionary->keys, index) &&
+    return !BA_DynamicDictionary_UpdateFrozenState(dictionary) &&
+           BA_DynamicArray_RemoveElementAt(&dictionary->keys, index) &&
            BA_DynamicArray_RemoveElementAt(&dictionary->values, index);
 }
 
