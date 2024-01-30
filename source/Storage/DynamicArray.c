@@ -17,7 +17,7 @@ static BA_Boolean BA_DynamicArray_ReallocateArray(BA_DynamicArray* array) {
 
     BA_LOGGER_TRACE("Ran out of free space, expanding array\nThis is expensive, so you should try avoiding it\n");
 
-    array->size *= 2;
+    array->size += array->originalSize;
     array->calledReallocate++;
     
     void** newArray = (void**) realloc(array->internalArray, sizeof(void*) * array->size);
@@ -53,6 +53,7 @@ BA_Boolean BA_DynamicArray_Create(BA_DynamicArray* array, size_t size) {
     array->size = size;
     array->frozen = BA_BOOLEAN_FALSE;
     array->calledReallocate = 0;
+    array->originalSize = size;
     return BA_BOOLEAN_TRUE;
 }
 

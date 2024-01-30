@@ -1,7 +1,7 @@
 // Purpose: Stores a variable amount of elements.
 // Created on: 8/8/22 @ 3:50 PM
 
-// Copyright (c) 2022, 2023, PortalPlayer <email@portalplayer.xyz>
+// Copyright (c) 2022, 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #pragma once
@@ -18,6 +18,7 @@ typedef struct {
     size_t size;
     int calledReallocate;
     BA_Boolean frozen;
+    size_t originalSize;
 } BA_DynamicArray;
 
 /**
