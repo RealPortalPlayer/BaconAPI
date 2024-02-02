@@ -15,6 +15,11 @@
 #include "BaconAPI/String.h"
 #include "BaconAPI/Debugging/Assert.h"
 #include "BaconAPI/Storage/DynamicDictionary.h"
+#include "BaconAPI/Internal/OperatingSystem.h"
+
+#if BA_OPERATINGSYSTEM_WINDOWS
+#   define strtok_r strtok_s // I hate Microshit so much. Stop trying to be unique and quirky
+#endif
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_DynamicDictionary baStringCustomFormatters;
@@ -202,42 +207,24 @@ char* BA_String_FormatPremadeList(char** target, va_list arguments) {
 BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray* dynamicArray = malloc(sizeof(BA_DynamicArray));
     size_t targetLength = strlen(target);
-    size_t splitByLength = strlen(splitBy);
-    const char* target2 = target;
+    char stackTarget[targetLength + 1];
+
+    BA_DynamicArray_Create(dynamicArray, 100);
 
     if (dynamicArray == NULL)
         return NULL;
-
-    BA_DynamicArray_Create(dynamicArray, 100);
     
-    if (targetLength < splitByLength)
-        return dynamicArray;
-    
-    for (int i = 0, j = 0; i <= targetLength; i++) {
-        if (strncmp(target + i, splitBy, splitByLength) != 0) {
-            j++;
+    memcpy(stackTarget, target, targetLength);
 
-            if (i != targetLength)
-                continue;
-        }
+    stackTarget[targetLength] = '\0';
 
-        char* string = malloc(sizeof(char) * (j != 0 ? j : 1));
+    char* stackTargetPointer = &(stackTarget[0]);
+    char* token = strtok_r(stackTarget, splitBy, &stackTargetPointer);
 
-        if (string == NULL) {
-            for (int k = 0; k < dynamicArray->used; k++)
-                free(dynamicArray->internalArray[k]);
-
-            free(dynamicArray->internalArray);
-            return NULL;
-        };
-
-        string[j] = '\0';
-
-        memcpy(string, target2, j);
-        BA_DynamicArray_AddElementToLast(dynamicArray, string);
-
-        target2 += j + splitByLength;
-        j = 0;
+    while (token != NULL) {
+        BA_DynamicArray_AddElementToLast(dynamicArray, BA_String_Copy(token));
+        
+        token = strtok_r(stackTargetPointer, splitBy, &stackTargetPointer);
     }
     
     return dynamicArray;
