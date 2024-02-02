@@ -377,7 +377,13 @@ int main(void) {
         ASSERT(strcmp(BA_String_Replace(&string, "this should do nothing", "test"), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
         ASSERT(strcmp(BA_String_ReplaceCharacter(&string, 'd', 'g'), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm going fine! That's goog to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
         ASSERT(strcmp(BA_String_ReplaceCharacter(&string, 'x', 'z'), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm going fine! That's goog to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
-    }
+    
+        BA_DynamicArray* splitString = BA_String_Split("Hello, World!", " ");
+
+        ASSERT(strcmp(BA_String_Join(splitString, "  "), "Hello,  World!") == 0);
+        ASSERT(strcmp(BA_String_JoinCharacter(splitString, ' '), "Hello, World!") == 0);
+        ASSERT(strcmp(BA_String_JoinCharacter(splitString, '_'), "Hello,_World!") == 0);
+    };
 
     {
         printf("--- Number\n");

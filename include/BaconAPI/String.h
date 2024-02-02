@@ -168,6 +168,16 @@ char* BA_String_CreateEmpty(void);
 BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafeFormatAction actionFunction);
 char* BA_String_Replace(char** target, const char* what, const char* to);
 char* BA_String_ReplaceCharacter(char** target, char what, char to);
+
+/**
+ * @warning Undefined behavior if the array contains anything other than strings
+ */
+char* BA_String_Join(const BA_DynamicArray* dynamicArray, const char* joinString);
+
+/**
+ * @warning Undefined behavior if the array contains anything other than strings
+ */
+char* BA_String_JoinCharacter(const BA_DynamicArray* dynamicArray, char joinCharacter);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_STRING_FORMAT_SAFE_ARGUMENT_STRING(value) BA_STRING_SAFE_FORMAT_TYPE_STRING, value

@@ -501,4 +501,21 @@ char* BA_String_ReplaceCharacter(char** target, char what, char to) {
     
     return BA_String_Replace(target, temporaryWhat, temporaryTo);
 }
+
+char* BA_String_Join(const BA_DynamicArray* dynamicArray, const char* joinString) {
+    char* finalString = BA_String_CreateEmpty();
+    
+    for (int i = 0; i < dynamicArray->used - 1; i++) {
+        BA_String_Append(&finalString, BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, dynamicArray, i));
+        BA_String_Append(&finalString, joinString);
+    }
+    
+    return BA_String_Append(&finalString, BA_DYNAMICARRAY_GET_LAST_ELEMENT_POINTER(char, dynamicArray));
+}
+
+char* BA_String_JoinCharacter(const BA_DynamicArray* dynamicArray, char joinCharacter) {
+    char temporaryString[2] = {joinCharacter, '\0'};
+    
+    return BA_String_Join(dynamicArray, temporaryString);
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
