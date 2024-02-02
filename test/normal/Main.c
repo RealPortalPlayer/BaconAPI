@@ -289,6 +289,12 @@ int main(void) {
         ASSERT(BA_String_Contains(string, ", Wor", BA_BOOLEAN_TRUE));
         ASSERT(!BA_String_Contains(string, "bye, Wor", BA_BOOLEAN_FALSE));
         ASSERT(!BA_String_Contains(string, "bye, wor", BA_BOOLEAN_TRUE));
+        ASSERT(BA_String_Equals(string, "Hello, World!", BA_BOOLEAN_FALSE));
+        ASSERT(!BA_String_Equals(string, "hello, world!", BA_BOOLEAN_FALSE));
+        ASSERT(BA_String_Equals(string, "hello, world!", BA_BOOLEAN_TRUE));
+        ASSERT(BA_String_Equals(string, "Hello, World!", BA_BOOLEAN_TRUE));
+        ASSERT(!BA_String_Equals(string, "Bye, World", BA_BOOLEAN_FALSE));
+        ASSERT(!BA_String_Equals(string, "bye, world", BA_BOOLEAN_TRUE));
         ASSERT(BA_String_StartsWith(string, "Hello,", BA_BOOLEAN_FALSE));
         ASSERT(!BA_String_StartsWith(string, "hello,", BA_BOOLEAN_FALSE));
         ASSERT(BA_String_StartsWith(string, "hello,", BA_BOOLEAN_TRUE));

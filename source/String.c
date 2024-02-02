@@ -153,7 +153,7 @@ BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean 
         return BA_BOOLEAN_FALSE;
     
     BA_STRING_GET_STACK_STRING_COMPARE(stringLength, stringLength);
-    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), stringLength);
+    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), stringLength) == 0;
 }
 
 char* BA_String_AppendCharacter(char** target, char character) {
