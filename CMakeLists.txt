@@ -40,6 +40,7 @@ if(BA_ALLOW_DEBUG_LOGS)
 endif()
 
 target_include_directories(BaconAPI PUBLIC include)
+ba_strip_static(BaconAPI)
 
 add_subdirectory(test/normal)
 add_subdirectory(test/threads)
