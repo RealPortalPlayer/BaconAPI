@@ -370,6 +370,13 @@ int main(void) {
                       "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 100000 10000000000000 100 200.000000 h 100000 10000000000000 %s %s %s") == 0);
         ASSERT(BA_String_AddCustomSafeFormatter(1, BooleanFormat));
         ASSERT(strcmp(BA_String_FormatSafe(&string, 2, 1, 1, 1, 0), "GOOD MORNING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 100000 10000000000000 100 200.000000 h 100000 10000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_Replace(&string, "MORNING", "EVENING"), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 100000 10000000000000 100 200.000000 h 100000 10000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_Replace(&string, "100000", "200000"), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_Replace(&string, "EVENING", "EVE"), "GOOD EVE! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_Replace(&string, "EVE", "EVENING"), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_Replace(&string, "this should do nothing", "test"), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm doing fine! That's good to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_ReplaceCharacter(&string, 'd', 'g'), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm going fine! That's goog to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
+        ASSERT(strcmp(BA_String_ReplaceCharacter(&string, 'x', 'z'), "GOOD EVENING! HELLO, WORLD! HOW ARE YOU? I'm going fine! That's goog to hear! 10 12.000000 h 200000 20000000000000 100 200.000000 h 200000 20000000000000 true false %s") == 0);
     }
 
     {

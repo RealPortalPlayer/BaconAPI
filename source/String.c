@@ -220,9 +220,9 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
             if (i != targetLength)
                 continue;
         }
-        
+
         char* string = malloc(sizeof(char) * (j != 0 ? j : 1));
-        
+
         if (string == NULL) {
             for (int k = 0; k < dynamicArray->used; k++)
                 free(dynamicArray->internalArray[k]);
@@ -232,10 +232,10 @@ BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
         };
 
         string[j] = '\0';
-        
+
         memcpy(string, target2, j);
         BA_DynamicArray_AddElementToLast(dynamicArray, string);
-        
+
         target2 += j + splitByLength;
         j = 0;
     }
@@ -473,5 +473,45 @@ BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafe
 
     BA_DynamicDictionary_AddElementToLast(&baStringCustomFormatters, identifierPointer, actionFunction);
     return BA_BOOLEAN_TRUE;
+}
+
+char* BA_String_Replace(char** target, const char* what, const char* to) {
+    size_t targetLength = strlen(*target);
+    size_t whatLength = strlen(what);
+    size_t toLength = strlen(to);
+
+    if (targetLength < whatLength)
+        return *target;
+    
+    for (int i = 0; i < targetLength; i++) {
+        if (strncmp((*target) + i, what, whatLength) != 0)
+            continue;
+        
+        size_t temporaryLength = targetLength - i;
+        char temporaryString[temporaryLength + 1];
+
+        memcpy(temporaryString, (*target) + i + whatLength, temporaryLength);
+        
+        temporaryString[temporaryLength] = '\0';
+
+        if (whatLength != toLength) {
+            targetLength += toLength - whatLength;
+            *target = realloc(*target, sizeof(char) * targetLength);
+        }
+
+        memcpy((*target) + i, to, toLength);
+        memcpy((*target) + i + toLength, temporaryString, temporaryLength);
+
+        (*target)[targetLength] = '\0';
+    }
+    
+    return *target;
+}
+
+char* BA_String_ReplaceCharacter(char** target, char what, char to) {
+    const char temporaryWhat[2] = {what, '\0'};
+    const char temporaryTo[2] = {to, '\0'};
+    
+    return BA_String_Replace(target, temporaryWhat, temporaryTo);
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
