@@ -39,8 +39,7 @@ char* BA_String_Copy(const char* duplicateFrom) {
     if (string == NULL)
         return NULL;
     
-    strcpy(string, duplicateFrom);
-    return string;
+    return strcpy(string, duplicateFrom);
 }
 
 char* BA_String_Append(char** target, const char* stringToAppend) {
@@ -50,9 +49,7 @@ char* BA_String_Append(char** target, const char* stringToAppend) {
         return NULL;
     
     *target = reallocatedString;
-    
-    strcat(*target, stringToAppend);
-    return *target;
+    return strcat(*target, stringToAppend);
 }
 
 char* BA_String_Prepend(char** target, const char* stringToPrepend) {
@@ -457,9 +454,7 @@ BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafe
         return BA_BOOLEAN_FALSE;
     
     *identifierPointer = identifier;
-
-    BA_DynamicDictionary_AddElementToLast(&baStringCustomFormatters, identifierPointer, actionFunction);
-    return BA_BOOLEAN_TRUE;
+    return BA_DynamicDictionary_AddElementToLast(&baStringCustomFormatters, identifierPointer, actionFunction);
 }
 
 char* BA_String_Replace(char** target, const char* what, const char* to) {
