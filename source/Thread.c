@@ -12,6 +12,8 @@
 #endif
 
 #include "BaconAPI/Thread.h"
+#include "BaconAPI/ArgumentHandler.h"
+#include "BaconAPI/BuiltInArguments.h"
 
 // TODO: Error handling sucks right now
 // TODO: Should we disable creation of locks if multi-threading is disabled?
@@ -30,7 +32,7 @@ BA_Thread BA_Thread_GetCurrent(void) {
 
 BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument) {
 #ifndef BA_SINGLE_THREADED
-    if (baThreadLimit == baThreadCreated)
+    if (baThreadLimit == baThreadCreated || BA_Thread_IsSingleThreaded())
         return BA_BOOLEAN_FALSE;
 
 #   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
@@ -52,6 +54,9 @@ BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction
 
 BA_Boolean BA_Thread_Join(BA_Thread thread, void* returnValue) {
 #ifndef BA_SINGLE_THREADED
+    if (BA_Thread_IsSingleThreaded())
+        return BA_BOOLEAN_FALSE;
+    
 #   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     if (pthread_join(thread, returnValue) != 0)
         return BA_BOOLEAN_FALSE;
@@ -116,6 +121,9 @@ int BA_Thread_GetAmount(void) {
 
 BA_Boolean BA_Thread_Kill(BA_Thread thread) {
 #ifndef BA_SINGLE_THREADED
+    if (BA_Thread_IsSingleThreaded())
+        return BA_BOOLEAN_FALSE;
+    
 #   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_cancel(thread) == 0;
 #   else
@@ -123,6 +131,19 @@ BA_Boolean BA_Thread_Kill(BA_Thread thread) {
 #   endif
 #else
     return BA_BOOLEAN_FALSE;
+#endif
+}
+
+BA_Boolean BA_Thread_IsSingleThreaded(void) {
+#ifndef BA_SINGLE_THREADED
+    static int enabled = -1;
+
+    if (enabled == -1)
+        enabled = BA_ArgumentHandler_ContainsArgumentOrShort(BA_BUILTINARGUMENTS_SINGLE_THREADED, BA_BUILTINARGUMENTS_SINGLE_THREADED_SHORT, BA_BOOLEAN_FALSE);
+
+    return enabled;
+#else
+    return BA_BOOLEAN_TRUE;
 #endif
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
