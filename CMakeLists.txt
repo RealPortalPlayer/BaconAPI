@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 11)
 
 option(BA_ALLOW_DEBUG_LOGS "Always allow debug logs, even for release builds" OFF)
 option(BA_DISABLE_HACKS "Disable operating system specific hacks" OFF)
+option(BA_SINGLE_THREADED "Don't allow the creation of a second thread" OFF)
 
 include(cmake/Strip.cmake)
 
@@ -41,6 +42,10 @@ endif()
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
+
+if(BA_SINGLE_THREADED)
+    target_compile_definitions(BaconAPI PUBLIC BA_SINGLE_THREADED)
+endif()
 
 add_subdirectory(test/normal)
 add_subdirectory(test/threads)

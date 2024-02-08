@@ -9,6 +9,10 @@
 
 #define NUMBER_OF_THREADS 5
 
+#ifdef BA_SINGLE_THREADED
+#   warning BaconAPI is compiled to be single-threaded. This test will not work
+#endif
+
 static volatile BA_Boolean threadsWaiting = BA_BOOLEAN_TRUE;
 static BA_Thread_Lock lock;
 static int lockNumber;

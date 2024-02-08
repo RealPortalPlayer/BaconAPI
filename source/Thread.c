@@ -13,7 +13,8 @@
 
 #include "BaconAPI/Thread.h"
 
-// TODO: Windows error handling is not complete
+// TODO: Error handling sucks right now
+// TODO: Should we disable creation of locks if multi-threading is disabled?
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static int baThreadLimit = -1;
@@ -28,36 +29,44 @@ BA_Thread BA_Thread_GetCurrent(void) {
 }
 
 BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument) {
+#ifndef BA_SINGLE_THREADED
     if (baThreadLimit == baThreadCreated)
         return BA_BOOLEAN_FALSE;
-    
-#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+
+#   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     if (pthread_create(thread, NULL, threadFunction, &argument) != 0)
         return BA_BOOLEAN_FALSE;
-#elif BA_OPERATINGSYSTEM_WINDOWS
+#   elif BA_OPERATINGSYSTEM_WINDOWS
     *thread = (BA_Thread) CreateThread(NULL, 0, threadFunction, &argument, 0, NULL);
     
     if (*thread == NULL)
         return BA_BOOLEAN_FALSE;
-#endif
+#   endif
 
     baThreadCreated++;
     return BA_BOOLEAN_TRUE;
+#else
+    return BA_BOOLEAN_FALSE;
+#endif
 }
 
 BA_Boolean BA_Thread_Join(BA_Thread thread, void* returnValue) {
-#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+#ifndef BA_SINGLE_THREADED
+#   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     if (pthread_join(thread, returnValue) != 0)
         return BA_BOOLEAN_FALSE;
-#elif BA_OPERATINGSYSTEM_WINDOWS
+#   elif BA_OPERATINGSYSTEM_WINDOWS
     if (WaitForSingleObject(thread, INFINITE) != WAIT_OBJECT_0)
         return BA_BOOLEAN_FALSE;
 
     GetExitCodeThread(thread, returnValue);
-#endif
+#   endif
 
     baThreadCreated--;
     return BA_BOOLEAN_TRUE;
+#else
+    return BA_BOOLEAN_FALSE;
+#endif
 }
 
 BA_Boolean BA_Thread_CreateLock(BA_Thread_Lock* lock) {
@@ -106,10 +115,14 @@ int BA_Thread_GetAmount(void) {
 }
 
 BA_Boolean BA_Thread_Kill(BA_Thread thread) {
-#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+#ifndef BA_SINGLE_THREADED
+#   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     return pthread_cancel(thread) == 0;
-#else
+#   else
     return TerminateThread(thread, 0) != 0;
+#   endif
+#else
+    return BA_BOOLEAN_FALSE;
 #endif
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
