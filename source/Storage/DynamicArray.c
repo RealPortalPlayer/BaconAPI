@@ -29,7 +29,7 @@ static BA_Boolean BA_DynamicArray_ReallocateArray(BA_DynamicArray* array) {
     return BA_BOOLEAN_TRUE;
 }
 
-int BA_DynamicArray_GetIndexForElement(const BA_DynamicArray* array, void* element, size_t elementSize) {
+int BA_DynamicArray_GetIndexForElement(const BA_DynamicArray* array, const void* element, size_t elementSize) {
     for (int i = 0; i < array->used; i++) {
         if (memcmp(array->internalArray[i], element, elementSize) != 0)
             continue;
