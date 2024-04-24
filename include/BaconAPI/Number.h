@@ -22,6 +22,8 @@ BA_NUMBER_STRING_CONVERT(int, Integer);
 BA_NUMBER_STRING_CONVERT(unsigned, Unsigned);
 BA_NUMBER_STRING_CONVERT(long, Long);
 BA_NUMBER_STRING_CONVERT(unsigned long, UnsignedLong);
+BA_NUMBER_STRING_CONVERT(long long, LongLong);
+BA_NUMBER_STRING_CONVERT(unsigned long long, UnsignedLongLong);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_NUMBER_MIN(number, minimum) ((number) > (minimum) ? (number) : (minimum))
