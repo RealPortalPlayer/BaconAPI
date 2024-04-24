@@ -24,7 +24,7 @@ typedef struct {
 /**
  * @return The index if the element was found, -1 if not
  */
-int BA_DynamicArray_GetIndexForElement(BA_DynamicArray* array, void* element, size_t elementSize);
+int BA_DynamicArray_GetIndexForElement(const BA_DynamicArray* array, const void* element, size_t elementSize);
 
 BA_Boolean BA_DynamicArray_Create(BA_DynamicArray* array, size_t size);
 BA_Boolean BA_DynamicArray_AddElementToStart(BA_DynamicArray* array, void* element);
@@ -48,7 +48,7 @@ BA_Boolean BA_DynamicArray_RemoveElementAt(BA_DynamicArray* array, unsigned int 
 /**
   * @note This doesn't free any memory, you have to do that yourself to prevent memory leaks.
   */
-BA_Boolean BA_DynamicArray_RemoveMatchedElement(BA_DynamicArray* array, void* element, size_t elementSize, BA_Boolean repeat);
+BA_Boolean BA_DynamicArray_RemoveMatchedElement(BA_DynamicArray* array, const void* element, size_t elementSize, BA_Boolean repeat);
 BA_Boolean BA_DynamicArray_Shrink(BA_DynamicArray* array);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 

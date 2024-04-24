@@ -50,7 +50,7 @@ BA_Boolean BA_DynamicDictionary_RemoveElementAt(BA_DynamicDictionary* dictionary
            BA_DynamicArray_RemoveElementAt(&dictionary->values, index);
 }
 
-BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictionary, void* key, size_t elementSize, BA_Boolean repeat) {
+BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictionary, const void* key, size_t elementSize, BA_Boolean repeat) {
     if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
         return BA_BOOLEAN_FALSE;
 
@@ -78,7 +78,7 @@ BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictio
     return removedOne;
 }
 
-BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, void* value, size_t elementSize, BA_Boolean repeat) {
+BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, const void* value, size_t elementSize, BA_Boolean repeat) {
     if (BA_DynamicDictionary_UpdateFrozenState(dictionary))
         return BA_BOOLEAN_FALSE;
 
@@ -106,7 +106,7 @@ BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dict
     return removedOne;
 }
 
-int BA_DynamicDictionary_GetElementIndexFromKey(const BA_DynamicDictionary* dictionary, void* key, size_t elementSize) {
+int BA_DynamicDictionary_GetElementIndexFromKey(const BA_DynamicDictionary* dictionary, const void* key, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->keys.internalArray[index] == NULL || memcmp(dictionary->keys.internalArray[index], key, elementSize) != 0)
             continue;
@@ -117,7 +117,7 @@ int BA_DynamicDictionary_GetElementIndexFromKey(const BA_DynamicDictionary* dict
     return -1;
 }
 
-int BA_DynamicDictionary_GetElementIndexFromValue(const BA_DynamicDictionary* dictionary, void* value, size_t elementSize) {
+int BA_DynamicDictionary_GetElementIndexFromValue(const BA_DynamicDictionary* dictionary, const void* value, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->values.internalArray[index] == NULL || memcmp(dictionary->values.internalArray[index], value, elementSize) != 0)
             continue;
@@ -128,19 +128,19 @@ int BA_DynamicDictionary_GetElementIndexFromValue(const BA_DynamicDictionary* di
     return -1;
 }
 
-void* BA_DynamicDictionary_GetElementKeyViaValue(const BA_DynamicDictionary* dictionary, void* value, size_t elementSize) {
+void* BA_DynamicDictionary_GetElementKeyViaValue(const BA_DynamicDictionary* dictionary, const void* value, size_t elementSize) {
     int index = BA_DynamicDictionary_GetElementIndexFromValue(dictionary, value, elementSize);
 
     return index != -1 ? dictionary->keys.internalArray[index] : NULL;
 }
 
-void* BA_DynamicDictionary_GetElementValueViaKey(const BA_DynamicDictionary* dictionary, void* key, size_t elementSize) {
+void* BA_DynamicDictionary_GetElementValueViaKey(const BA_DynamicDictionary* dictionary, const void* key, size_t elementSize) {
     int index = BA_DynamicDictionary_GetElementIndexFromKey(dictionary, key, elementSize);
 
     return index != -1 ? dictionary->values.internalArray[index] : NULL;
 }
 
-void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* key, size_t elementSize) {
+void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* key, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->keys.internalArray[index] == NULL || memcmp(dictionary->keys.internalArray[index], key, elementSize) != 0)
             continue;
@@ -149,7 +149,7 @@ void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dic
     }
 }
 
-void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* value, size_t elementSize) {
+void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* value, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->values.internalArray[index] == NULL || memcmp(dictionary->values.internalArray[index], value, elementSize) != 0)
             continue;
