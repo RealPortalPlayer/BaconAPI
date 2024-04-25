@@ -83,4 +83,22 @@ int BA_ArgumentHandler_ContainsArgumentOrShort(const char* argument, const char*
     return BA_ArgumentHandler_GetIndex(argument, ignoreDontParse) != -1 ||
            BA_ArgumentHandler_GetIndex(shortArgument, ignoreDontParse) != -1;
 }
+
+const char* BA_ArgumentHandler_GetHelpMessage(void) {
+#ifdef BA_ALLOW_DEBUG_LOGS
+#   define BA_LAUNCHER_HELP_LOGGER_EXTRA_ARGUMENTS "/trace/trc/debug/dbg"
+#else
+#   define BA_LAUNCHER_HELP_LOGGER_EXTRA_ARGUMENTS
+#endif
+    
+    return BA_ARGUMENTHANDLER_HELP_MESSAGE_NO_SHORT_ARGUMENTS(BA_BUILTINARGUMENTS_DONT_PARSE, "<argument>", "Do not parse arguments beyond this point\n")
+           BA_ARGUMENTHANDLER_HELP_MESSAGE(BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING, BA_BUILTINARGUMENTS_DISABLE_ANSI_COLORING_SHORT, "Disable log colors\n")
+           BA_ARGUMENTHANDLER_HELP_MESSAGE_ARGUMENTS(BA_BUILTINARGUMENTS_LOG_LEVEL, "<null" BA_LAUNCHER_HELP_LOGGER_EXTRA_ARGUMENTS "/warn/wrn/error/err/fatal/ftl>", BA_BUILTINARGUMENTS_LOG_LEVEL_SHORT, "Sets the current log level\n")
+           BA_ARGUMENTHANDLER_HELP_MESSAGE(BA_BUILTINARGUMENTS_DONT_CHANGE_LOG_LEVELS, BA_BUILTINARGUMENTS_DONT_CHANGE_LOG_LEVELS_SHORT, "Prevent the client from changing the log level\n")
+#ifdef BA_ALLOW_DEBUG_LOGS
+           BA_ARGUMENTHANDLER_HELP_MESSAGE(BA_BUILTINARGUMENTS_DONT_PRINT_ASSERT_CHECKS, BA_BUILTINARGUMENTS_DONT_PRINT_ASSERT_CHECKS_SHORT, "Do not log assert checks, does nothing if log level is not trace\n")
+#endif
+           BA_ARGUMENTHANDLER_HELP_MESSAGE(BA_BUILTINARGUMENTS_DISABLE_LOG_HEADER, BA_BUILTINARGUMENTS_DISABLE_LOG_HEADER_SHORT, "Do not log the log level header\n")
+           BA_ARGUMENTHANDLER_HELP_MESSAGE(BA_BUILTINARGUMENTS_SINGLE_THREADED, BA_BUILTINARGUMENTS_SINGLE_THREADED_SHORT, "Don't allow thread creation");
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

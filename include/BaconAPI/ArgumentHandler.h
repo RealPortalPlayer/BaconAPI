@@ -32,6 +32,7 @@ typedef struct {
 void BA_ArgumentHandler_Initialize(int argc, char** argv);
 int BA_ArgumentHandler_GetCount(void);
 char** BA_ArgumentHandler_GetVector(void);
+const char* BA_ArgumentHandler_GetHelpMessage(void);
 
 /**
   *  @return The index if the argument was found, -1 if not.
@@ -48,3 +49,8 @@ int BA_ArgumentHandler_GetInformationWithShort(const char* argument, const char*
 
 BA_Boolean BA_ArgumentHandler_ContainsArgumentOrShort(const char* argument, const char* shortArgument, BA_Boolean ignoreDontParse);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
+
+#define BA_ARGUMENTHANDLER_HELP_MESSAGE_NO_SHORT(argument, description) argument ": " description
+#define BA_ARGUMENTHANDLER_HELP_MESSAGE(argument, short, description) BA_ARGUMENTHANDLER_HELP_MESSAGE_NO_SHORT(argument " (" short ")", description)
+#define BA_ARGUMENTHANDLER_HELP_MESSAGE_ARGUMENTS(argument, arguments, short, description) BA_ARGUMENTHANDLER_HELP_MESSAGE(argument " " arguments, short, description)
+#define BA_ARGUMENTHANDLER_HELP_MESSAGE_NO_SHORT_ARGUMENTS(argument, arguments, description) BA_ARGUMENTHANDLER_HELP_MESSAGE_NO_SHORT(argument " " arguments, description)
