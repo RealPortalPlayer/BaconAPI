@@ -140,7 +140,7 @@ void* BA_DynamicDictionary_GetElementValueViaKey(const BA_DynamicDictionary* dic
     return index != -1 ? dictionary->values.internalArray[index] : NULL;
 }
 
-void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* key, size_t elementSize) {
+void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* key, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->keys.internalArray[index] == NULL || memcmp(dictionary->keys.internalArray[index], key, elementSize) != 0)
             continue;
@@ -149,7 +149,7 @@ void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dic
     }
 }
 
-void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* value, size_t elementSize) {
+void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* value, size_t elementSize) {
     for (int index = 0; index < dictionary->keys.used; index++) {
         if (dictionary->values.internalArray[index] == NULL || memcmp(dictionary->values.internalArray[index], value, elementSize) != 0)
             continue;

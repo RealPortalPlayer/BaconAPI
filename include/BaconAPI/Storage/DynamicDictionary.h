@@ -51,8 +51,8 @@ BA_Boolean BA_DynamicDictionary_RemoveElementViaKey(BA_DynamicDictionary* dictio
   * @note This doesn't free any memory, you have to do that yourself to prevent memory leaks.
   */
 BA_Boolean BA_DynamicDictionary_RemoveElementViaValue(BA_DynamicDictionary* dictionary, const void* value, size_t elementSize, BA_Boolean repeat);
-void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* value, size_t elementSize);
-void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, const void* key, size_t elementSize);
+void BA_DynamicDictionary_GetElementsKeyViaValue(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* value, size_t elementSize);
+void BA_DynamicDictionary_GetElementsValueViaKey(const BA_DynamicDictionary* dictionary, BA_DynamicDictionary* results, void* key, size_t elementSize);
 BA_Boolean BA_DynamicDictionary_Shrink(BA_DynamicDictionary* dictionary);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
