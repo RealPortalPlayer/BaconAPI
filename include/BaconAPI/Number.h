@@ -11,7 +11,7 @@
 #include "BaconAPI/Internal/CPlusPlusSupport.h"
 #include "BaconAPI/Internal/Boolean.h"
 
-#define BA_NUMBER_STRING_CONVERT(type, to) type BA_Number_StringTo ## to(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, char defaultValue)
+#define BA_NUMBER_STRING_CONVERT(type, to) type BA_Number_StringTo ## to(const char* string, char** endPointer, BA_Boolean* isError, const char* errorMessage, type defaultValue)
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 BA_NUMBER_STRING_CONVERT(char, Character);
