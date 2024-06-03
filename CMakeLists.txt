@@ -48,5 +48,4 @@ if(BA_SINGLE_THREADED)
     target_compile_definitions(BaconAPI PUBLIC BA_SINGLE_THREADED)
 endif()
 
-add_subdirectory(test/normal)
-add_subdirectory(test/threads)
+add_subdirectory(test)
