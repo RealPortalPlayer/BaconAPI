@@ -4,10 +4,10 @@
 #define BA_MEMORY_INFORMATION_ENUM_NAME MemoryTypes
 #define BA_MEMORY_INFORMATION_ENUM_SIZE MEMORY_TYPE_SIZE
 
-#include <BaconAPI/Memory.h>
 #include <BaconAPI/Debugging/StaticAssert.h>
 #include <BaconAPI/ArgumentHandler.h>
 #include <BaconAPI/String.h>
+#include <BaconAPI/Memory.h>
 
 #include "BaconAPI/Debugging/Assert.h"
 
@@ -16,7 +16,7 @@ memoryInformation = BA_Memory_GetAllocatedInformation(""); \
 BA_LOGGER_INFO("%s\n", memoryInformation); \
 free(memoryInformation)
 
-typedef enum MemoryTypes {
+typedef enum {
     MEMORY_TYPE_TEST1,
     MEMORY_TYPE_TEST2,
 
@@ -28,7 +28,11 @@ BA_Memory_TypeData baMemoryLookupTable[] = {
     {0, 0}
 };
 
-BA_STATIC_ASSERT_LOOKUP_TABLE_CHECK(baMemoryLookupTable, BA_MEMORY_INFORMATION_ENUM_SIZE);
+BA_STATIC_ASSERT_LOOKUP_TABLE_CHECK(baMemoryLookupTable, MEMORY_TYPE_SIZE);
+
+size_t BA_Memory_GetEnumeratorSize(void) {
+    return MEMORY_TYPE_SIZE;
+}
 
 char* BA_Memory_GetAllocatedInformation(const char* prefix) {
     char* finalString;
@@ -37,7 +41,7 @@ char* BA_Memory_GetAllocatedInformation(const char* prefix) {
                                                      BA_MEMORY_DEFINE_INFORMATION_STRING_TEMPLATE("Test2"));
     BA_MEMORY_FORMAT_INFORMATION_STRING(finalString,
                                         BA_MEMORY_GET_MEMORY_INFORMATION(MEMORY_TYPE_TEST1),
-                                        BA_MEMORY_GET_MEMORY_INFORMATION(MEMORY_TYPE_TEST2));
+                                        BA_MEMORY_GET_MEMORY_INFORMATION(MEMORY_TYPE_TEST1));
     return finalString;
 }
 

@@ -13,23 +13,7 @@
 #include "String.h"
 #include "Debugging/Assert.h"
 
-#ifndef BA_MEMORY_INFORMATION_ENUM_NAME
-#   define BA_MEMORY_INFORMATION_ENUM_NAME BA_Memory_Dummy
-#endif
-
-#ifndef BA_MEMORY_INFORMATION_ENUM_SIZE
-#   define BA_MEMORY_INFORMATION_ENUM_SIZE BA_MEMORYINFORMATION_SIZE
-#endif
-
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-typedef enum BA_MEMORY_INFORMATION_ENUM_NAME BA_MEMORY_INFORMATION_ENUM_NAME;
-
-typedef enum BA_Memory_Dummy {
-    BA_MEMORYINFORMATION_DUMMY,
-
-    BA_MEMORYINFORMATION_SIZE
-} BA_Memory_Dummy;
-
 typedef struct {
     size_t allocatedBytes;
     size_t allocatedAmount;
@@ -38,13 +22,14 @@ typedef struct {
 const BA_Memory_TypeData* BA_Memory_Get(void);
 size_t BA_Memory_GetAllocatedBytes(void);
 size_t BA_Memory_GetAllocatedAmount(void);
+size_t BA_Memory_GetEnumeratorSize(void);
 
 char* BA_Memory_GetAllocatedInformation(const char* prefix);
-void* BA_Memory_Allocate(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType);
-void* BA_Memory_Reallocate(void* pointer, size_t oldSize, size_t newSize, BA_MEMORY_INFORMATION_ENUM_NAME memoryType);
-void* BA_Memory_Deallocate(void* pointer, size_t oldSize, BA_MEMORY_INFORMATION_ENUM_NAME memoryType);
-void BA_Memory_AddSize(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType);
-void BA_Memory_RemoveSize(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType);
+void* BA_Memory_Allocate(size_t size, int memoryType);
+void* BA_Memory_Reallocate(void* pointer, size_t oldSize, size_t newSize, int memoryType);
+void BA_Memory_Deallocate(void* pointer, size_t oldSize, int memoryType);
+void BA_Memory_AddSize(size_t size, int memoryType);
+void BA_Memory_RemoveSize(size_t size, int memoryType);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_MEMORY_GET_MEMORY_INFORMATION(memoryType) prefix, baMemoryLookupTable[memoryType].allocatedAmount, baMemoryLookupTable[memoryType].allocatedBytes

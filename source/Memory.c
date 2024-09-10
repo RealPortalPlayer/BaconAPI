@@ -8,8 +8,8 @@
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 extern BA_Memory_TypeData baMemoryLookupTable[];
 
-static BA_Memory_TypeData* BA_Memory_GetMemoryTypeInformation(BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
-    BA_ASSERT(memoryType < BA_MEMORY_INFORMATION_ENUM_SIZE, "This shouldn't happen\n");
+static BA_Memory_TypeData* BA_Memory_GetMemoryTypeInformation(int memoryType) {
+    BA_ASSERT(memoryType < BA_Memory_GetEnumeratorSize(), "This shouldn't happen\n");
     return &baMemoryLookupTable[memoryType];
 }
 
@@ -20,7 +20,7 @@ const BA_Memory_TypeData* BA_Memory_Get(void) {
 size_t BA_Memory_GetAllocatedBytes(void) {
     size_t allocatedBytes = 0;
     
-    for (int i = 0; i < BA_MEMORY_INFORMATION_ENUM_SIZE; i++)
+    for (int i = 0; i < BA_Memory_GetEnumeratorSize(); i++)
         allocatedBytes += baMemoryLookupTable[i].allocatedBytes;
     
     return allocatedBytes;
@@ -29,13 +29,13 @@ size_t BA_Memory_GetAllocatedBytes(void) {
 size_t BA_Memory_GetAllocatedAmount(void) {
     size_t finalAmount = 0;
 
-    for (int i = 0; i < BA_MEMORY_INFORMATION_ENUM_SIZE; i++)
+    for (int i = 0; i < BA_Memory_GetEnumeratorSize(); i++)
         finalAmount += baMemoryLookupTable[i].allocatedAmount;
 
     return finalAmount;
 }
 
-void* BA_Memory_Allocate(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
+void* BA_Memory_Allocate(size_t size, int memoryType) {
     void* pointer;
     BA_Memory_TypeData* memoryTypeInformation = BA_Memory_GetMemoryTypeInformation(memoryType);
 
@@ -50,7 +50,7 @@ void* BA_Memory_Allocate(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType
     return pointer;
 }
 
-void* BA_Memory_Reallocate(void* pointer, size_t oldSize, size_t newSize, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
+void* BA_Memory_Reallocate(void* pointer, size_t oldSize, size_t newSize, int memoryType) {
     void* newPointer;
     BA_Memory_TypeData* memoryTypeInformation = BA_Memory_GetMemoryTypeInformation(memoryType);
 
@@ -66,7 +66,7 @@ void* BA_Memory_Reallocate(void* pointer, size_t oldSize, size_t newSize, BA_MEM
     return newPointer;
 }
 
-void* BA_Memory_Deallocate(void* pointer, size_t oldSize, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
+void BA_Memory_Deallocate(void* pointer, size_t oldSize, int memoryType) {
     BA_Memory_TypeData* memoryTypeInformation = BA_Memory_GetMemoryTypeInformation(memoryType);
 
     BA_LOGGER_TRACE("Deallocating memory\n"
@@ -80,7 +80,7 @@ void* BA_Memory_Deallocate(void* pointer, size_t oldSize, BA_MEMORY_INFORMATION_
     memoryTypeInformation->allocatedAmount--;
 }
 
-void BA_Memory_AddSize(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
+void BA_Memory_AddSize(size_t size, int memoryType) {
     BA_LOGGER_TRACE("Adding to allocated bytes\n"
                     "Size: %zu\n"
                     "Type: %i\n", size, memoryType);
@@ -88,7 +88,7 @@ void BA_Memory_AddSize(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) 
     BA_Memory_GetMemoryTypeInformation(memoryType)->allocatedBytes += size;
 }
 
-void BA_Memory_RemoveSize(size_t size, BA_MEMORY_INFORMATION_ENUM_NAME memoryType) {
+void BA_Memory_RemoveSize(size_t size, int memoryType) {
     BA_LOGGER_TRACE("Removing from allocated bytes\n"
                     "Size: %zu\n"
                     "Type: %i\n", size, memoryType);
