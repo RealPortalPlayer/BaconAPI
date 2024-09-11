@@ -10,4 +10,5 @@ foreach(file ${files})
     target_link_libraries("${filename}Test" PRIVATE BaconAPI)
 
     ba_strip("${filename}Test")
+    ba_apply_compiler_options("${filename}Test")
 endforeach()

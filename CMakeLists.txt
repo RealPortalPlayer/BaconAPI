@@ -9,12 +9,7 @@ option(BA_SINGLE_THREADED "Don't allow the creation of a second thread" OFF)
 option(BA_DISABLE_TEST_PROJECTS "Don't compile any of the test projects" OFF)
 
 include(cmake/Strip.cmake)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    add_compile_definitions(DEBUG BA_ALLOW_DEBUG_LOGS)
-elseif(BA_ALLOW_DEBUG_LOGS)
-    add_compile_definitions(BA_ALLOW_DEBUG_LOGS)
-endif()
+include(cmake/Options.cmake)
 
 set(BA_SOURCE_FILES)
 
@@ -39,16 +34,9 @@ add_library(BaconAPI STATIC
         source/Configuration.c
         source/Memory.c)
 
-if(BA_ALLOW_DEBUG_LOGS)
-    target_compile_definitions(BaconAPI PUBLIC BA_ALLOW_DEBUG_LOGS)
-endif()
-
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
-
-if(BA_SINGLE_THREADED)
-    target_compile_definitions(BaconAPI PUBLIC BA_SINGLE_THREADED)
-endif()
+ba_apply_compiler_options(BaconAPI)
 
 if(NOT BA_DISABLE_TEST_PROJECTS)
     add_subdirectory(test)
