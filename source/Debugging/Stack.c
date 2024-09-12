@@ -76,19 +76,10 @@ char* BA_Stack_GetCallTrace(void) {
 
     while (StackWalk(IMAGE_FILE_MACHINE_AMD64, process, thread, &frame, &context, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL)) {
         DWORD64 functionAddress = frame.AddrPC.Offset;
-        // char* moduleName = NULL;
         char* fileName = NULL;
         char* functionName = NULL;
         DWORD lineNumber = 0;
-
-        // {
-        //     DWORD moduleBase = SymGetModuleBase(process, frame.AddrPC.Offset);
-        //     char moduleBuffer[MAX_PATH];
-        //
-        //     if (moduleBuffer != NULL && GetModuleFileNameA((HINSTANCE) moduleBase, moduleBuffer, MAX_PATH))
-        //         moduleName = moduleBuffer;
-        // }
-
+        
         {
             char symbolBuffer[sizeof(IMAGEHLP_SYMBOL) + 255];
             PIMAGEHLP_SYMBOL symbol = (PIMAGEHLP_SYMBOL) symbolBuffer;
@@ -122,7 +113,7 @@ char* BA_Stack_GetCallTrace(void) {
             
             if (functionName != NULL) {
                 BA_String_Append(&callTrace, "%s%s+0x%x%s");
-                BA_String_Format(&callTrace, surround ? " (" : "", functionName, lineNumber, surround ? ")" : "");
+                BA_String_Format(&callTrace, surround ? "(" : "", functionName, lineNumber, surround ? ")" : "");
             }
 
             surround = functionName != NULL;
