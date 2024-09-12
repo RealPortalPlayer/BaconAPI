@@ -8,6 +8,10 @@ option(BA_DISABLE_HACKS "Disable operating system specific hacks" OFF)
 option(BA_SINGLE_THREADED "Don't allow the creation of a second thread" OFF)
 option(BA_DISABLE_TEST_PROJECTS "Don't compile any of the test projects" OFF)
 
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    message(WARNING "MSVC on non-Windows platform. Make sure your CMake toolchain is valid")
+endif()
+
 include(cmake/Strip.cmake)
 include(cmake/Options.cmake)
 
