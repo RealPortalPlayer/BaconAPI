@@ -10,7 +10,7 @@
 #include "BaconAPI/Configuration.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-static BA_Boolean BA_Configuration_AddLine(BA_DynamicDictionary* results, char* line, ssize_t length) {
+static BA_Boolean BA_Configuration_AddLine(BA_DynamicDictionary* results, char* line, intmax_t length) {
     if (length == -2) {
         failed:
         BA_LOGGER_TRACE("Failed to allocate memory for configuration buffer\n");
@@ -53,7 +53,7 @@ static BA_Boolean BA_Configuration_AddLine(BA_DynamicDictionary* results, char* 
 BA_DynamicDictionary* BA_Configuration_ParseFromFile(FILE* configurationFile) {
     BA_DynamicDictionary* results = malloc(sizeof(BA_DynamicDictionary));
     char* line;
-    ssize_t length;
+    intmax_t length;
     
     BA_ASSERT(results != NULL, "Failed to allocate memory for configuration results\n");
     BA_DynamicDictionary_Create(results, 100);
@@ -78,7 +78,7 @@ BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData) {
     for (int i = 0; i < unparsedKeysValues->used; i++) {
         char* line = BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, unparsedKeysValues, i);
 
-        if (BA_Configuration_AddLine(results, line, (ssize_t) strlen(line)))
+        if (BA_Configuration_AddLine(results, line, (intmax_t) strlen(line)))
             continue;
 
         return NULL;

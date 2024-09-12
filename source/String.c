@@ -25,13 +25,13 @@ BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_DynamicDictionary baStringCustomFormatters;
 static BA_Boolean baStringInitializedCustomFormatters = BA_BOOLEAN_FALSE;
 
-#define BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength) \
-char stackString[stringLength + 1];                                     \
-char stackCompare[compareLength + 1];                                   \
-memcpy(stackString, string, stringLength);                              \
-memcpy(stackCompare, compare, compareLength);                           \
-stackString[stringLength + 1] = '\0';                                   \
-stackCompare[compareLength + 1] = '\0'
+#define BA_STRING_GET_STRING_COMPARE(stringLength, compareLength) \
+char* heapString = malloc(stringLength);                          \
+char* heapCompare = malloc(compareLength);                        \
+memcpy(heapString, string, stringLength);                         \
+memcpy(heapCompare, compare, compareLength);                      \
+heapString[stringLength + 1] = '\0';                              \
+heapCompare[compareLength + 1] = '\0'
 
 char* BA_String_Copy(const char* duplicateFrom) {
     char* string = malloc(sizeof(char) * (strlen(duplicateFrom) + 1));
@@ -77,8 +77,13 @@ BA_Boolean BA_String_StartsWith(const char* string, const char* compare, BA_Bool
     if (!caseless)
         return strncmp(string, compare, compareLength) == 0;
     
-    BA_STRING_GET_STACK_STRING_COMPARE(compareLength, compareLength);
-    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), compareLength) == 0;
+    BA_STRING_GET_STRING_COMPARE(compareLength, compareLength);
+
+    BA_Boolean result = strncmp(BA_String_ToLower(heapString), BA_String_ToLower(heapCompare), compareLength) == 0;
+
+    free(heapString);
+    free(heapCompare);
+    return result;
 }
 
 BA_Boolean BA_String_EndsWith(const char* string, const char* compare, BA_Boolean caseless) {
@@ -94,8 +99,13 @@ BA_Boolean BA_String_EndsWith(const char* string, const char* compare, BA_Boolea
     if (!caseless)
         return strncmp(string + (stringLength - compareLength), compare, compareLength) == 0;
 
-    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength);
-    return strncmp(BA_String_ToLower(stackString + (stringLength - compareLength)), BA_String_ToLower(stackCompare), compareLength) == 0;
+    BA_STRING_GET_STRING_COMPARE(stringLength, compareLength);
+
+    BA_Boolean result = strncmp(BA_String_ToLower(heapString + (stringLength - compareLength)), BA_String_ToLower(heapCompare), compareLength) == 0;
+
+    free(heapString);
+    free(heapCompare);
+    return result;
 }
 
 char* BA_String_ToLower(char* string) {
@@ -122,20 +132,24 @@ BA_Boolean BA_String_Contains(const char* string, const char* compare, BA_Boolea
     if (stringLength < compareLength)
         return BA_BOOLEAN_FALSE;
 
-    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, compareLength);
+    BA_STRING_GET_STRING_COMPARE(stringLength, compareLength);
 
     if (caseless) {
-        memcpy(stackString, BA_String_ToLower(stackString), stringLength);
-        memcpy(stackCompare, BA_String_ToLower(stackCompare), compareLength);
+        BA_String_ToLower(heapString);
+        BA_String_ToLower(heapCompare);
     }
     
     for (int i = 0; i < stringLength; i++) {
-        if (strncmp(stackString + i, stackCompare, compareLength) != 0)
+        if (strncmp(heapString + i, heapCompare, compareLength) != 0)
             continue;
-        
+
+        free(heapString);
+        free(heapCompare);
         return BA_BOOLEAN_TRUE;
     }
 
+    free(heapString);
+    free(heapCompare);
     return BA_BOOLEAN_FALSE;
 }
 
@@ -154,8 +168,13 @@ BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean 
     if (stringLength != strlen(compare))
         return BA_BOOLEAN_FALSE;
     
-    BA_STRING_GET_STACK_STRING_COMPARE(stringLength, stringLength);
-    return strncmp(BA_String_ToLower(stackString), BA_String_ToLower(stackCompare), stringLength) == 0;
+    BA_STRING_GET_STRING_COMPARE(stringLength, stringLength);
+
+    BA_Boolean result = strncmp(BA_String_ToLower(heapString), BA_String_ToLower(heapCompare), stringLength) == 0;
+
+    free(heapString);
+    free(heapCompare);
+    return result;
 }
 
 char* BA_String_AppendCharacter(char** target, char character) {
@@ -204,26 +223,29 @@ char* BA_String_FormatPremadeList(char** target, va_list arguments) {
 BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray* dynamicArray = malloc(sizeof(BA_DynamicArray));
     size_t targetLength = strlen(target);
-    char stackTarget[targetLength + 1];
+    char* heapTarget = malloc(targetLength + 1);
 
     BA_DynamicArray_Create(dynamicArray, 100);
 
-    if (dynamicArray == NULL)
+    if (dynamicArray == NULL) {
+        free(heapTarget);
         return NULL;
+    }
     
-    memcpy(stackTarget, target, targetLength);
+    memcpy(heapTarget, target, targetLength);
 
-    stackTarget[targetLength] = '\0';
+    heapTarget[targetLength] = '\0';
 
-    char* stackTargetPointer = &(stackTarget[0]);
-    char* token = strtok_r(stackTarget, splitBy, &stackTargetPointer);
+    char* stackTargetPointer = &(heapTarget[0]);
+    char* token = strtok_r(heapTarget, splitBy, &stackTargetPointer);
 
     while (token != NULL) {
         BA_DynamicArray_AddElementToLast(dynamicArray, BA_String_Copy(token));
         
         token = strtok_r(stackTargetPointer, splitBy, &stackTargetPointer);
     }
-    
+
+    free(heapTarget);
     return dynamicArray;
 }
 
@@ -262,11 +284,11 @@ char* BA_String_ReadFile(FILE* file, size_t lengthLimit, size_t* lineLength) {
     return buffer;
 }
 
-ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
+intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     const char* currentSplitString = splitString != NULL ? splitString : "\n";
-    ssize_t length = 0;
+    intmax_t length = 0;
     char* buffer = NULL;
-    ssize_t splitStringLength = (int) strlen(currentSplitString);
+    intmax_t splitStringLength = (int) strlen(currentSplitString);
 
     if (line != NULL) {
         buffer = BA_String_CreateEmpty();
@@ -276,8 +298,8 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     }
     
     while (!feof(file)) {
-        char contents[splitStringLength + 1];
-        
+        char* contents = malloc(splitStringLength + 1);
+
         contents[0] = '\0';
         contents[splitStringLength] = '\0';
         
@@ -286,16 +308,20 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
         if (BA_String_Equals(contents, currentSplitString, BA_BOOLEAN_FALSE)) {
             if (line != NULL)
                 *line = buffer;
-            
+
+            free(contents);
             return length;
         }
         
         length += splitStringLength;
 
-        if (line == NULL)
+        if (line == NULL) {
+            free(contents);
             continue;
+        }
         
-        BA_String_Append(&buffer, BA_String_Copy(contents));
+        BA_String_Append(&buffer, contents);
+        free(contents);
     }
 
     if (line != NULL && buffer[0] != '\0') {
@@ -306,7 +332,7 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     return -1;
 }
 
-ssize_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter) {
+intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter) {
     const char temporaryString[2] = {splitCharacter, '\0'};
     
     return BA_String_GetLine(file, line, temporaryString);
@@ -375,7 +401,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
 do {                                                        \
     type value = va_arg(arguments, type);                   \
     size_t bufferSize = snprintf(NULL, 0, formatSpecifier, value); \
-    char buffer[bufferSize];                                \
+    char* buffer = malloc(bufferSize);                      \
     snprintf(buffer, bufferSize + 1, formatSpecifier, value); \
     BA_String_Append(&newBuffer, buffer);                   \
 } while (0)
@@ -470,7 +496,7 @@ char* BA_String_Replace(char** target, const char* what, const char* to) {
             continue;
         
         size_t temporaryLength = targetLength - i;
-        char temporaryString[temporaryLength + 1];
+        char* temporaryString = malloc(temporaryLength + 1);
 
         memcpy(temporaryString, (*target) + i + whatLength, temporaryLength);
         
@@ -485,6 +511,8 @@ char* BA_String_Replace(char** target, const char* what, const char* to) {
         memcpy((*target) + i + toLength, temporaryString, temporaryLength);
 
         (*target)[targetLength] = '\0';
+
+        free(temporaryString);
     }
     
     return *target;

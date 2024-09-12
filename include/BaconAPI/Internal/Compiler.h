@@ -21,7 +21,6 @@
 #elif defined(_MSC_VER)
 #   undef BA_COMPILER_MSVC
 #   define BA_COMPILER_MSVC 1
-
 #else
 #   undef BA_COMPILER_UNKNOWN
 #   define BA_COMPILER_UNKNOWN 1

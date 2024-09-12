@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "Internal/Boolean.h"
 #include "Storage/DynamicArray.h"
@@ -128,7 +129,7 @@ char* BA_String_ReadFile(FILE* file, size_t lengthLimit, size_t* lineLength);
  * @note This moves the file pointer
  * @warning Make sure to run free on the returned buffer
  */
-ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString);
+intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString);
 
 /**
  * Gets the next line in the file
@@ -138,7 +139,7 @@ ssize_t BA_String_GetLine(FILE* file, char** line, const char* splitString);
  * @note This moves the file pointer
  * @warning Make sure to run free on the returned buffer
  */
-ssize_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter);
+intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter);
 
 /**
  * Safer version of BA_String_Format, intended to be used when target is controlled by user input.

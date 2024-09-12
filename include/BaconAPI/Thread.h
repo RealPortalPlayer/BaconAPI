@@ -29,7 +29,7 @@ typedef HANDLE BA_Thread_Lock;
 #   define BA_THREAD_ATTRIBUTE WINAPI
 #endif
 
-typedef BA_THREAD_RETURN_VALUE BA_THREAD_ATTRIBUTE (*BA_Thread_Function)(void*);
+typedef BA_THREAD_RETURN_VALUE (*BA_Thread_Function)(void*);
 
 BA_Thread BA_Thread_GetCurrent(void);
 BA_Boolean BA_Thread_IsSingleThreaded(void);

@@ -9,9 +9,8 @@
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
 #   include <stdint.h>
-#   include <ntdef.h>
 #   include <dbghelp.h>
-#   define BA_STACK_BUFFER_SIZE MAXUSHORT
+#   define BA_STACK_BUFFER_SIZE 0xFFFF
 #   include "BaconAPI/Number.h"
 #   include "BaconAPI/Internal/PlatformSpecific.h"
 #endif
@@ -122,14 +121,14 @@ char* BA_Stack_GetCallTrace(void) {
             }
             
             if (functionName != NULL) {
-                BA_String_Append(&callTrace, "%s%s+0x%x%s [0x%x]");
-                BA_String_Format(&callTrace, surround ? "(" : "", functionName, lineNumber, surround ? ")" : "");
+                BA_String_Append(&callTrace, "%s%s+0x%x%s");
+                BA_String_Format(&callTrace, surround ? " (" : "", functionName, lineNumber, surround ? ")" : "");
             }
 
             surround = functionName != NULL;
 
             BA_String_Append(&callTrace, "%s0x%x%s\n");
-            BA_String_Format(&callTrace, surround ? "[" : "", functionAddress, surround ? "]" : "");
+            BA_String_Format(&callTrace, surround ? " [" : "", functionAddress, surround ? "]" : "");
         }
     }
 
