@@ -113,8 +113,24 @@ char* BA_Stack_GetCallTrace(void) {
             }
         }
 
-        BA_String_Append(&callTrace, "%s(%s+0x%x) [0x%x]\n");
-        BA_String_Format(&callTrace, fileName, functionName, lineNumber, functionAddress);
+        {
+            BA_Boolean surround = fileName != NULL;
+            
+            if (surround) {
+                BA_String_Append(&callTrace, "%s");
+                BA_String_Format(&callTrace, fileName);
+            }
+            
+            if (functionName != NULL) {
+                BA_String_Append(&callTrace, "%s%s+0x%x%s [0x%x]");
+                BA_String_Format(&callTrace, surround ? "(" : "", functionName, lineNumber, surround ? ")" : "");
+            }
+
+            surround = functionName != NULL;
+
+            BA_String_Append(&callTrace, "%s0x%x%s\n");
+            BA_String_Format(&callTrace, surround ? "[" : "", functionAddress, surround ? "]" : "");
+        }
     }
 
     SymCleanup(process);
