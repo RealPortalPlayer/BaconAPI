@@ -1,20 +1,7 @@
 macro(ba_apply_compiler_options TARGET)
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-        target_compile_definitions("${TARGET}" PUBLIC DEBUG BA_ALLOW_DEBUG_LOGS)
-        set(CMAKE_EXECUTABLE_ENABLE_EXPORTS TRUE)
-    elseif(BA_ALLOW_DEBUG_LOGS)
-        target_compile_definitions("${TARGET}" PUBLIC BA_ALLOW_DEBUG_LOGS)
-    endif()
-    
-    if(BA_ALLOW_DEBUG_LOGS)
-        target_compile_definitions("${TARGET}" PUBLIC BA_ALLOW_DEBUG_LOGS)
-    endif()
-
-    if(BA_SINGLE_THREADED)
-        target_compile_definitions("${TARGET}" PUBLIC BA_SINGLE_THREADED)
-    endif()
-
-    if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-        target_link_libraries("${TARGET}" PUBLIC dbghelp)
-    endif()
+    target_compile_definitions("${TARGET}" PUBLIC "$<$<CONFIG:Debug>:DEBUG>"
+                                                  "$<$<CONFIG:Debug>:BA_ALLOW_DEBUG_LOGS>"
+                                                  "$<$<BOOL:${BA_ALLOW_DEBUG_LOGS}>:BA_ALLOW_DEBUG_LOGS>"
+                                                  "$<$<BOOL:${BA_SINGLE_THREADED}>:BA_SINGLE_THREADED>")
+    target_link_libraries("${TARGET}" PUBLIC "$<$<PLATFORM_ID:Windows>:dbghelp>")
 endmacro()
