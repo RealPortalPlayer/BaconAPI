@@ -9,6 +9,7 @@
 
 #include "BaconAPI/Logger.h"
 #include "BaconAPI/Internal/Boolean.h"
+#include "BaconAPI/Debugging/Stack.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 BA_Boolean BA_Assert_CheckLogsEnabled(void);
@@ -21,6 +22,7 @@ do {                          \
     if (!(check)) {           \
         BA_Logger_LogImplementation(BA_BOOLEAN_TRUE, BA_LOGGER_LOG_LEVEL_FATAL, "Assertion Failed\nCode: %s\nMessage: ", #check); \
         BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_FATAL, __VA_ARGS__); \
+        BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_FATAL, "Stack:\n%s\n", BA_Stack_GetCallTrace()); \
         abort();              \
         while (BA_BOOLEAN_TRUE) continue; \
     }                         \

@@ -7,17 +7,17 @@
 #include "BaconAPI/Number.h"
 
 #define BA_NUMBER_STRING_CONVERT_IMPLEMENTATION(type, parsedType, to, min, max, function) \
-BA_NUMBER_STRING_CONVERT(type, to) {                                          \
-    char* pointer;                                                            \
-    parsedType parsedValue = function(string, &pointer, 0);                         \
-    BA_Boolean errored = pointer[0] != '\0' || parsedValue < min || parsedValue > max; \
-    if (endPointer != NULL)                                                   \
-        *endPointer = pointer;                                                \
-    if (isError != NULL)                                                      \
-        *isError = errored;                                                   \
-    if (errored && errorMessage != NULL)                                      \
-        BA_LOGGER_ERROR("%s", errorMessage);                                  \
-    return !errored ? (type) parsedValue : defaultValue;                      \
+BA_NUMBER_STRING_CONVERT(type, to) {                                                      \
+    char* pointer = NULL;                                                                 \
+    parsedType parsedValue = function(string, &pointer, 0);                               \
+    BA_Boolean errored = pointer[0] != '\0' || parsedValue < min || parsedValue > max;    \
+    if (endPointer != NULL)                                                               \
+        *endPointer = pointer;                                                            \
+    if (isError != NULL)                                                                  \
+        *isError = errored;                                                               \
+    if (errored && errorMessage != NULL)                                                  \
+        BA_LOGGER_ERROR("%s", errorMessage);                                              \
+    return !errored ? (type) parsedValue : defaultValue;                                  \
 }
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
