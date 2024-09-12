@@ -29,4 +29,8 @@ int main(int argc, char** argv) {
     NUMBER_FUNCTION_TEST(UnsignedShort);
     NUMBER_FUNCTION_TEST(Integer);
     NUMBER_FUNCTION_TEST(Unsigned);
+    NUMBER_FUNCTION_TEST(Long);
+    NUMBER_FUNCTION_TEST(UnsignedLong);
+    NUMBER_FUNCTION_TEST(LongLong);
+    NUMBER_FUNCTION_TEST(UnsignedLongLong);
 }
