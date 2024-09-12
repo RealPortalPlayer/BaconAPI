@@ -50,6 +50,7 @@ char* BA_Stack_GetCallTrace(void) {
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
     CONTEXT context = {};
+    BA_Boolean firstOne = BA_BOOLEAN_TRUE;
 
     context.ContextFlags = CONTEXT_FULL;
 
@@ -75,6 +76,11 @@ char* BA_Stack_GetCallTrace(void) {
     frame.AddrStack.Mode = AddrModeFlat;
 
     while (StackWalk(IMAGE_FILE_MACHINE_AMD64, process, thread, &frame, &context, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL)) {
+        if (firstOne) {
+            firstOne = BA_BOOLEAN_FALSE;
+            continue;
+        }
+        
         DWORD64 functionAddress = frame.AddrPC.Offset;
         char* fileName = NULL;
         char* functionName = NULL;
