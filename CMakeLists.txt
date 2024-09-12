@@ -32,7 +32,8 @@ add_library(BaconAPI STATIC
         ${BA_SOURCE_FILES}
         source/Number.c
         source/Configuration.c
-        source/Memory.c)
+        source/Memory.c
+        source/Debugging/Stack.c)
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
