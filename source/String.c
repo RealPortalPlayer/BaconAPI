@@ -26,8 +26,8 @@ static BA_DynamicDictionary baStringCustomFormatters;
 static BA_Boolean baStringInitializedCustomFormatters = BA_BOOLEAN_FALSE;
 
 #define BA_STRING_GET_STRING_COMPARE(stringLength, compareLength) \
-char* heapString = malloc(stringLength);                          \
-char* heapCompare = malloc(compareLength);                        \
+char* heapString = malloc(stringLength + 1);                      \
+char* heapCompare = malloc(compareLength + 1);                    \
 memcpy(heapString, string, stringLength);                         \
 memcpy(heapCompare, compare, compareLength);                      \
 heapString[stringLength + 1] = '\0';                              \
