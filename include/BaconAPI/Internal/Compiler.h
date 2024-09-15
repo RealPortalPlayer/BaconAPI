@@ -54,3 +54,9 @@
 #else
 #   warning "Standard Library version is not defined?"
 #endif
+
+#ifdef __cplusplus
+#   define BA_COMPILER_VERSION BA_CXX_COMPILER_VERSION
+#else
+#   define BA_COMPILER_VERSION BA_C_COMPILER_VERSION
+#endif

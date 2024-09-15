@@ -3,7 +3,9 @@ macro(ba_apply_compiler_options TARGET)
                                                   "$<$<CONFIG:Debug>:BA_ALLOW_DEBUG_LOGS>"
                                                   "$<$<BOOL:${BA_ALLOW_DEBUG_LOGS}>:BA_ALLOW_DEBUG_LOGS>"
                                                   "$<$<BOOL:${BA_SINGLE_THREADED}>:BA_SINGLE_THREADED>"
-                                                  "$<$<BOOL:${X11_FOUND}>:BA_X11_FOUND>")
+                                                  "$<$<BOOL:${X11_FOUND}>:BA_X11_FOUND>"
+                                                  BA_C_COMPILER_VERSION="${CMAKE_C_COMPILER_VERSION}"
+                                                  BA_CXX_COMPILER_VERSION="${CMAKE_CXX_COMPILER_VERSION}")
 
     if(NOT BA_DISABLE_FREETYPE AND FREETYPE_FOUND)
         target_compile_definitions("${TARGET}" PUBLIC BA_FREETYPE_FOUND)

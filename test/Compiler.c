@@ -7,6 +7,6 @@
 
 int main(int argc, char** argv) {
     BA_ArgumentHandler_Initialize(argc, argv);
-    BA_LOGGER_INFO("Compiler: %s\n"
-                   "Standard Version: %i\n", BA_COMPILER_NAME, BA_COMPILER_STANDARD_VERSION);
+    BA_LOGGER_INFO("Compiler: %s %s\n"
+                   "Standard Version: %i\n", BA_COMPILER_NAME, BA_COMPILER_VERSION, BA_COMPILER_STANDARD_VERSION);
 }
