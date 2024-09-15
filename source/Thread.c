@@ -39,7 +39,7 @@ BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction
     if (pthread_create(thread, NULL, threadFunction, &argument) != 0)
         return BA_BOOLEAN_FALSE;
 #   elif BA_OPERATINGSYSTEM_WINDOWS
-    *thread = (BA_Thread) CreateThread(NULL, 0, threadFunction, &argument, 0, NULL);
+    *thread = (BA_Thread) CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadFunction, &argument, 0, NULL);
     
     if (*thread == NULL)
         return BA_BOOLEAN_FALSE;

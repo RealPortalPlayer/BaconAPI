@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     if (BA_Thread_IsSingleThreaded()) {
         BA_Thread throwaway;
         
-        BA_ASSERT(!BA_Thread_Create(&throwaway, &ThreadFunction, NULL), "Created a thread despite it being single-threaded\n");
+        BA_ASSERT(!BA_Thread_Create(&throwaway, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Created a thread despite it being single-threaded\n");
         return 0;
     }
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
         createdThreads++;
 
-        BA_ASSERT(BA_Thread_Create(&thread, &ThreadFunction, NULL), "Failed to create thread %i", createdThreads);
+        BA_ASSERT(BA_Thread_Create(&thread, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Failed to create thread %i", createdThreads);
 
         addedThreads[i] = thread;
     }
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     {
         BA_Thread throwaway;
 
-        BA_ASSERT(!BA_Thread_Create(&throwaway, &ThreadFunction, NULL), "Created a thread despite hitting the limit\n");
+        BA_ASSERT(!BA_Thread_Create(&throwaway, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Created a thread despite hitting the limit\n");
     }
 
     BA_ASSERT(BA_Thread_GetAmount() == createdThreads, "Still incremented the thread count\n");
