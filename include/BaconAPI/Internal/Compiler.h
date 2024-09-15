@@ -11,16 +11,23 @@
 #define BA_COMPILER_UNKNOWN 0
 #define BA_COMPILER_STANDARD_VERSION 0
 #define BA_COMPILER_CLANG 0
+#define BA_COMPILER_NAME "Unknown"
 
 #if defined(__clang__)
 #   undef BA_COMPILER_CLANG
+#   undef BA_COMPILER_NAME
 #   define BA_COMPILER_CLANG 1
+#   define BA_COMPILER_NAME "Clang"
 #elif defined(__GNUC__)
 #   undef BA_COMPILER_GCC
+#   undef BA_COMPILER_NAME
 #   define BA_COMPILER_GCC 1
+#   define BA_COMPILER_NAME "GCC"
 #elif defined(_MSC_VER)
 #   undef BA_COMPILER_MSVC
+#   undef BA_COMPILER_NAME
 #   define BA_COMPILER_MSVC 1
+#   define BA_COMPILER_NAME "MSVC"
 #else
 #   undef BA_COMPILER_UNKNOWN
 #   define BA_COMPILER_UNKNOWN 1
