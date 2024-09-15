@@ -25,15 +25,18 @@
 typedef struct {
     const char* text;
     BA_MessageBox_Result result;
+    size_t textLength;
 } BA_MessageBox_ButtonObject;
 
 #   define BA_MESSAGEBOX_BUTTON_WIDTH 88
 #   define BA_MESSAGEBOX_BUTTON_HEIGHT 26
-#   define BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING 12
+#   define BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING 9
+#   define BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING_NO_IMAGE_NO_LINES_ADDITION 2
 #   define BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING 8
-#   define BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING_IMAGES_ADDITION 1
-#   define BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING 11
-#   define BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING 9
+#   define BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING_MAX_WIDTH_AND_IMAGE_OR_HAS_SECOND_BUTTON 1
+#   define BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING 8
+#   define BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING_HAS_FIRST_BUTTON_ADDITION 2
+#   define BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING 8
 #   define BA_MESSAGEBOX_BUTTON_BACKGROUND_HEIGHT 49
 #   define BA_MESSAGEBOX_MAX_CHARACTERS 53
 #   define BA_MESSAGEBOX_MAX_CHARACTERS_LOADED_IMAGE 47
@@ -52,11 +55,14 @@ typedef struct {
 #   define BA_MESSAGEBOX_BOTTOM_PADDING_IMAGE_THREE_ADDITION 4
 #   define BA_MESSAGEBOX_BOTTOM_PADDING_IMAGE_ZERO_LINES_ADDITION 24
 #   define BA_MESSAGEBOX_BOTTOM_PADDING_IMAGE_ONE_LINE_ADDITION 15
-#   define BA_MESSAGEBOX_BOTTOM_PADDING_IMAGE_TWO_OR_MORE_LINES_ADDITION 17
+#   define BA_MESSAGEBOX_BOTTOM_PADDING_IMAGE_TWO_OR_MORE_LINES_ADDITION 8
 #   define BA_MESSAGEBOX_BOTTOM_PADDING_SINGLE_OR_MORE_LINES_ADDITION 6
 #   define BA_MESSAGEBOX_LEFT_PADDING_BASE 16
 #   define BA_MESSAGEBOX_RIGHT_PADDING_BASE 125
+#   define BA_MESSAGEBOX_RIGHT_PADDING_EMPTY_BOX 26
 #   define BA_MESSAGEBOX_RIGHT_PADDING_IMAGE_SUBTRACTION 53
+#   define BA_MESSAGEBOX_MAX_WIDTH_WITHOUT_IMAGE 474
+#   define BA_MESSAGEBOX_MAX_WIDTH_WITH_IMAGE_ADDITION 6
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
 #endif
@@ -296,6 +302,14 @@ do {                                                        \
             break;
     }
 
+    if (button1.text != NULL)
+        button1.textLength = strlen(button1.text);
+
+    if (button2.text != NULL)
+        button2.textLength = strlen(button2.text);
+
+    button3.textLength = strlen(button3.text);
+
     uint32_t width = 0;
     uint32_t topPadding = BA_MESSAGEBOX_TOP_PADDING_BASE + (loadedImage && lines.used <= 1 ? BA_MESSAGEBOX_TOP_PADDING_IMAGE_SINGLE_OR_NO_LINE_ADDITION : 0);
     uint32_t height = topPadding + (lines.used >= 1 ? 9 * lines.used + 6 * (lines.used - 1) : 0) + BA_MESSAGEBOX_BOTTOM_PADDING_BASE + BA_MESSAGEBOX_BUTTON_BACKGROUND_HEIGHT;
@@ -310,82 +324,67 @@ do {                                                        \
     } else if (lines.used != 0)
         height += BA_MESSAGEBOX_BOTTOM_PADDING_SINGLE_OR_MORE_LINES_ADDITION;
 
+#define BA_MESSAGEBOX_GET_TEXT_WIDTH_CLASSIC(variable, text, textLength) variable = XTextWidth(fontStructure, text, textLength)
+
+#ifdef BA_FREETYPE_FOUND
+#   define BA_MESSAGEBOX_GET_TEXT_WIDTH(variable, text, textLength) \
+do {                                                                \
+    size_t lineLength = textLength;                                 \
+    if (font == NULL)                                               \
+        BA_MESSAGEBOX_GET_TEXT_WIDTH_CLASSIC(variable, text, lineLength); \
+    else {                                                          \
+        XGlyphInfo information;                                     \
+        XftTextExtentsUtf8(display, font, text, lineLength, &information); \
+        variable = information.width;                               \
+    }                                                               \
+} while (BA_BOOLEAN_FALSE)
+#else
+#   define BA_MESSAGEBOX_GET_TEXT_WIDTH(variable, text, textLength) BA_MESSAGEBOX_GET_TEXT_WIDTH_CLASSIC(variable, text, textLength)
+#endif
+    
     {
         size_t biggestLineLength = 0;
     
         for (int i = 0; i < lines.used; i++) {
-            size_t lineLength = strlen(lines.internalArray[i]);
+            size_t length = strlen(lines.internalArray[i]);
+            size_t calculatedLength;
 
-#ifdef BA_FREETYPE_FOUND
-            if (font == NULL)
-#endif
-            {
-                size_t newWidth = XTextWidth(fontStructure, lines.internalArray[i], lineLength);
-            
-                if (width >= newWidth)
-                    continue;
-                
-                width = newWidth;
-                biggestLineLength = lineLength;
-#ifdef BA_FREETYPE_FOUND
-                continue;
-            }
+            BA_MESSAGEBOX_GET_TEXT_WIDTH(calculatedLength, lines.internalArray[i], length);
 
-            XGlyphInfo information;
-            
-            XftTextExtentsUtf8(display, font, lines.internalArray[i], lineLength, &information);
-
-            if (width >= information.width)
+            if (width >= calculatedLength)
                 continue;
 
-            width = information.width;
-            biggestLineLength = lineLength;
-#else
-            }
-#endif
+            width = calculatedLength;
+            biggestLineLength = length;
         }
 
         width += BA_MESSAGEBOX_LEFT_PADDING_BASE;
 
+    
         if (biggestLineLength == 0)
-            width += 26;
+            width += BA_MESSAGEBOX_RIGHT_PADDING_EMPTY_BOX;
+    }
+
+    if (button1.text != NULL)
+        width += BA_MESSAGEBOX_BUTTON_WIDTH + BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING;
+
+    if (button2.text != NULL)
+        width += BA_MESSAGEBOX_BUTTON_WIDTH + BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING + (button1.text != NULL ? BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING_HAS_FIRST_BUTTON_ADDITION : 0);
+
+    width += BA_MESSAGEBOX_BUTTON_WIDTH + BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING + (button2.text != NULL ? BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING_MAX_WIDTH_AND_IMAGE_OR_HAS_SECOND_BUTTON : 0);
+
+    if (loadedImage && width )
+    
+    {
+        int maxWidth = BA_MESSAGEBOX_MAX_WIDTH_WITHOUT_IMAGE;
+
+        if (loadedImage)
+            maxWidth += BA_MESSAGEBOX_MAX_WIDTH_WITH_IMAGE_ADDITION;
+
+        if (width > maxWidth)
+            width = maxWidth;
     }
     
-    if (loadedImage)
-        width -= BA_MESSAGEBOX_RIGHT_PADDING_IMAGE_SUBTRACTION;
-
-    width += BA_MESSAGEBOX_BUTTON_WIDTH + BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING;
-    
-    // uint32_t width = 0;
-    // uint32_t height = (lines.used <= 1 ? BA_MESSAGEBOX_TOP_PADDING_ONE_OR_LESS_LINES + (loadedImage ? 7 : 0) : BA_MESSAGEBOX_TOP_PADDING_TWO_OR_MORE_LINES) + 9 + 15 * (lines.used != 0 ? lines.used - 1 : 0) + (lines.used <= 1 ? BA_MESSAGEBOX_BOTTOM_PADDING_ONE_OR_LESS_LINES + (loadedImage ? 9 : 0) : BA_MESSAGEBOX_BOTTOM_PADDING_TWO_OR_MORE_LINES) + BA_MESSAGEBOX_BUTTON_BACKGROUND_HEIGHT - (lines.used == 0 && !loadedImage ? 16 : 0) - (lines.used == 1);
-    //
-    //     {
-    //         ssize_t temporaryWidth = (loadedImage || lines.used == 0 ? BA_MESSAGEBOX_RIGHT_PADDING_MAXIMUM : BA_MESSAGEBOX_RIGHT_PADDING_MAXIMUM_NO_IMAGE) - 8 * biggestLineLength + (lines.used == 0 && !loadedImage);
-    //
-    //         if (temporaryWidth < BA_MESSAGEBOX_RIGHT_PADDING_MINIMUM)
-    //             temporaryWidth = BA_MESSAGEBOX_RIGHT_PADDING_MINIMUM;
-    //         
-    //         width += 65 + temporaryWidth;
-    //
-    //         if (button2.text != NULL)
-    //             width += 12;
-    //
-    //         if (button1.text != NULL)
-    //             width += 98;
-    //
-    //         if (loadedImage) {
-    //             if (lines.used == 0)
-    //                 width++;
-    //
-    //             if (lines.used == 1)
-    //                 width += 5;
-    //         }
-    //     }
-    // }
-    //
-    // if (width > 480)
-    //     width = 480;
-    //
     {
         XSizeHints hints;
 
@@ -398,7 +397,7 @@ do {                                                        \
         XSetWMNormalHints(display, window, &hints);
     }
     
-    XSelectInput(display, window, ExposureMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+    XSelectInput(display, window, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 
     {
         Atom deleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
@@ -461,35 +460,38 @@ do {                                                                          \
 
             XFillRectangle(display, window, buttonBackgroundGC, 0, height - BA_MESSAGEBOX_BUTTON_BACKGROUND_HEIGHT, width, BA_MESSAGEBOX_BUTTON_BACKGROUND_HEIGHT);
 
+#define BA_MESSAGEBOX_GET_BUTTON_X_Y(padding1, padding2) \
+size_t buttonX = width - (BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING + ((loadedImage && width == BA_MESSAGEBOX_MAX_WIDTH_WITHOUT_IMAGE + BA_MESSAGEBOX_MAX_WIDTH_WITH_IMAGE_ADDITION) || button2.text != NULL ? BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING_MAX_WIDTH_AND_IMAGE_OR_HAS_SECOND_BUTTON : 0)) - BA_MESSAGEBOX_BUTTON_WIDTH - (padding2 != 0 ? (padding2 + (button1.text != NULL ? BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING_HAS_FIRST_BUTTON_ADDITION : 0) + BA_MESSAGEBOX_BUTTON_WIDTH) : 0) - (padding1 != 0 ? padding1 + BA_MESSAGEBOX_BUTTON_WIDTH : 0); \
+size_t buttonY = height - (BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING + (!loadedImage && lines.used != 0 ? BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING_NO_IMAGE_NO_LINES_ADDITION : 0)) - BA_MESSAGEBOX_BUTTON_HEIGHT
+
 #define BA_MESSAGEBOX_DRAW_BORDER(outerShine, outerShadow, innerShine, innerShadow) \
 do {                                                                                \
-    XDrawLine(display, window, outerShine, x, y, x + BA_MESSAGEBOX_BUTTON_WIDTH - 1, y); \
-    XDrawLine(display, window, outerShine, x, y, x, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 1); \
-    XDrawLine(display, window, outerShadow, x, y + BA_MESSAGEBOX_BUTTON_HEIGHT, x + BA_MESSAGEBOX_BUTTON_WIDTH, y + BA_MESSAGEBOX_BUTTON_HEIGHT); \
-    XDrawLine(display, window, outerShadow, x + BA_MESSAGEBOX_BUTTON_WIDTH, y, x + BA_MESSAGEBOX_BUTTON_WIDTH, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 1); \
-    XDrawLine(display, window, innerShine, x + 1, y + 1, x + BA_MESSAGEBOX_BUTTON_WIDTH - 2, y + 1); \
-    XDrawLine(display, window, innerShine, x + 1, y + 2, x + 1, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 2); \
-    XDrawLine(display, window, innerShadow, x + 1, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 1, x + BA_MESSAGEBOX_BUTTON_WIDTH - 2, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 1); \
-    XDrawLine(display, window, innerShadow, x + BA_MESSAGEBOX_BUTTON_WIDTH - 1, y + 1, x + BA_MESSAGEBOX_BUTTON_WIDTH - 1, y + BA_MESSAGEBOX_BUTTON_HEIGHT - 1); \
+    XDrawLine(display, window, outerShine, buttonX, buttonY, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH - 1, buttonY); \
+    XDrawLine(display, window, outerShine, buttonX, buttonY + 1, buttonX, buttonY + 1 + BA_MESSAGEBOX_BUTTON_HEIGHT - 2); \
+    XDrawLine(display, window, outerShadow, buttonX + 1, buttonY + BA_MESSAGEBOX_BUTTON_HEIGHT - 1, buttonX + 1 + BA_MESSAGEBOX_BUTTON_WIDTH - 2, buttonY + BA_MESSAGEBOX_BUTTON_HEIGHT - 1); \
+    XDrawLine(display, window, outerShadow, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH - 1, buttonY + 1, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH - 1, buttonY + 1 + BA_MESSAGEBOX_BUTTON_HEIGHT - 3); \
+    XDrawLine(display, window, innerShine, buttonX + 1, buttonY + 1, buttonX + 1 + BA_MESSAGEBOX_BUTTON_WIDTH - 3, buttonY + 1); \
+    XDrawLine(display, window, innerShine, buttonX + 1, buttonY + 2, buttonX + 1, buttonY + 2 + BA_MESSAGEBOX_BUTTON_HEIGHT - 4); \
+    XDrawLine(display, window, innerShadow, buttonX + 2, buttonY + BA_MESSAGEBOX_BUTTON_HEIGHT - 2, buttonX + 2 + BA_MESSAGEBOX_BUTTON_WIDTH - 4, buttonY + BA_MESSAGEBOX_BUTTON_HEIGHT - 2); \
+    XDrawLine(display, window, innerShadow, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH - 2, buttonY + 2, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH - 2, buttonY + 2 + BA_MESSAGEBOX_BUTTON_HEIGHT - 5); \
 } while (BA_BOOLEAN_FALSE)
 
-#define BA_MESSAGEBOX_DRAW_BUTTON(button, padding1, padding2, padding3) \
-do {                                                                    \
-    size_t buttonTextLength = strlen(button.text);                      \
-    size_t x = width - padding3 - BA_MESSAGEBOX_BUTTON_WIDTH - padding2 - (padding2 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0) - padding1 - (padding1 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0); \
-    size_t y = height - BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - BA_MESSAGEBOX_BUTTON_HEIGHT; \
-    XDrawRectangle(display, window, DefaultGC(display, screen), x, y, BA_MESSAGEBOX_BUTTON_WIDTH, BA_MESSAGEBOX_BUTTON_HEIGHT); \
+#define BA_MESSAGEBOX_DRAW_BUTTON(button, padding1, padding2) \
+do {                                                          \
+    BA_MESSAGEBOX_GET_BUTTON_X_Y(padding1, padding2);         \
     BA_MESSAGEBOX_DRAW_BORDER(buttonOuterShineGC, buttonOuterShadowGC, buttonInnerShineGC, buttonInnerShadowGC); \
-    /*BA_MESSAGEBOX_RENDER_TEXT(display, window, width - (((padding3 - 1) + (BA_MESSAGEBOX_BUTTON_WIDTH + 1)) + (((padding2 - (padding2 != 0)) + (padding2 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2) + (((padding1 - (padding1 != 0)) + (padding1 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2)) / 2 - XTextWidth(fontStructure, button.text, buttonTextLength) / 2 - (2 + (padding2 != 0 ? 4 : 0) - (padding1 != 0 ? 1 : 0)), height - ((BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - 1) + (BA_MESSAGEBOX_BUTTON_HEIGHT + 1)) / 2 - 2, button.text, buttonTextLength);*/ \
+    size_t textWidth;                                         \
+    BA_MESSAGEBOX_GET_TEXT_WIDTH(textWidth, button.text, button.textLength); \
+    BA_MESSAGEBOX_RENDER_TEXT(display, window, buttonX + BA_MESSAGEBOX_BUTTON_WIDTH / 2 - textWidth / 2 + 1, buttonY + fontHeight + 1, button.text, button.textLength); \
 } while (BA_BOOLEAN_FALSE)
-    
+            
             if (button1.text != NULL)
-                BA_MESSAGEBOX_DRAW_BUTTON(button1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
-            
+                BA_MESSAGEBOX_DRAW_BUTTON(button1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
+
             if (button2.text != NULL)
-                BA_MESSAGEBOX_DRAW_BUTTON(button2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+                BA_MESSAGEBOX_DRAW_BUTTON(button2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
             
-            BA_MESSAGEBOX_DRAW_BUTTON(button3, 0, 0, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+            BA_MESSAGEBOX_DRAW_BUTTON(button3, 0, 0);
             continue;
         }
 
@@ -500,69 +502,68 @@ do {                                                                    \
 
 #define BA_MESSAGEBOX_IS_INSIDE_BUTTON(x1, y1) (event.xmotion.x >= x1 && event.xmotion.x <= x1 + BA_MESSAGEBOX_BUTTON_WIDTH && event.xmotion.y >= y1 && event.xmotion.y <= y1 + BA_MESSAGEBOX_BUTTON_HEIGHT)
         
-#define BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2, padding3) \
-size_t x = width - padding3 - BA_MESSAGEBOX_BUTTON_WIDTH - padding2 - (padding2 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0) - padding1 - (padding1 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0); \
-size_t y = height - BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - BA_MESSAGEBOX_BUTTON_HEIGHT; \
-if (BA_MESSAGEBOX_IS_INSIDE_BUTTON(x, y))
+#define BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2) \
+if (BA_MESSAGEBOX_IS_INSIDE_BUTTON(buttonX, buttonY))
         
-#define BA_MESSAGEBOX_SET_PRESSED_BUTTON(id, padding1, padding2, padding3) \
-do {                                                                       \
-        BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2, padding3) {         \
-            pressedButton = id;                                            \
-            pressedX = x;                                                  \
-            pressedY = y;                                                  \
+#define BA_MESSAGEBOX_SET_PRESSED_BUTTON(id, padding1, padding2) \
+do {                                                             \
+        BA_MESSAGEBOX_GET_BUTTON_X_Y(padding1, padding2);        \
+        BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2) {         \
+            pressedButton = id;                                  \
+            pressedX = buttonX;                                  \
+            pressedY = buttonY;                                  \
             BA_MESSAGEBOX_DRAW_BORDER(buttonPressedOuterGC, buttonPressedOuterGC, buttonPressedInnerGC, buttonPressedInnerGC); \
-        }                                                                  \
+        }                                                        \
 } while (BA_BOOLEAN_FALSE)
         
         if (event.type == ButtonPress) {
             if (button1.text != NULL)
-                BA_MESSAGEBOX_SET_PRESSED_BUTTON(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
-
+                BA_MESSAGEBOX_SET_PRESSED_BUTTON(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
+        
             if (button2.text != NULL)
-                BA_MESSAGEBOX_SET_PRESSED_BUTTON(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+                BA_MESSAGEBOX_SET_PRESSED_BUTTON(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
             
-            BA_MESSAGEBOX_SET_PRESSED_BUTTON(3, 0, 0, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+            BA_MESSAGEBOX_SET_PRESSED_BUTTON(3, 0, 0);
             continue;
         }
 
-#define BA_MESSAGEBOX_PRESS_BUTTON(id, padding1, padding2, padding3) \
-{                                                                    \
-    BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2, padding3) {       \
-        if (pressedButton == id) {                                   \
-            result = button ## id.result;                            \
-            break;                                                   \
-        }                                                            \
-    }                                                                \
+#define BA_MESSAGEBOX_PRESS_BUTTON(id, padding1, padding2) \
+{                                                          \
+    BA_MESSAGEBOX_GET_BUTTON_X_Y(padding1, padding2);      \
+    BA_MESSAGEBOX_CHECK_BUTTON(padding1, padding2) {       \
+        if (pressedButton == id) {                         \
+            result = button ## id.result;                  \
+            break;                                         \
+        }                                                  \
+    }                                                      \
 } (void) NULL
         
         if (event.type == ButtonRelease) {
-            BA_MESSAGEBOX_PRESS_BUTTON(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
-            BA_MESSAGEBOX_PRESS_BUTTON(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
-            BA_MESSAGEBOX_PRESS_BUTTON(3, 0, 0, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+            BA_MESSAGEBOX_PRESS_BUTTON(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
+            BA_MESSAGEBOX_PRESS_BUTTON(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
+            BA_MESSAGEBOX_PRESS_BUTTON(3, 0, 0);
             
             pressedButton = 0;
             continue;
         }
 
-#define BA_MESSAGEBOX_UPDATE_BORDER(id, padding1, padding2, padding3) \
-do {                                                                  \
-    size_t x = width - padding3 - BA_MESSAGEBOX_BUTTON_WIDTH - padding2 - (padding2 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0) - padding1 - (padding1 != 0 ? BA_MESSAGEBOX_BUTTON_WIDTH : 0); \
-    size_t y = height - BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - BA_MESSAGEBOX_BUTTON_HEIGHT; \
+#define BA_MESSAGEBOX_UPDATE_BORDER(id, padding1, padding2) \
+do {                                                        \
+    BA_MESSAGEBOX_GET_BUTTON_X_Y(padding1, padding2);       \
     if (BA_MESSAGEBOX_IS_INSIDE_BUTTON(pressedX, pressedY) && pressedButton == id) \
         BA_MESSAGEBOX_DRAW_BORDER(buttonPressedOuterGC, buttonPressedOuterGC, buttonPressedInnerGC, buttonPressedInnerGC); \
-    else                                                              \
+    else                                                    \
         BA_MESSAGEBOX_DRAW_BORDER(buttonOuterShineGC, buttonOuterShadowGC, buttonInnerShineGC, buttonInnerShadowGC); \
 } while (BA_BOOLEAN_FALSE)
         
         if (event.type == MotionNotify) {
             if (button1.text != NULL)
-                BA_MESSAGEBOX_UPDATE_BORDER(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
-
-            if (button2.text != NULL)
-                BA_MESSAGEBOX_UPDATE_BORDER(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+                BA_MESSAGEBOX_UPDATE_BORDER(1, BA_MESSAGEBOX_BUTTON1_RIGHT_PADDING, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
             
-            BA_MESSAGEBOX_UPDATE_BORDER(3, 0, 0, BA_MESSAGEBOX_BUTTON3_RIGHT_PADDING);
+            if (button2.text != NULL)
+                BA_MESSAGEBOX_UPDATE_BORDER(2, 0, BA_MESSAGEBOX_BUTTON2_RIGHT_PADDING);
+            
+            BA_MESSAGEBOX_UPDATE_BORDER(3, 0, 0);
         }
     }
     
