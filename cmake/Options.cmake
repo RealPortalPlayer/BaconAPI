@@ -11,12 +11,12 @@ macro(ba_apply_compiler_options TARGET)
         target_compile_definitions("${TARGET}" PUBLIC BA_X11_FOUND)
         target_link_libraries("${TARGET}" PUBLIC ${X11_LIBRARIES} Xpm)
         target_include_directories("${TARGET}" PUBLIC ${X11_INCLUDE_DIR})
-    endif()
-    
-    if(NOT BA_DISABLE_FREETYPE AND FREETYPE_FOUND)
-        target_compile_definitions("${TARGET}" PUBLIC BA_FREETYPE_FOUND)
-        target_link_libraries("${TARGET}" PUBLIC ${FREETYPE_LIBRARIES})
-        target_include_directories("${TARGET}" PUBLIC ${FREETYPE_INCLUDE_DIRS})
+
+        if(NOT BA_DISABLE_FREETYPE AND FREETYPE_FOUND)
+            target_compile_definitions("${TARGET}" PUBLIC BA_FREETYPE_FOUND)
+            target_link_libraries("${TARGET}" PUBLIC ${FREETYPE_LIBRARIES} Xft)
+            target_include_directories("${TARGET}" PUBLIC ${FREETYPE_INCLUDE_DIRS})
+        endif()
     endif()
     
     target_link_libraries("${TARGET}" PUBLIC "$<$<PLATFORM_ID:Windows>:dbghelp>")
