@@ -144,7 +144,7 @@ intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter
  * @example
  * @code
  * char* exampleString = BA_String_Copy("Hello, %s\n");
- * BA_String_FormatSafe(&exampleString, 1, BA_STRING_FORMAT_SAFE_ARGUMENT_STRING("World!"));
+ * exampleString = BA_String_FormatSafe(exampleString, 1, BA_STRING_FORMAT_SAFE_ARGUMENT_STRING("World!"));
  * @endcode
  * You should be using the helper macros for this, but this is essentially how it works.
  * The code takes amountOfFormatters and times it by 2.
@@ -153,7 +153,7 @@ intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter
  * It works something like this:
  * @code
  * char* exampleString = BA_String_Copy("Hello, %s\n");
- * BA_String_FormatSafe(&exampleString, 1, BA_STRING_SAFE_FORMAT_TYPE_STRING, "World!");
+ * exampleString = BA_String_FormatSafe(exampleString, 1, BA_STRING_SAFE_FORMAT_TYPE_STRING, "World!");
  * @endcode
  */
 char* BA_String_FormatSafe(char* target, int amountOfFormatters, ...);
