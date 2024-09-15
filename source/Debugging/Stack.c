@@ -21,6 +21,7 @@
 
 #include "BaconAPI/Logger.h"
 #include "BaconAPI/String.h"
+#include "BaconAPI/Internal/Compiler.h"
 
 // FIXME: This code sucks. It's not async signal safe. The alternative, which is libunwind, doesn't play nicely with CMake.
 //        The only option is to do this. Too bad
@@ -68,14 +69,26 @@ char* BA_Stack_GetCallTrace(void) {
 
     STACKFRAME frame = {};
 
-    frame.AddrPC.Offset = context.Rip;
+#if BA_COMPILER_BITS == BA_COMPILER_64BITS
+#   define BA_STACK_IP context.Rip
+#   define BA_STACK_BP context.Rbp
+#   define BA_STACK_SP context.Rsp
+#   define BA_STACK_MACHINE IMAGE_FILE_MACHINE_AMD64
+#elif BA_COMPILER_BITS == BA_COMPILER_32BITS
+#   define BA_STACK_IP context.Eip
+#   define BA_STACK_BP context.Ebp
+#   define BA_STACK_SP context.Esp
+#   define BA_STACK_MACHINE IMAGE_FILE_MACHINE_I386
+#endif
+
+    frame.AddrPC.Offset = BA_STACK_IP;
     frame.AddrPC.Mode = AddrModeFlat;
-    frame.AddrFrame.Offset = context.Rbp;
+    frame.AddrFrame.Offset = BA_STACK_BP;
     frame.AddrFrame.Mode = AddrModeFlat;
-    frame.AddrStack.Offset = context.Rsp;
+    frame.AddrStack.Offset = BA_STACK_SP;
     frame.AddrStack.Mode = AddrModeFlat;
 
-    while (StackWalk(IMAGE_FILE_MACHINE_AMD64, process, thread, &frame, &context, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL)) {
+    while (StackWalk(BA_STACK_MACHINE, process, thread, &frame, &context, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL)) {
         if (firstOne) {
             firstOne = BA_BOOLEAN_FALSE;
             continue;
@@ -112,20 +125,14 @@ char* BA_Stack_GetCallTrace(void) {
         {
             BA_Boolean surround = fileName != NULL;
             
-            if (surround) {
-                BA_String_Append(&callTrace, "%s");
-                BA_String_Format(&callTrace, fileName);
-            }
+            if (surround)
+                callTrace = BA_String_Format(BA_String_Append(callTrace, "%s"), fileName);
             
-            if (functionName != NULL) {
-                BA_String_Append(&callTrace, "%s%s+0x%x%s");
-                BA_String_Format(&callTrace, surround ? "(" : "", functionName, lineNumber, surround ? ")" : "");
-            }
+            if (functionName != NULL)
+                callTrace = BA_String_Format(BA_String_Append(callTrace, "%s%s+0x%x%s"), surround ? "(" : "", functionName, lineNumber, surround ? ")" : "");
 
             surround = functionName != NULL;
-
-            BA_String_Append(&callTrace, "%s0x%x%s\n");
-            BA_String_Format(&callTrace, surround ? " [" : "", functionAddress, surround ? "]" : "");
+            callTrace = BA_String_Format(BA_String_Append(callTrace, "%s0x%x%s\n"), surround ? " [" : "", functionAddress, surround ? "]" : "");
         }
     }
 
