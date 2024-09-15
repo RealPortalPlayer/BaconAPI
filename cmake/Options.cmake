@@ -7,18 +7,19 @@ macro(ba_apply_compiler_options TARGET)
                                                   BA_C_COMPILER_VERSION="${CMAKE_C_COMPILER_VERSION}"
                                                   BA_CXX_COMPILER_VERSION="${CMAKE_CXX_COMPILER_VERSION}")
 
+    if(NOT BA_DISABLE_X11 AND X11_FOUND)
+        target_compile_definitions("${TARGET}" PUBLIC BA_X11_FOUND)
+        target_link_libraries("${TARGET}" PUBLIC ${X11_LIBRARIES} Xpm)
+        target_include_directories("${TARGET}" PUBLIC ${X11_INCLUDE_DIR})
+    endif()
+    
     if(NOT BA_DISABLE_FREETYPE AND FREETYPE_FOUND)
         target_compile_definitions("${TARGET}" PUBLIC BA_FREETYPE_FOUND)
         target_link_libraries("${TARGET}" PUBLIC ${FREETYPE_LIBRARIES})
         target_include_directories("${TARGET}" PUBLIC ${FREETYPE_INCLUDE_DIRS})
     endif()
     
-    target_link_libraries("${TARGET}" PUBLIC "$<$<PLATFORM_ID:Windows>:dbghelp>"
-                                             "$<$<BOOL:${X11_FOUND}>:${X11_LIBRARIES}>"
-                                             "$<$<BOOL:${X11_FOUND}>:Xpm>"
-                                             "$<$<BOOL:${FREETYPE_FOUND}>:Xft>")
-    target_include_directories("${TARGET}" PUBLIC "$<$<BOOL:${X11_FOUND}>:${X11_INCLUDE_DIR}>"
-                                                  "$<$<BOOL:${FREETYPE_FOUND}>:${FREETYPE_INCLUDE_DIRS}>")
+    target_link_libraries("${TARGET}" PUBLIC "$<$<PLATFORM_ID:Windows>:dbghelp>")
     set(CMAKE_EXECUTABLE_ENABLE_EXPORTS TRUE)
     
     if(NOT "${BA_ASAN_SANITIZER}" STREQUAL "")
