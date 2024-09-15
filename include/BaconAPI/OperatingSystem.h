@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Internal/CPlusPlusSupport.h"
+#include "Internal/Boolean.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 typedef struct {
@@ -15,6 +16,11 @@ typedef struct {
      */
     char* systemName;
     char* release;
+
+    /**
+     * Is the host 64-bits. Will obviously always be true on 64-bit binaries.
+     */
+    BA_Boolean is64bits;
 } BA_OperatingSystem_Version;
 
 void BA_OperatingSystem_GetVersion(BA_OperatingSystem_Version* version);

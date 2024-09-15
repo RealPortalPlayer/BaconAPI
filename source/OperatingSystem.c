@@ -22,8 +22,11 @@ void BA_OperatingSystem_GetVersion(BA_OperatingSystem_Version* version) {
 
     version->systemName = BA_String_Copy(name.sysname);
     version->release = BA_String_Copy(name.release);
+    version->is64bits = BA_String_Equals(name.machine, "x86_64", BA_BOOLEAN_FALSE);
 #elif BA_OPERATINGSYSTEM_WINDOWS
     HMODULE ntdll = GetModuleHandle("ntdll.dll");
+
+    IsWow64Process(NULL, &version->is64bits);
     
     if (ntdll != NULL) {
         BA_OperatingSystem_WindowsGetVersionFunction getVersionFunction = (BA_OperatingSystem_WindowsGetVersionFunction) GetProcAddress(ntdll, "RtlGetVersion");
