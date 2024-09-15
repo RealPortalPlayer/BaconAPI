@@ -101,7 +101,6 @@ BA_MessageBox_Result BA_MessageBox_Open(BA_MessageBox_Flags flags, const char* t
     attributes.valuemask = XpmExactColors;
 
 #define BA_MESSAGEBOX_LOAD_IMAGE_FIRST(bit, image) \
-    BA_LOGGER_INFO("%s\n", #bit);\
 if (BA_BITWISE_IS_BIT_SET(flags, bit)) {           \
     XpmCreatePixmapFromData(display, window, image, &pixmap, &shapeMask, &attributes); \
     loadedImage = BA_BOOLEAN_TRUE;                 \
@@ -481,7 +480,7 @@ do {                                                                    \
     size_t y = height - BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - BA_MESSAGEBOX_BUTTON_HEIGHT; \
     XDrawRectangle(display, window, DefaultGC(display, screen), x, y, BA_MESSAGEBOX_BUTTON_WIDTH, BA_MESSAGEBOX_BUTTON_HEIGHT); \
     BA_MESSAGEBOX_DRAW_BORDER(buttonOuterShineGC, buttonOuterShadowGC, buttonInnerShineGC, buttonInnerShadowGC); \
-    BA_MESSAGEBOX_RENDER_TEXT(display, window, width - (((padding3 - 1) + (BA_MESSAGEBOX_BUTTON_WIDTH + 1)) + (((padding2 - (padding2 != 0)) + (padding2 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2) + (((padding1 - (padding1 != 0)) + (padding1 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2)) / 2 - XTextWidth(fontStructure, button.text, buttonTextLength) / 2 - (2 + (padding2 != 0 ? 4 : 0) - (padding1 != 0 ? 1 : 0)), height - ((BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - 1) + (BA_MESSAGEBOX_BUTTON_HEIGHT + 1)) / 2 - 2, button.text, buttonTextLength); \
+    /*BA_MESSAGEBOX_RENDER_TEXT(display, window, width - (((padding3 - 1) + (BA_MESSAGEBOX_BUTTON_WIDTH + 1)) + (((padding2 - (padding2 != 0)) + (padding2 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2) + (((padding1 - (padding1 != 0)) + (padding1 != 0 ? (BA_MESSAGEBOX_BUTTON_WIDTH + 1) : 0)) * 2)) / 2 - XTextWidth(fontStructure, button.text, buttonTextLength) / 2 - (2 + (padding2 != 0 ? 4 : 0) - (padding1 != 0 ? 1 : 0)), height - ((BA_MESSAGEBOX_BUTTON_BOTTOM_PADDING - 1) + (BA_MESSAGEBOX_BUTTON_HEIGHT + 1)) / 2 - 2, button.text, buttonTextLength);*/ \
 } while (BA_BOOLEAN_FALSE)
     
             if (button1.text != NULL)
