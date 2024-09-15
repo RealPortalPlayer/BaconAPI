@@ -56,7 +56,8 @@ add_library(BaconAPI STATIC
         source/Configuration.c
         source/Memory.c
         source/Debugging/Stack.c
-        source/MessageBox.c)
+        source/MessageBox.c
+        source/OperatingSystem.c)
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)

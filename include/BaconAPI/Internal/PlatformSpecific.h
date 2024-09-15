@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OperatingSystem.h"
+#include "../OperatingSystem.h"
 #include "Boolean.h"
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT

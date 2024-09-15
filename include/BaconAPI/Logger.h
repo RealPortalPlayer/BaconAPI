@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "Internal/OperatingSystem.h"
+#include "OperatingSystem.h"
 #include "Internal/CPlusPlusSupport.h"
 #include "Internal/Boolean.h"
 

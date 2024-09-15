@@ -1,7 +1,7 @@
 // Copyright (c) 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
-#include "BaconAPI/Internal/OperatingSystem.h"
+#include "BaconAPI/OperatingSystem.h"
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
 #   include <execinfo.h>

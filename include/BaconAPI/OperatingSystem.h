@@ -1,10 +1,24 @@
+// Copyright (c) 2024, PortalPlayer <email@portalplayer.xyz>
+// Licensed under MIT <https://opensource.org/licenses/MIT>
+
 // Purpose: OS specific definitions.
 // Created on: 4/1/22 @ 7:25 PM
 
-// Copyright (c) 2022, 2023, PortalPlayer <email@portalplayer.xyz>
-// Licensed under MIT <https://opensource.org/licenses/MIT>
-
 #pragma once
+
+#include "Internal/CPlusPlusSupport.h"
+
+BA_CPLUSPLUS_SUPPORT_GUARD_START()
+typedef struct {
+    /**
+     * Always "Windows" on Windows
+     */
+    char* systemName;
+    char* release;
+} BA_OperatingSystem_Version;
+
+void BA_OperatingSystem_GetVersion(BA_OperatingSystem_Version* version);
+BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_OPERATINGSYSTEM_NAME "Unknown"
 #define BA_OPERATINGSYSTEM_WINDOWS 0

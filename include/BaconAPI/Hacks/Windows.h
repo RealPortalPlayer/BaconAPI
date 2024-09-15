@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "BaconAPI/Internal/OperatingSystem.h"
+#include "../OperatingSystem.h"
 
 #if !BA_OPERATINGSYSTEM_WINDOWS
 #   error You cannot include Windows hacks on non-Windows Operating Systems.

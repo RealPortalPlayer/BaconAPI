@@ -2,7 +2,7 @@
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include "BaconAPI/MessageBox.h"
-#include "BaconAPI/Internal/OperatingSystem.h"
+#include "BaconAPI/OperatingSystem.h"
 #include "BaconAPI/Logger.h"
 #include "BaconAPI/Debugging/StaticAssert.h"
 #include "BaconAPI/String.h"

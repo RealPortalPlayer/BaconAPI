@@ -1,7 +1,7 @@
 // Copyright (c) 2023, 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
-#include "BaconAPI/Internal/OperatingSystem.h"
+#include "BaconAPI/OperatingSystem.h"
 
 #if BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
@@ -15,7 +15,7 @@
 #include "BaconAPI/String.h"
 #include "BaconAPI/Debugging/Assert.h"
 #include "BaconAPI/Storage/DynamicDictionary.h"
-#include "BaconAPI/Internal/OperatingSystem.h"
+#include "BaconAPI/OperatingSystem.h"
 
 #if BA_OPERATINGSYSTEM_WINDOWS
 #   define strtok_r strtok_s // I hate Microshit so much. Stop trying to be unique and quirky
