@@ -47,7 +47,7 @@ typedef enum {
     BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG_INTEGER = BA_STRING_SAFE_FORMAT_TYPE_UNSIGNED_LONG_LONG
 } BA_String_SafeFormatTypes;
 
-typedef void (*BA_String_CustomSafeFormatAction)(char** buffer, void** argument);
+typedef char* (*BA_String_CustomSafeFormatAction)(char* buffer, void** argument);
 
 BA_Boolean BA_String_Contains(const char* string, const char* compare, BA_Boolean caseless);
 BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean caseless);
@@ -61,45 +61,39 @@ BA_Boolean BA_String_ContainsCharacter(const char* string, char compare, BA_Bool
 char* BA_String_Copy(const char* duplicateFrom);
 
 /**
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  */
-char* BA_String_Append(char** target, const char* stringToAppend);
+char* BA_String_Append(char* target, const char* stringToAppend);
 
 /**
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  */
-char* BA_String_Prepend(char** target, const char* stringToPrepend);
+char* BA_String_Prepend(char* target, const char* stringToPrepend);
 
 char* BA_String_ToLower(char* string);
 char* BA_String_ToUpper(char* string);
 
 /**
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  */
-char* BA_String_AppendCharacter(char** target, char character);
+char* BA_String_AppendCharacter(char* target, char character);
 
 /**
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  */
-char* BA_String_PrependCharacter(char** target, char character);
+char* BA_String_PrependCharacter(char* target, char character);
 
 /** 
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  * @warning Passing user controlled input as target will open up a uncontrolled format string attack.
  */
-char* BA_String_Format(char** target, ...);
+char* BA_String_Format(char* target, ...);
 
 /** 
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  * @warning Passing user controlled input as target will open up a uncontrolled format string attack.
  */
-char* BA_String_FormatPremadeList(char** target, va_list arguments);
+char* BA_String_FormatPremadeList(char* target, va_list arguments);
 
 /**
  * @return A char* DynamicArray
@@ -145,7 +139,6 @@ intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter
  * Safer version of BA_String_Format, intended to be used when target is controlled by user input.
  * Use %s when you want to substitute an argument, no matter the type
  * @param ... Each format type
- * @return The string target
  * @note Returns NULL if it fails to allocate memory
  * @warning Undefined behavior if amountOfFormatters is greater than the amount of formatters you've actually passed
  * @example
@@ -163,12 +156,12 @@ intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter
  * BA_String_FormatSafe(&exampleString, 1, BA_STRING_SAFE_FORMAT_TYPE_STRING, "World!");
  * @endcode
  */
-char* BA_String_FormatSafe(char** target, int amountOfFormatters, ...);
-char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_list arguments);
+char* BA_String_FormatSafe(char* target, int amountOfFormatters, ...);
+char* BA_String_FormatSafePremadeList(char* target, int amountOfFormatters, va_list arguments);
 char* BA_String_CreateEmpty(void);
 BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafeFormatAction actionFunction);
-char* BA_String_Replace(char** target, const char* what, const char* to);
-char* BA_String_ReplaceCharacter(char** target, char what, char to);
+char* BA_String_Replace(char* target, const char* what, const char* to);
+char* BA_String_ReplaceCharacter(char* target, char what, char to);
 
 /**
  * @warning Undefined behavior if the array contains anything other than strings

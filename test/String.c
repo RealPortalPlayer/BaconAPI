@@ -16,7 +16,7 @@ BA_ASSERT(!function(string, dummy, BA_BOOLEAN_FALSE), "Found dummy string\n")
 do {                                                                 \
     char* result = BA_String_Copy(string);                           \
     BA_ASSERT(result != NULL, "Failed to allocate memory for string\n"); \
-    BA_ASSERT(function(&result, secondaryString) != NULL, "Failed to allocate memory for string\n"); \
+    BA_ASSERT((result = function(result, secondaryString)) != NULL, "Failed to allocate memory for string\n"); \
     BA_ASSERT(strcmp(result, expectedOutput) == 0, "String did not match expected outcome\n"); \
     free(result);                                                    \
 } while (BA_BOOLEAN_FALSE)
@@ -24,7 +24,7 @@ do {                                                                 \
 do {                                                     \
     char* result = BA_String_Copy(string);               \
     BA_ASSERT(result != NULL, "Failed to allocate memory for string\n"); \
-    BA_ASSERT(function(result) != NULL, "Failed to allocate memory for string\n"); \
+    BA_ASSERT((result = function(result)) != NULL, "Failed to allocate memory for string\n"); \
     BA_ASSERT(strcmp(result, expectedOutput) == 0, "String did not match expected outcome\n"); \
     free(result);                                         \
 } while (BA_BOOLEAN_FALSE)
@@ -32,26 +32,26 @@ do {                                                     \
 do {                                                           \
     char* result = BA_String_Copy(string);                     \
     BA_ASSERT(result != NULL, "Failed to allocate memory for string\n"); \
-    BA_ASSERT(function(&result, secondaryString, thirdString) != NULL, "Failed to allocate memory for string\n"); \
+    BA_ASSERT((result = function(result, secondaryString, thirdString)) != NULL, "Failed to allocate memory for string\n"); \
     BA_ASSERT(strcmp(result, expectedOutput) == 0, "String did not match expected outcome\n"); \
     free(result);                                              \
 } while (BA_BOOLEAN_FALSE)
 
 #define FORMAT_SAFE_ARGUMENT_BOOLEAN(boolean) 1, boolean
 
-char* FormatSafeWrapper(char** target, ...) {
+char* FormatSafeWrapper(char* target, ...) {
     va_list arguments;
 
     va_start(arguments, target);
     
-    char* returnValue = BA_String_FormatSafePremadeList(target, 1, arguments);
+    target = BA_String_FormatSafePremadeList(target, 1, arguments);
 
     va_end(arguments);
-    return returnValue;
+    return target;
 }
 
-void BooleanSafeFormat(char** buffer, void** argument) {
-    BA_String_Append(buffer, *(int*) argument ? "Yes" : "No");
+char* BooleanSafeFormat(char* buffer, void** argument) {
+    return BA_String_Append(buffer, *(int*) argument ? "Yes" : "No");
 }
 
 int main(int argc, char** argv) {
@@ -83,7 +83,14 @@ int main(int argc, char** argv) {
 
     BA_ASSERT(BA_String_AddCustomSafeFormatter(1, &BooleanSafeFormat), "Failed to add custom safe formatter\n");
     MAIN_TEST(FormatSafeWrapper, "Said hello to world? %s", FORMAT_SAFE_ARGUMENT_BOOLEAN(BA_BOOLEAN_TRUE), "Said hello to world? Yes");
-    THIRD_TEST(BA_String_Replace, "Hello, Moon!", "Hello", "Goodbye", "Goodbye, Moon!");
+    do {
+        char* result = BA_String_Copy("Hello, Moon!");
+        BA_ASSERT(result != NULL, "Failed to allocate memory for string\n");
+        result = BA_String_Replace(result, "Hello", "Goodbye");
+        BA_ASSERT(result != NULL, "Failed to allocate memory for string\n");
+        BA_ASSERT(strcmp(result, "Goodbye, Moon!") == 0, "String did not match expected outcome\n");
+        free(result);
+    } while (BA_BOOLEAN_FALSE);
     THIRD_TEST(BA_String_ReplaceCharacter, "Gello, World!", 'G', 'H', "Hello, World!");
     // TODO: BA_String_Join, BA_String_JoinCharacter
 }

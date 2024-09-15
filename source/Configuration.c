@@ -40,7 +40,8 @@ static BA_Boolean BA_Configuration_AddLine(BA_DynamicDictionary* results, char* 
     char* value = BA_String_CreateEmpty();
 
     for (int i = 1; i < configurationInformation->used; i++) {
-        BA_String_Append(&value, BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, configurationInformation, i));
+        value = BA_String_Append(value, BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, configurationInformation, i));
+
         free(configurationInformation->internalArray[i]);
     }
 

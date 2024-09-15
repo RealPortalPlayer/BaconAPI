@@ -36,12 +36,12 @@ char* BA_Stack_GetCallTrace(void) {
     
     if (symbols != NULL) {
         for (int i = 1; i < size; i++) {
-            BA_String_Append(&callTrace, symbols[i]);
+            callTrace = BA_String_Append(callTrace, symbols[i]);
 
             if (i == size - 1)
                 continue;
 
-            BA_String_Append(&callTrace, "\n");
+            callTrace = BA_String_Append(callTrace, "\n");
         }
 
         free(symbols);

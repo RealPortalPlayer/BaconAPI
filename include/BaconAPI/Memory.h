@@ -40,4 +40,4 @@ do {                                                         \
     variable = BA_String_Copy(value);                        \
     BA_ASSERT(variable != NULL, "Failed to allocate memory for a string\n"); \
 } while (BA_BOOLEAN_FALSE)
-#define BA_MEMORY_FORMAT_INFORMATION_STRING(variable, ...) BA_ASSERT(BA_String_Format(&variable, __VA_ARGS__), "Failed to format string\n")
+#define BA_MEMORY_FORMAT_INFORMATION_STRING(variable, ...) BA_ASSERT((variable = BA_String_Format(variable, __VA_ARGS__)), "Failed to format string\n")

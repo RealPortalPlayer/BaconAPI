@@ -25,16 +25,17 @@ BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_DynamicDictionary baStringCustomFormatters;
 static BA_Boolean baStringInitializedCustomFormatters = BA_BOOLEAN_FALSE;
 
+// FIXME: Some of these functions return NULL on allocation failure. Some people don't want to crash their program on
+//        OOM. This would inconvenience them. No easy way to fix without masking memory issues. Such is life
+
 #define BA_STRING_GET_STRING_COMPARE(stringLength, compareLength) \
-char* heapString = malloc(stringLength + 1);                      \
-char* heapCompare = malloc(compareLength + 1);                    \
+char* heapString = calloc(stringLength + 1, 1);                   \
+char* heapCompare = calloc(compareLength + 1, 1);                 \
 memcpy(heapString, string, stringLength);                         \
-memcpy(heapCompare, compare, compareLength);                      \
-heapString[stringLength + 1] = '\0';                              \
-heapCompare[compareLength + 1] = '\0'
+memcpy(heapCompare, compare, compareLength)
 
 char* BA_String_Copy(const char* duplicateFrom) {
-    char* string = malloc(sizeof(char) * (strlen(duplicateFrom) + 1));
+    char* string = calloc(sizeof(char) * (strlen(duplicateFrom) + 1), 1);
 
     if (string == NULL)
         return NULL;
@@ -42,27 +43,29 @@ char* BA_String_Copy(const char* duplicateFrom) {
     return strcpy(string, duplicateFrom);
 }
 
-char* BA_String_Append(char** target, const char* stringToAppend) {
-    char* reallocatedString = realloc(*target, sizeof(char) * (strlen(*target) + strlen(stringToAppend) + 1));
+char* BA_String_Append(char* target, const char* stringToAppend) {
+    size_t length = sizeof(char) * (strlen(target) + strlen(stringToAppend) + 1);
+    char* clonedTarget = calloc(length, 1);
 
-    if (reallocatedString == NULL)
+    if (clonedTarget == NULL)
         return NULL;
     
-    *target = reallocatedString;
-    return strcat(*target, stringToAppend);
+    strcpy(clonedTarget, target);
+    strcat(clonedTarget, stringToAppend);
+    free(target);
+    return clonedTarget;
 }
 
-char* BA_String_Prepend(char** target, const char* stringToPrepend) {
+char* BA_String_Prepend(char* target, const char* stringToPrepend) {
     char* copiedStringToPrepend = BA_String_Copy(stringToPrepend);
 
     if (copiedStringToPrepend == NULL)
         return NULL;
     
-    BA_String_Append(&copiedStringToPrepend, *target);
-    free(*target);
+    copiedStringToPrepend = BA_String_Append(copiedStringToPrepend, target);
     
-    *target = copiedStringToPrepend;
-    return *target;
+    free(target);
+    return copiedStringToPrepend;
 }
 
 BA_Boolean BA_String_StartsWith(const char* string, const char* compare, BA_Boolean caseless) {
@@ -177,53 +180,52 @@ BA_Boolean BA_String_Equals(const char* string, const char* compare, BA_Boolean 
     return result;
 }
 
-char* BA_String_AppendCharacter(char** target, char character) {
+char* BA_String_AppendCharacter(char* target, char character) {
     char temporaryString[2] = {character, '\0'};
     
     return BA_String_Append(target, temporaryString);
 }
 
-char* BA_String_PrependCharacter(char** target, char character) {
+char* BA_String_PrependCharacter(char* target, char character) {
     char temporaryString[2] = {character, '\0'};
     
     return BA_String_Prepend(target, temporaryString);
 }
 
-char* BA_String_Format(char** target, ...) {
+char* BA_String_Format(char* target, ...) {
     va_list arguments;
     
     va_start(arguments, target);
     
-    char* returnValue = BA_String_FormatPremadeList(target, arguments);
+    target = BA_String_FormatPremadeList(target, arguments);
     
     va_end(arguments);
-    return returnValue;
+    return target;
 }
 
-char* BA_String_FormatPremadeList(char** target, va_list arguments) {
+char* BA_String_FormatPremadeList(char* target, va_list arguments) {
     va_list argumentsCopy;
 
     va_copy(argumentsCopy, arguments);
 
-    size_t newLength = vsnprintf(NULL, 0, *target, arguments) + 1;
-    char* newBuffer = malloc(sizeof(char) * newLength);
+    size_t newLength = vsnprintf(NULL, 0, target, arguments) + 1;
+    char* newBuffer = calloc(sizeof(char) * newLength, 1);
 
     if (newBuffer == NULL) {
         va_end(argumentsCopy);
         return NULL;
     }
     
-    vsnprintf(newBuffer, newLength, *target, argumentsCopy);
+    vsnprintf(newBuffer, newLength, target, argumentsCopy);
     va_end(argumentsCopy);
-
-    *target = newBuffer;
-    return *target;
+    free(target);
+    return newBuffer;
 }
 
 BA_DynamicArray* BA_String_Split(const char* target, const char* splitBy) {
     BA_DynamicArray* dynamicArray = malloc(sizeof(BA_DynamicArray));
     size_t targetLength = strlen(target);
-    char* heapTarget = malloc(targetLength + 1);
+    char* heapTarget = calloc(targetLength + 1, 1);
 
     BA_DynamicArray_Create(dynamicArray, 100);
 
@@ -256,18 +258,16 @@ BA_DynamicArray* BA_String_SplitCharacter(const char* target, char splitBy) {
 }
 
 char* BA_String_ReadFile(FILE* file, size_t lengthLimit, size_t* lineLength) {
-    size_t numberOfBytes;
-
     fseek(file, 0, SEEK_END);
     
-    numberOfBytes = ftell(file);
+    size_t numberOfBytes = ftell(file);
 
     fseek(file, 0, SEEK_SET);
 
     if (lengthLimit != 0 && numberOfBytes > lengthLimit)
         numberOfBytes = lengthLimit;
     
-    char* buffer = malloc(sizeof(char) * numberOfBytes);
+    char* buffer = calloc(sizeof(char) * numberOfBytes, 1);
     
     if (buffer == NULL)
         return NULL;
@@ -298,7 +298,7 @@ intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     }
     
     while (!feof(file)) {
-        char* contents = malloc(splitStringLength + 1);
+        char* contents = calloc(splitStringLength + 1, 1);
 
         contents[0] = '\0';
         contents[splitStringLength] = '\0';
@@ -320,7 +320,8 @@ intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
             continue;
         }
         
-        BA_String_Append(&buffer, contents);
+        buffer = BA_String_Append(buffer, contents);
+        
         free(contents);
     }
 
@@ -338,18 +339,18 @@ intmax_t BA_String_GetLineCharacter(FILE* file, char** line, char splitCharacter
     return BA_String_GetLine(file, line, temporaryString);
 }
 
-char* BA_String_FormatSafe(char** target, int amountOfFormatters, ...) {
+char* BA_String_FormatSafe(char* target, int amountOfFormatters, ...) {
     va_list arguments;
 
     va_start(arguments, amountOfFormatters);
     
-    char* returnValue = BA_String_FormatSafePremadeList(target, amountOfFormatters, arguments);
+    target = BA_String_FormatSafePremadeList(target, amountOfFormatters, arguments);
 
     va_end(arguments);
-    return returnValue;
+    return target;
 }
 
-char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_list arguments) {
+char* BA_String_FormatSafePremadeList(char* target, int amountOfFormatters, va_list arguments) {
     if (!baStringInitializedCustomFormatters) {
         if (!BA_DynamicDictionary_Create(&baStringCustomFormatters, 10))
             return NULL;
@@ -357,10 +358,10 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
         baStringInitializedCustomFormatters = BA_BOOLEAN_TRUE;
     }
     
-    size_t originalTargetSize = strlen(*target);
+    size_t originalTargetSize = strlen(target);
 
     if (originalTargetSize == 0 || amountOfFormatters <= 0)
-        return *target;
+        return target;
 
     char* newBuffer = BA_String_CreateEmpty();
 
@@ -372,7 +373,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
     int lastSuccessfulIdentifier = 0;
     
     for (int i = 0; i < originalTargetSize; i++) {
-        char character = (*target)[i];
+        char character = target[i];
 
         if (character == '%') {
             if (!percentageFound) {
@@ -380,7 +381,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
                 continue;
             }
 
-            BA_String_Append(&newBuffer, "%%");
+            newBuffer = BA_String_Append(newBuffer, "%%");
 
             percentageFound = BA_BOOLEAN_FALSE;
             continue;
@@ -391,7 +392,7 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
 
             if (character == 's') {
                 if (usedArguments >= amountOfFormatters) {
-                    BA_String_Append(&newBuffer, "%s");
+                    newBuffer = BA_String_Append(newBuffer, "%s");
                     continue;
                 }
 
@@ -401,18 +402,19 @@ char* BA_String_FormatSafePremadeList(char** target, int amountOfFormatters, va_
 do {                                                        \
     type value = va_arg(arguments, type);                   \
     size_t bufferSize = snprintf(NULL, 0, formatSpecifier, value); \
-    char* buffer = malloc(bufferSize);                      \
+    char* buffer = calloc(bufferSize, 1);                   \
     snprintf(buffer, bufferSize + 1, formatSpecifier, value); \
-    BA_String_Append(&newBuffer, buffer);                   \
+    newBuffer = BA_String_Append(newBuffer, buffer);        \
+    free(buffer);                                           \
 } while (0)
 
                 BA_String_SafeFormatTypes identifier = va_arg(arguments, BA_String_SafeFormatTypes);
                 
                 switch (identifier) {
-                    case BA_STRING_SAFE_FORMAT_TYPE_STRING: BA_String_Append(&newBuffer, va_arg(arguments, char*)); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_STRING: newBuffer = BA_String_Append(newBuffer, va_arg(arguments, char*)); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_INTEGER: BA_STRING_CONVERT_AND_APPEND(int, "%d"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_DOUBLE: BA_STRING_CONVERT_AND_APPEND(double, "%lf"); break;
-                    case BA_STRING_SAFE_FORMAT_TYPE_CHARACTER: BA_String_AppendCharacter(&newBuffer, (char) va_arg(arguments, int)); break;
+                    case BA_STRING_SAFE_FORMAT_TYPE_CHARACTER: newBuffer = BA_String_AppendCharacter(newBuffer, (char) va_arg(arguments, int)); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_LONG: BA_STRING_CONVERT_AND_APPEND(long, "%li"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_LONG_LONG: BA_STRING_CONVERT_AND_APPEND(long long, "%lli"); break;
                     case BA_STRING_SAFE_FORMAT_TYPE_SHORT: BA_STRING_CONVERT_AND_APPEND(int, "%hi"); break;
@@ -429,7 +431,7 @@ do {                                                        \
                         if (actionFunction != NULL) {
                             void* argument = va_arg(arguments, void*);
                             
-                            actionFunction(&newBuffer, &argument);
+                            newBuffer = actionFunction(newBuffer, &argument);
                             break;
                         }
 
@@ -443,27 +445,21 @@ do {                                                        \
                 continue;
             }
 
-            BA_String_AppendCharacter(&newBuffer, '%');
+            newBuffer = BA_String_AppendCharacter(newBuffer, '%');
         }
 
-        BA_String_AppendCharacter(&newBuffer, character);
+        newBuffer = BA_String_AppendCharacter(newBuffer, character);
     }
 
     if (percentageFound)
-        BA_String_AppendCharacter(&newBuffer, '%');
+        newBuffer = BA_String_AppendCharacter(newBuffer, '%');
 
-    *target = newBuffer;
-    return *target;
+    free(target);
+    return newBuffer;
 }
 
 char* BA_String_CreateEmpty(void) {
-    char* string = malloc(sizeof(char));
-
-    if (string == NULL)
-        return NULL;
-    
-    string[0] = '\0';
-    return string;
+    return calloc(sizeof(char), 1);
 }
 
 BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafeFormatAction actionFunction) {
@@ -483,42 +479,38 @@ BA_Boolean BA_String_AddCustomSafeFormatter(int identifier, BA_String_CustomSafe
     return BA_DynamicDictionary_AddElementToLast(&baStringCustomFormatters, identifierPointer, actionFunction);
 }
 
-char* BA_String_Replace(char** target, const char* what, const char* to) {
-    size_t targetLength = strlen(*target);
+char* BA_String_Replace(char* target, const char* what, const char* to) {
+    size_t targetLength = strlen(target);
     size_t whatLength = strlen(what);
     size_t toLength = strlen(to);
 
     if (targetLength < whatLength)
-        return *target;
+        return target;
     
     for (int i = 0; i < targetLength; i++) {
-        if (strncmp((*target) + i, what, whatLength) != 0)
+        if (strncmp(target + i, what, whatLength) != 0)
             continue;
-        
-        size_t temporaryLength = targetLength - i;
-        char* temporaryString = malloc(temporaryLength + 1);
 
-        memcpy(temporaryString, (*target) + i + whatLength, temporaryLength);
+        size_t savedStringLength = targetLength - (i + whatLength);
+        char* temporaryString = calloc(savedStringLength + 1, 1);
         
-        temporaryString[temporaryLength] = '\0';
-
+        strncpy(temporaryString, target + i + whatLength, savedStringLength);
+        
         if (whatLength != toLength) {
             targetLength += toLength - whatLength;
-            *target = realloc(*target, sizeof(char) * targetLength);
+            target = realloc(target, sizeof(char) * targetLength + 1);
+            target[targetLength] = '\0';
         }
-
-        memcpy((*target) + i, to, toLength);
-        memcpy((*target) + i + toLength, temporaryString, temporaryLength);
-
-        (*target)[targetLength] = '\0';
-
+        
+        strncpy(target + i, to, toLength);
+        strncpy(target + i + toLength, temporaryString, savedStringLength);
         free(temporaryString);
     }
     
-    return *target;
+    return target;
 }
 
-char* BA_String_ReplaceCharacter(char** target, char what, char to) {
+char* BA_String_ReplaceCharacter(char* target, char what, char to) {
     const char temporaryWhat[2] = {what, '\0'};
     const char temporaryTo[2] = {to, '\0'};
     
@@ -528,12 +520,10 @@ char* BA_String_ReplaceCharacter(char** target, char what, char to) {
 char* BA_String_Join(const BA_DynamicArray* dynamicArray, const char* joinString) {
     char* finalString = BA_String_CreateEmpty();
     
-    for (int i = 0; i < dynamicArray->used - 1; i++) {
-        BA_String_Append(&finalString, BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, dynamicArray, i));
-        BA_String_Append(&finalString, joinString);
-    }
+    for (int i = 0; i < dynamicArray->used - 1; i++)
+        finalString = BA_String_Append(BA_String_Append(finalString, BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, dynamicArray, i)), joinString);
     
-    return BA_String_Append(&finalString, BA_DYNAMICARRAY_GET_LAST_ELEMENT_POINTER(char, dynamicArray));
+    return BA_String_Append(finalString, BA_DYNAMICARRAY_GET_LAST_ELEMENT_POINTER(char, dynamicArray));
 }
 
 char* BA_String_JoinCharacter(const BA_DynamicArray* dynamicArray, char joinCharacter) {
