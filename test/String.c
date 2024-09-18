@@ -92,5 +92,13 @@ int main(int argc, char** argv) {
         free(result);
     } while (BA_BOOLEAN_FALSE);
     THIRD_TEST(BA_String_ReplaceCharacter, "Gello, World!", 'G', 'H', "Hello, World!");
+
+    {
+        char* buffer = BA_String_WideStringToString(L"Hello, World!");
+
+        BA_ASSERT(buffer != NULL, "Failed to convert string\n");
+        BA_ASSERT(strcmp(buffer, "Hello, World!") == 0, "String did not match expected outcome\n");
+        free(buffer);
+    }
     // TODO: BA_String_Join, BA_String_JoinCharacter
 }

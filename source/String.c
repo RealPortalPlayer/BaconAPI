@@ -11,6 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <wchar.h>
 
 #include "BaconAPI/String.h"
 #include "BaconAPI/Debugging/Assert.h"
@@ -530,5 +531,17 @@ char* BA_String_JoinCharacter(const BA_DynamicArray* dynamicArray, char joinChar
     char temporaryString[2] = {joinCharacter, '\0'};
     
     return BA_String_Join(dynamicArray, temporaryString);
+}
+
+char* BA_String_WideStringToString(const wchar_t* wideCharacter) {
+    size_t bufferSize = wcslen(wideCharacter);
+    char* buffer = calloc(bufferSize + 1, 1);
+
+    if (wcstombs(buffer, wideCharacter, bufferSize) == -1) {
+        free(buffer);
+        return NULL;
+    }
+
+    return buffer;
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

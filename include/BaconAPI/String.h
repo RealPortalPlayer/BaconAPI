@@ -172,6 +172,8 @@ char* BA_String_Join(const BA_DynamicArray* dynamicArray, const char* joinString
  * @warning Undefined behavior if the array contains anything other than strings
  */
 char* BA_String_JoinCharacter(const BA_DynamicArray* dynamicArray, char joinCharacter);
+
+char* BA_String_WideStringToString(const wchar_t* wideCharacter);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_STRING_FORMAT_SAFE_ARGUMENT_STRING(value) BA_STRING_SAFE_FORMAT_TYPE_STRING, value
