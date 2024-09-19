@@ -12,8 +12,6 @@ int main(int argc, char** argv) {
     BA_OperatingSystem_Version version;
 
     BA_OperatingSystem_GetVersion(&version);
-    
     BA_LOGGER_INFO("OS: %s %s %s (internally %s)\n", version.systemName, version.release, version.is64bits ? "x64" : "x86", BA_OPERATINGSYSTEM_NAME);
-    free(version.systemName);
-    free(version.release);
+    BA_OperatingSystem_Free(&version);
 }

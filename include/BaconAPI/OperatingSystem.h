@@ -24,6 +24,8 @@ typedef struct {
 } BA_OperatingSystem_Version;
 
 void BA_OperatingSystem_GetVersion(BA_OperatingSystem_Version* version);
+
+void BA_OperatingSystem_Free(BA_OperatingSystem_Version* version);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_OPERATINGSYSTEM_NAME "Unknown"

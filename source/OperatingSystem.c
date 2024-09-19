@@ -48,4 +48,9 @@ void BA_OperatingSystem_GetVersion(BA_OperatingSystem_Version* version) {
     version->release = BA_String_CreateEmpty();
 #endif
 }
+
+void BA_OperatingSystem_Free(BA_OperatingSystem_Version* version) {
+    free(version->systemName);
+    free(version->release);
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
