@@ -2,7 +2,6 @@
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
 #include <BaconAPI/MessageBox.h>
-#include <stdio.h>
 
 int main(int argc, char** argv) {
     BA_MessageBox_Result result = BA_MessageBox_Open(BA_MESSAGEBOX_FLAG_BUTTON_YES_NO | BA_MESSAGEBOX_FLAG_ICON_QUESTION, "Question", "Is your fridge running?");

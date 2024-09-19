@@ -8,6 +8,7 @@ foreach(file ${files})
     add_executable("${filename}Test" "${file}")
 
     target_link_libraries("${filename}Test" PRIVATE BaconAPI)
+    target_include_directories("${filename}Test" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
     ba_strip("${filename}Test")
     ba_apply_compiler_options("${filename}Test")

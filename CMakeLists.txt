@@ -45,6 +45,8 @@ if(NOT BA_DISABLE_HACKS)
 endif()
 
 add_library(BaconAPI STATIC
+        source/StringImplementation.h
+        
         source/ArgumentHandler.c
         source/Logger.c
         source/ANSI.c
@@ -60,7 +62,9 @@ add_library(BaconAPI STATIC
         source/Memory.c
         source/Debugging/Stack.c
         source/MessageBox.c
-        source/OperatingSystem.c)
+        source/OperatingSystem.c
+        source/StringImplementation.c
+        source/WideString.c)
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
