@@ -162,6 +162,8 @@ BA_Boolean BA_StringImplementation_Contains(const BA_StringImplementation* strin
 }
 
 BA_Boolean BA_StringImplementation_Equals(const BA_StringImplementation* string, const BA_StringImplementation* compare, BA_Boolean caseless) {
+    BA_Boolean result;
+
     if (string == compare)
         return BA_BOOLEAN_TRUE;
     
@@ -197,7 +199,7 @@ BA_Boolean BA_StringImplementation_Equals(const BA_StringImplementation* string,
     heapCompare = BA_StringImplementation_ToLower(heapCompare);
 
     check:
-    BA_Boolean result = (string->isWideString ? wcsncmp(heapString->wideString, heapCompare->wideString, stringLength) : strncmp(heapString->string, heapCompare->string, stringLength)) == 0;
+    result = (string->isWideString ? wcsncmp(heapString->wideString, heapCompare->wideString, stringLength) : strncmp(heapString->string, heapCompare->string, stringLength)) == 0;
 
     if (allocated) {
         BA_STRINGIMPLEMENTATION_FREE(heapString);
@@ -208,6 +210,8 @@ BA_Boolean BA_StringImplementation_Equals(const BA_StringImplementation* string,
 }
 
 BA_Boolean BA_StringImplementation_StartsWith(const BA_StringImplementation* string, const BA_StringImplementation* compare, BA_Boolean caseless) {
+    BA_Boolean result;
+
     if (string == compare)
         return BA_BOOLEAN_TRUE;
 
@@ -242,7 +246,7 @@ BA_Boolean BA_StringImplementation_StartsWith(const BA_StringImplementation* str
     heapCompare = BA_StringImplementation_ToLower(heapCompare);
 
     check:
-    BA_Boolean result = (string->isWideString ? wcsncmp(heapString->wideString, heapCompare->wideString, compareLength) : strncmp(heapString->string, heapCompare->string, compareLength)) == 0;
+    result = (string->isWideString ? wcsncmp(heapString->wideString, heapCompare->wideString, compareLength) : strncmp(heapString->string, heapCompare->string, compareLength)) == 0;
 
     if (allocated) {
         BA_STRINGIMPLEMENTATION_FREE(heapString);
@@ -253,6 +257,8 @@ BA_Boolean BA_StringImplementation_StartsWith(const BA_StringImplementation* str
 }
 
 BA_Boolean BA_StringImplementation_EndsWith(const BA_StringImplementation* string, const BA_StringImplementation* compare, BA_Boolean caseless) {
+    BA_Boolean result;
+
     if (string == compare)
         return BA_BOOLEAN_TRUE;
 
@@ -283,7 +289,7 @@ BA_Boolean BA_StringImplementation_EndsWith(const BA_StringImplementation* strin
     heapCompare = BA_StringImplementation_ToLower(heapCompare);
 
     check:
-    BA_Boolean result = (string->isWideString ? wcsncmp(heapString->wideString + (stringLength - compareLength), heapCompare->wideString, compareLength) : strncmp(heapString->string + (stringLength - compareLength), heapCompare->string, compareLength)) == 0;
+    result = (string->isWideString ? wcsncmp(heapString->wideString + (stringLength - compareLength), heapCompare->wideString, compareLength) : strncmp(heapString->string + (stringLength - compareLength), heapCompare->string, compareLength)) == 0;
 
     if (allocated) {
         BA_STRINGIMPLEMENTATION_FREE(heapString);
