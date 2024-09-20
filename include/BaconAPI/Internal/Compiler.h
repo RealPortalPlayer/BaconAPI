@@ -64,15 +64,3 @@
 #   undef BA_COMPILER_VERSION
 #   define BA_COMPILER_VERSION BA_C_COMPILER_VERSION
 #endif
-
-#define BA_COMPILER_BITS 0
-#define BA_COMPILER_64BITS 64
-#define BA_COMPILER_32BITS 86
-
-#if defined(_WIN64) || defined(__x86_64)
-#   undef BA_COMPILER_BITS
-#   define BA_COMPILER_BITS BA_COMPILER_64BITS
-#elif defined(_WIN32) || defined(__i386__)
-#   undef BA_COMPILER_BITS
-#   define BA_COMPILER_BITS BA_COMPILER_32BITS
-#endif
