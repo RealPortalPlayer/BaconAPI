@@ -4,7 +4,9 @@
 #include "BaconAPI/OperatingSystem.h"
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+#   if !BA_OPERATINGSYSTEM_EMSCRIPTEN // TODO: Fix this
 #   include <execinfo.h>
+#   endif
 #   define BA_STACK_BUFFER_SIZE 4024
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
@@ -26,12 +28,11 @@
 // FIXME: This code sucks. It's not async signal safe. The alternative, which is libunwind, doesn't play nicely with CMake.
 //        The only option is to do this. Too bad
 
-
 char* BA_Stack_GetCallTrace(void) {
     void* buffer[BA_STACK_BUFFER_SIZE];
     char* callTrace = BA_String_CreateEmpty();
 
-#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT && !BA_OPERATINGSYSTEM_EMSCRIPTEN
     int size = backtrace(buffer, BA_STACK_BUFFER_SIZE);
     char** symbols = backtrace_symbols(buffer, size);
     
