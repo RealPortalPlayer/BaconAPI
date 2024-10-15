@@ -64,7 +64,8 @@ add_library(BaconAPI STATIC
         source/MessageBox.c
         source/OperatingSystem.c
         source/StringImplementation.c
-        source/WideString.c)
+        source/WideString.c
+        source/StringManager.c)
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
