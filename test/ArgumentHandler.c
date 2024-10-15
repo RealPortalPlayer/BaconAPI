@@ -12,7 +12,7 @@
 #define ARGUMENT1 "--test1"
 #define ARGUMENT2 "--test2"
 
-int main(void) {
+void Test(void) {
     char* fakeArguments[] = {
         "throwaway", // argv[0] is the executable name/path. ArgumentHandler skips this
         ARGUMENT1, "value",

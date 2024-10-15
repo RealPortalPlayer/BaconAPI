@@ -6,9 +6,7 @@
 #include <BaconAPI/Logger.h>
 #include <BaconAPI/Debugging/Assert.h>
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     int string1 = BA_StringManager_Allocate("Hello, World!",  BA_BOOLEAN_FALSE);
     int string2 = BA_StringManager_Allocate(L"Hello, World!", BA_BOOLEAN_TRUE);
 

@@ -21,8 +21,7 @@ do {                             \
         NUMBER_FUNCTION(to, "1test", 0, BA_BOOLEAN_TRUE, "test"); \
 } while (0)
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
+void Test(void) {
     NUMBER_FUNCTION_TEST(Character);
     NUMBER_FUNCTION_TEST(UnsignedCharacter);
     NUMBER_FUNCTION_TEST(Short);

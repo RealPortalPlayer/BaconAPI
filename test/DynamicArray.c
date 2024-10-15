@@ -16,9 +16,7 @@ ASSERT_USED(2);             \
 ASSERT_SIZE(11);            \
 ASSERT_REALLOCATE(1)
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     BA_DynamicArray array;
     int number1 = 0;
     int number2 = 1;

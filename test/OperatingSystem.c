@@ -6,9 +6,7 @@
 #include <BaconAPI/Logger.h>
 #include <stdlib.h>
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     BA_OperatingSystem_Version version;
 
     BA_OperatingSystem_GetVersion(&version);

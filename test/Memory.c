@@ -45,9 +45,7 @@ char* BA_Memory_GetAllocatedInformation(const char* prefix) {
     return finalString;
 }
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     char* memoryInformation;
 
     PRINT_MEMORY_INFORMATION();

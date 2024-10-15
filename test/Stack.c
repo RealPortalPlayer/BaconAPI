@@ -29,7 +29,6 @@ void Function1(void) {
     Function2();
 }
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
+void Test(void) {
     Function1();
 }

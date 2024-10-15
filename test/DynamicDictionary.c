@@ -26,9 +26,7 @@ BA_DynamicDictionary_RemoveFirstElement(&dictionary); \
 BA_ASSERT(!dictionary.keys.frozen && !dictionary.values.frozen, "Dictionary internal arrays did not unfreeze\n"); \
 dictionary.frozen = BA_BOOLEAN_TRUE
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     BA_DynamicDictionary dictionary;
     int key1 = 0;
     int value1 = 1;

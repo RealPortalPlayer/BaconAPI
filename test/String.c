@@ -8,7 +8,6 @@
 
 #include "StringHelper.h"
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
+void Test(void) {
     STRING_HELPER_CREATE(String);
 }

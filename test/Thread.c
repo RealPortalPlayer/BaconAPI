@@ -30,14 +30,12 @@ BA_THREAD_FUNCTION ThreadFunction(void* argument) {
     return (BA_THREAD_RETURN_VALUE) NULL;
 }
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
-
+void Test(void) {
     if (BA_Thread_IsSingleThreaded()) {
         BA_Thread throwaway;
         
         BA_ASSERT(!BA_Thread_Create(&throwaway, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Created a thread despite it being single-threaded\n");
-        return 0;
+        return;
     }
 
     BA_ASSERT(BA_Thread_CreateLock(&lock), "Failed to create lock\n");

@@ -5,8 +5,7 @@
 #include <BaconAPI/Logger.h>
 #include <BaconAPI/User.h>
 
-int main(int argc, char** argv) {
-    BA_ArgumentHandler_Initialize(argc, argv);
+void Test(void) {
     BA_LOGGER_INFO("User information:\n"
                    "Username: %s\n"
                    "Is administrator: %i\n", BA_User_GetName(), BA_User_IsAdministrator());
