@@ -17,7 +17,7 @@ BACONAPI_OBJECT_FILES:=$(patsubst ./source/%.c,${OBJECTS}/BaconAPI/%.o,${BACONAP
 BACONAPI_OBJECT_DIRECTORIES:=$(sort $(filter-out $(OBJECTS)/BaconAPI/,$(dir ${BACONAPI_OBJECT_FILES})))
 BACONAPI_DEPENDENCIES:=$(wildcard $(BACONAPI_OBJECT_FILES:%.o=%.d))
 
-TESTS_SOURCE_FILES:=$(shell find ./test -type f -name "*.c")
+TESTS_SOURCE_FILES:=$(shell find ./test -maxdepth 1 -type f -name "*.c")
 TESTS_OBJECT_FILES:=$(patsubst ./test/%.c,${OBJECTS}/test/%Test.o,${TESTS_SOURCE_FILES})
 TESTS_OUTPUT_FILES:=$(patsubst ${OBJECTS}/test/%Test.o,${OUT}/%Test,${TESTS_OBJECT_FILES})
 TESTS_DEPENDENCIES:=$(wildcard $(TESTS_OBJECT_FILES:%.o=%.d))
@@ -28,7 +28,7 @@ all: baconapi test
 
 baconapi: createbuild $(BACONAPI_OBJECT_FILES) $(OUT)/libBaconAPI.a
 
-test: createbuild baconapi $(TESTS_OUTPUT_FILES)
+test: createbuild baconapi ${OBJECTS}/test/Internal/Entry.o $(TESTS_OUTPUT_FILES)
 
 variables:
 	@echo "CC=${CC}"
@@ -50,22 +50,25 @@ help:
 
 # Internal
 
-createbuild: ${OUT} ${OBJECTS} ${BACONAPI_OBJECT_DIRECTORIES} ${OBJECTS}/test
+createbuild: ${OUT} ${OBJECTS} ${BACONAPI_OBJECT_DIRECTORIES} ${OBJECTS}/test ${OBJECTS}/test/Internal
 
-${OUT} ${OBJECTS} ${BACONAPI_OBJECT_DIRECTORIES} ${OBJECTS}/test:
+${OUT} ${OBJECTS} ${BACONAPI_OBJECT_DIRECTORIES} ${OBJECTS}/test ${OBJECTS}/test/Internal:
 	mkdir -p $@
 
 ${OBJECTS}/BaconAPI/%.o: ./source/%.c
-	$(CC) -MMD ${CFLAGS} -c $< -o $@ -I./include
+	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
 
 $(OUT)/libBaconAPI.a:
 	$(AR) -rcs $@ ${BACONAPI_OBJECT_FILES}
 
+${OBJECTS}/test/Internal/Entry.o: ./test/Internal/Entry.c
+	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
+
 ${OBJECTS}/test/%Test.o: ./test/%.c
-	$(CC) -MMD ${CFLAGS} -c $< -o $@ -I./include
+	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
 
 ${OUT}/%Test: ${OBJECTS}/test/%Test.o
-	$(CC) ${LDFLAGS} $< -lBaconAPI -o $@ -L${OUT}
+	$(CC) ${LDFLAGS} ${OBJECTS}/test/Internal/Entry.o $< -lBaconAPI -o $@ -L${OUT}
 
 include $(BACONAPI_DEPENDENCIES)
 include $(TESTS_DEPENDENCIES)
