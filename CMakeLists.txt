@@ -10,6 +10,11 @@ option(BA_DISABLE_TEST_PROJECTS "Don't compile any of the test projects" OFF)
 option(BA_DISABLE_FREETYPE "Don't use Freetype. Does nothing on non-Unix" OFF)
 option(BA_DISABLE_X11 "Don't use X11. Does nothing on non-Unix" OFF)
 set(BA_ASAN_SANITIZER "" CACHE STRING "Set what ASAN sanitizer to use")
+option(BA_NATIVE_SHUT_UP "Don't show the native binary warning, does nothing on Windows" OFF)
+
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Native" AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
+    message(WARNING "Build type is native. Output binaries might only work on your computer")
+endif()
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     message(WARNING "MSVC on non-Windows platform. Make sure your CMake toolchain is valid")
