@@ -7,12 +7,12 @@ macro(ba_strip TARGET)
     add_custom_command(TARGET "${TARGET}"
                        POST_BUILD
                        DEPENDS "${TARGET}"
-                       COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}>
+                       COMMAND $<$<OR:$<CONFIG:release>,$<CONFIG:native>>:${CMAKE_STRIP}>
                        ARGS --strip-all $<TARGET_FILE:${TARGET}>)
 endmacro()
 
 macro(ba_strip_static TARGET)
     if(NOT CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-        target_compile_options("${TARGET}" PUBLIC "$<$<CONFIG:Release>:-fvisibility=hidden>")
+        target_compile_options("${TARGET}" PUBLIC "$<$<OR:$<CONFIG:release>,$<CONFIG:native>>:-fvisibility=hidden>")
     endif()
 endmacro()
