@@ -11,6 +11,7 @@ option(BA_DISABLE_FREETYPE "Don't use Freetype. Does nothing on non-Unix" OFF)
 option(BA_DISABLE_X11 "Don't use X11. Does nothing on non-Unix" OFF)
 set(BA_ASAN_SANITIZER "" CACHE STRING "Set what ASAN sanitizer to use")
 option(BA_NATIVE_SHUT_UP "Don't show the native binary warning, does nothing on Windows" OFF)
+option(BA_FAST_MATH "Use fast math" OFF)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Native" AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
     message(WARNING "Build type is native. Output binaries might only work on your computer")
