@@ -56,16 +56,16 @@ ${OUT} ${OBJECTS} ${BACONAPI_OBJECT_DIRECTORIES} ${OBJECTS}/test ${OBJECTS}/test
 	mkdir -p $@
 
 ${OBJECTS}/BaconAPI/%.o: ./source/%.c
-	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
+	$(CC) -MMD ${CFLAGS} -c $< -o $@ -I./include
 
 $(OUT)/libBaconAPI.a:
 	$(AR) -rcs $@ ${BACONAPI_OBJECT_FILES}
 
 ${OBJECTS}/test/Internal/Entry.o: ./test/Internal/Entry.c
-	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
+	$(CC) -MMD ${CFLAGS} -c $< -o $@ -I./include
 
 ${OBJECTS}/test/%Test.o: ./test/%.c
-	$(CC) -MMD -DBA_C_COMPILER_VERSION="123" ${CFLAGS} -c $< -o $@ -I./include
+	$(CC) -MMD ${CFLAGS} -c $< -o $@ -I./include
 
 ${OUT}/%Test: ${OBJECTS}/test/%Test.o
 	$(CC) ${LDFLAGS} ${OBJECTS}/test/Internal/Entry.o $< -lBaconAPI -o $@ -L${OUT}
