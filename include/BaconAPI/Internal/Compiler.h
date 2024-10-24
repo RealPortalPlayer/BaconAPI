@@ -11,6 +11,7 @@
 #define BA_COMPILER_UNKNOWN 0
 #define BA_COMPILER_STANDARD_VERSION 0
 #define BA_COMPILER_CLANG 0
+#define BA_COMPILER_TINYC 0
 #define BA_COMPILER_NAME "Unknown"
 
 #if defined(__clang__)
@@ -28,6 +29,11 @@
 #   undef BA_COMPILER_NAME
 #   define BA_COMPILER_MSVC 1
 #   define BA_COMPILER_NAME "MSVC"
+#elif defined(__TINYC__)
+#   undef BA_COMPILER_TINYC
+#   undef BA_COMPILER_NAME
+#   define BA_COMPILER_TINYC 1
+#   define BA_COMPILER_NAME "Tiny C"
 #else
 #   undef BA_COMPILER_UNKNOWN
 #   define BA_COMPILER_UNKNOWN 1
