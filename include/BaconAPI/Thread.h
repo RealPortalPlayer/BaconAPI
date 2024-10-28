@@ -8,7 +8,6 @@
 
 #include "Internal/CPlusPlusSupport.h"
 #include "Internal/Boolean.h"
-#include "OperatingSystem.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
@@ -16,20 +15,14 @@ BA_CPLUSPLUS_SUPPORT_GUARD_START()
 
 typedef pthread_t BA_Thread;
 typedef pthread_mutex_t BA_Thread_Lock;
-
-#   define BA_THREAD_RETURN_VALUE void*
-#   define BA_THREAD_ATTRIBUTE
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
 
 typedef HANDLE BA_Thread;
 typedef HANDLE BA_Thread_Lock;
-
-#   define BA_THREAD_RETURN_VALUE DWORD
-#   define BA_THREAD_ATTRIBUTE WINAPI
 #endif
 
-typedef BA_THREAD_RETURN_VALUE (*BA_Thread_Function)(void*);
+typedef void (*BA_Thread_Function)(void*);
 
 BA_Thread BA_Thread_GetCurrent(void);
 BA_Boolean BA_Thread_IsSingleThreaded(void);
@@ -54,5 +47,3 @@ void BA_Thread_SetLimit(int limit);
 
 BA_Boolean BA_Thread_Kill(BA_Thread thread);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
-
-#define BA_THREAD_FUNCTION BA_THREAD_RETURN_VALUE BA_THREAD_ATTRIBUTE

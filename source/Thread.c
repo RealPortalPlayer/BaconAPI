@@ -36,10 +36,10 @@ BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction
         return BA_BOOLEAN_FALSE;
 
 #   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-    if (pthread_create(thread, NULL, threadFunction, &argument) != 0)
+    if (pthread_create(thread, NULL, (void* (*)(void*)) threadFunction, &argument) != 0)
         return BA_BOOLEAN_FALSE;
 #   elif BA_OPERATINGSYSTEM_WINDOWS
-    *thread = (BA_Thread) CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadFunction, &argument, 0, NULL);
+    *thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadFunction, &argument, 0, NULL);
     
     if (*thread == NULL)
         return BA_BOOLEAN_FALSE;
@@ -93,7 +93,7 @@ BA_Boolean BA_Thread_UseLock(BA_Thread_Lock* lock) {
 
 BA_Boolean BA_Thread_Unlock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-    return pthread_mutex_unlock((pthread_mutex_t*) lock) == 0;
+    return pthread_mutex_unlock(lock) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
     return ReleaseMutex(*lock) != 0;
 #endif
@@ -101,7 +101,7 @@ BA_Boolean BA_Thread_Unlock(BA_Thread_Lock* lock) {
 
 BA_Boolean BA_Thread_DestroyLock(BA_Thread_Lock* lock) {
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-    return pthread_mutex_destroy((pthread_mutex_t*) lock) == 0;
+    return pthread_mutex_destroy(lock) == 0;
 #elif BA_OPERATINGSYSTEM_WINDOWS
     return CloseHandle(*lock) != 0;
 #endif

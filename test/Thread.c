@@ -23,18 +23,17 @@ void LockProtectedFunction() {
     BA_ASSERT(BA_Thread_Unlock(&lock), "Failed to unlock lock\n");
 }
 
-BA_THREAD_FUNCTION ThreadFunction(void* argument) {
+void ThreadFunction(void* argument) {
     while (threadsWaiting) continue;
 
     LockProtectedFunction();
-    return (BA_THREAD_RETURN_VALUE) NULL;
 }
 
 void Test(void) {
     if (BA_Thread_IsSingleThreaded()) {
         BA_Thread throwaway;
         
-        BA_ASSERT(!BA_Thread_Create(&throwaway, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Created a thread despite it being single-threaded\n");
+        BA_ASSERT(!BA_Thread_Create(&throwaway, &ThreadFunction, NULL), "Created a thread despite it being single-threaded\n");
         return;
     }
 
@@ -45,7 +44,7 @@ void Test(void) {
 
         createdThreads++;
 
-        BA_ASSERT(BA_Thread_Create(&thread, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Failed to create thread %i", createdThreads);
+        BA_ASSERT(BA_Thread_Create(&thread, &ThreadFunction, NULL), "Failed to create thread %i", createdThreads);
 
         addedThreads[i] = thread;
     }
@@ -56,7 +55,7 @@ void Test(void) {
     {
         BA_Thread throwaway;
 
-        BA_ASSERT(!BA_Thread_Create(&throwaway, (BA_THREAD_FUNCTION) &ThreadFunction, NULL), "Created a thread despite hitting the limit\n");
+        BA_ASSERT(!BA_Thread_Create(&throwaway, &ThreadFunction, NULL), "Created a thread despite hitting the limit\n");
     }
 
     BA_ASSERT(BA_Thread_GetAmount() == createdThreads, "Still incremented the thread count\n");
