@@ -4,16 +4,26 @@
 #include "BaconAPI/OperatingSystem.h"
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
+#   define _GNU_SOURCE
 #   include <pthread.h>
-#   define BA_THREAD_INTERNAL_RETURN_TYPE void*
+#   include <string.h>
 #elif BA_OPERATINGSYSTEM_WINDOWS
 #   include <Windows.h>
-#   define BA_THREAD_INTERNAL_RETURN_TYPE DWORD
+
+#   pragma pack(push, 8)
+typedef struct {
+    DWORD type;
+    LPCSTR name;
+    DWORD threadId;
+    DWORD flags;
+} BA_Thread_NameInformation;
+#   pragma pack(pop)
 #endif
 
 #include "BaconAPI/Thread.h"
 #include "BaconAPI/ArgumentHandler.h"
 #include "BaconAPI/BuiltInArguments.h"
+#include "BaconAPI/Debugging/Assert.h"
 
 // TODO: Error handling sucks right now
 // TODO: Should we disable creation of locks if multi-threading is disabled?
@@ -30,7 +40,7 @@ BA_Thread BA_Thread_GetCurrent(void) {
 #endif
 }
 
-BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument) {
+BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, const char* name, void* argument) {
 #ifndef BA_SINGLE_THREADED
     if (baThreadLimit == baThreadCreated || BA_Thread_IsSingleThreaded())
         return BA_BOOLEAN_FALSE;
@@ -38,11 +48,40 @@ BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction
 #   if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
     if (pthread_create(thread, NULL, (void* (*)(void*)) threadFunction, &argument) != 0)
         return BA_BOOLEAN_FALSE;
+
+    if (name != NULL) {
+        BA_ASSERT(strlen(name) < 16, "Name cannot be longer than 16 characters\n");
+
+        // TODO: Mac OS X only allows you to set the name from within the thread, you cannot set it for the thread
+        // HACK: I don't personally use BSD systems, but it would be nice to support them. At least, this still allows them to compile
+#if BA_OPERATINGSYSTEM_LINUX
+        pthread_setname_np(*thread, name);
+#endif
+    }
 #   elif BA_OPERATINGSYSTEM_WINDOWS
     *thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) threadFunction, &argument, 0, NULL);
     
     if (*thread == NULL)
         return BA_BOOLEAN_FALSE;
+
+    if (name != NULL) {
+        BA_ASSERT(strlen(name) < 16, "Name cannot be longer than 16 characters\n");
+
+        BA_Thread_NameInformation information;
+
+        information.type = 0x1000;
+        information.name = name;
+        information.threadId = GetThreadId(*thread);
+        information.flags = 0;
+
+#   pragma warning(push)
+#   pragma warning(disable: 6320 6322)
+        __try {
+            RaiseException(0x406D1388, 0, sizeof(information) / sizeof(ULONG_PTR), (ULONG_PTR*) &information);
+        } __except (EXCEPTION_EXECUTE_HANDLER) {}
+#   pragma warning(pop)
+
+    }
 #   endif
 
     baThreadCreated++;

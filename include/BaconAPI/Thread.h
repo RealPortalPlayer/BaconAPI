@@ -33,7 +33,7 @@ BA_Boolean BA_Thread_IsSingleThreaded(void);
 int BA_Thread_GetLimit(void);
 int BA_Thread_GetAmount(void);
 
-BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, void* argument);
+BA_Boolean BA_Thread_Create(BA_Thread* thread, BA_Thread_Function threadFunction, const char* name, void* argument);
 BA_Boolean BA_Thread_Join(BA_Thread thread, void* returnValue);
 BA_Boolean BA_Thread_CreateLock(BA_Thread_Lock* lock);
 BA_Boolean BA_Thread_UseLock(BA_Thread_Lock* lock);
