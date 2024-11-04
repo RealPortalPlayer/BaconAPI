@@ -500,6 +500,7 @@ BA_DynamicArray* BA_StringImplementation_Split(const BA_StringImplementation* ta
         return NULL;
     
     BA_StringImplementation* heapTarget = BA_StringImplementation_Copy(target);
+    void* originalStringPointer = heapTarget->string; // NOTE: string, and wideString occupy the same space, so this wouldn't matter
     
     BA_DynamicArray_Create(dynamicArray, 100);
 
@@ -529,7 +530,8 @@ BA_DynamicArray* BA_StringImplementation_Split(const BA_StringImplementation* ta
         }
     }
 
-    BA_STRINGIMPLEMENTATION_FREE(heapTarget);
+    free(originalStringPointer);
+    free(heapTarget);
     return dynamicArray;
 }
 
