@@ -13,6 +13,6 @@ endmacro()
 
 macro(ba_strip_static TARGET)
     if(NOT CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-        target_compile_options("${TARGET}" PUBLIC "$<$<OR:$<CONFIG:release>,$<CONFIG:native>,$<CONFIG:minsizerel>>:-fvisibility=hidden>")
+        target_compile_options("${TARGET}" PUBLIC "$<$<OR:$<CONFIG:release>,$<CONFIG:native>,$<CONFIG:minsizerel>,$<CONFIG:minsizenat>>:-fvisibility=hidden>")
     endif()
 endmacro()

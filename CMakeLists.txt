@@ -13,7 +13,7 @@ set(BA_ASAN_SANITIZER "" CACHE STRING "Set what ASAN sanitizer to use")
 option(BA_NATIVE_SHUT_UP "Don't show the native binary warning, does nothing on Windows" OFF)
 option(BA_FAST_MATH "Use fast math" OFF)
 
-if(("${CMAKE_BUILD_TYPE}" STREQUAL "Native" OR "${CMAKE_BUILD_TYPE}" STREQUAL "NatWithDebInfo") AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
+if(("${CMAKE_BUILD_TYPE}" STREQUAL "Native" OR "${CMAKE_BUILD_TYPE}" STREQUAL "NatWithDebInfo" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeNat") AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
     message(WARNING "Build type is native. Output binaries might only work on your computer")
 endif()
 
