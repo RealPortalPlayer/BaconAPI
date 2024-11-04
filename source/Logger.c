@@ -68,6 +68,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
             initializing = BA_BOOLEAN_TRUE;
 
+#ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
             BA_LOGGER_INITIALIZER_DEBUG("Getting log type\n");
 
             {
@@ -111,6 +112,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                     BA_LOGGER_INITIALIZER_DEBUG("Log type: %i\n", baLoggerCurrentLogLevel);
 #endif
             }
+#endif
 
             initialized = BA_BOOLEAN_TRUE;
             initializing = BA_BOOLEAN_FALSE;
@@ -228,7 +230,11 @@ void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
 }
 
 BA_Boolean BA_Logger_IsLevelEnabled(BA_Logger_LogLevels logLevel) {
+#ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
     return baLoggerCurrentLogLevel != BA_LOGGER_LOG_LEVEL_NULL && logLevel <= baLoggerCurrentLogLevel;
+#else
+    return BA_BOOLEAN_TRUE;
+#endif
 }
 
 void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {

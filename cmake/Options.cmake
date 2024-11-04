@@ -4,7 +4,8 @@ macro(ba_apply_compiler_options TARGET)
                                                   "$<$<BOOL:${BA_ALLOW_DEBUG_LOGS}>:BA_ALLOW_DEBUG_LOGS>"
                                                   "$<$<BOOL:${BA_SINGLE_THREADED}>:BA_SINGLE_THREADED>"
                                                   "$<$<BOOL:${X11_FOUND}>:BA_X11_FOUND>"
-                                                  "$<$<BOOL:${BA_LOGGER_INITIALIZER_DEBUG_LOGS}>:BA_LOGGER_INITIALIZER_DEBUG_LOGS>")
+                                                  "$<$<BOOL:${BA_LOGGER_INITIALIZER_DEBUG_LOGS}>:BA_LOGGER_INITIALIZER_DEBUG_LOGS>"
+                                                  "$<$<BOOL:${BA_LOGGER_FORCE_ENABLE_ALL_LEVELS}>:BA_LOGGER_FORCE_ENABLE_ALL_LEVELS>")
 
     if(NOT BA_DISABLE_X11 AND X11_FOUND)
         target_compile_definitions("${TARGET}" PUBLIC BA_X11_FOUND)
