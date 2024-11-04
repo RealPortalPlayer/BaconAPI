@@ -1,10 +1,6 @@
 // Copyright (c) 2024, PortalPlayer <email@portalplayer.xyz>
 // Licensed under MIT <https://opensource.org/licenses/MIT>
 
-// ReSharper disable CppDFAUnreachableCode
-// ReSharper disable CppDFAUnusedValue
-// ReSharper disable CppDFAConstantFunctionResult
-
 #include <string.h>
 #include <wctype.h>
 #include <ctype.h>
@@ -24,6 +20,15 @@
 
 // FIXME: Some of these functions return NULL on allocation failure. Some people don't want to crash their program on
 //        OOM. This would inconvenience them. No easy way to fix without masking memory issues. Such is life
+
+// HACK: CLion hates this file
+// ReSharper disable CppDFAUnreachableCode
+// ReSharper disable CppDFAUnusedValue
+// ReSharper disable CppDFAConstantFunctionResult
+// ReSharper disable CppDFANullDereference
+
+// NOTE: CLion sucks at detecting memory leaks in this file. Use ASAN instead
+// ReSharper disable CppDFAMemoryLeak
 
 #undef BA_STRINGIMPLEMENTATION_CREATE
 #define BA_STRINGIMPLEMENTATION_CREATE(variable, size, makeItWideString) \
@@ -391,9 +396,9 @@ BA_StringImplementation* BA_StringImplementation_ToLower(BA_StringImplementation
 
     for (size_t i = 0; i < stringLength; i++) {
         if (string->isWideString)
-            string->wideString[i] = towlower(string->wideString[i]);
+            string->wideString[i] = (wchar_t) towlower(string->wideString[i]);
         else
-            string->string[i] = tolower(string->string[i]);
+            string->string[i] = (char) tolower(string->string[i]);
     }
 
     return string;
@@ -408,9 +413,9 @@ BA_StringImplementation* BA_StringImplementation_ToUpper(BA_StringImplementation
 
     for (size_t i = 0; i < stringLength; i++) {
         if (string->isWideString)
-            string->wideString[i] = towupper(string->wideString[i]);
+            string->wideString[i] = (wchar_t) towupper(string->wideString[i]);
         else
-            string->string[i] = toupper(string->string[i]);
+            string->string[i] = (char) toupper(string->string[i]);
     }
 
     return string;
