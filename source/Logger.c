@@ -23,6 +23,12 @@
 #   define write(file, message, size) _write(file, message, (unsigned) size) // HACK: This is a stupid idea, but it's the only way to make MSVC shut up.
 #endif
 
+#ifdef BA_LOGGER_INITIALIZER_DEBUG_LOGS
+#   define BA_LOGGER_INITIALIZER_DEBUG(...) printf(__VA_ARGS__)
+#else
+#   define BA_LOGGER_INITIALIZER_DEBUG(...)
+#endif
+
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 static BA_Logger_LogLevels baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
 static BA_Thread_Lock baLoggerLock;
@@ -43,6 +49,8 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
         static BA_Boolean initializing = BA_BOOLEAN_FALSE;
 
         if (!initialized) {
+            BA_LOGGER_INITIALIZER_DEBUG("Initializing logger\n");
+
             if (initializing) {
                 fprintf(stderr, "Logger called self during initializing, this is 100%% a bug with the engine\n"
                                 "includeHeader: %i\n"
@@ -51,6 +59,8 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                 abort();
             }
 
+            BA_LOGGER_INITIALIZER_DEBUG("Creating thread lock\n");
+
             if (!BA_Thread_CreateLock(&baLoggerLock)) {
                 printf("Failed to initialize logger lock: %i\n", errno);
                 abort();
@@ -58,8 +68,11 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
             initializing = BA_BOOLEAN_TRUE;
 
+            BA_LOGGER_INITIALIZER_DEBUG("Getting log type\n");
+
             {
                 BA_ArgumentHandler_ShortResults results;
+                BA_Logger_LogLevels original = baLoggerCurrentLogLevel;
 
                 if (BA_ArgumentHandler_GetInformationWithShort(BA_BUILTINARGUMENTS_LOG_LEVEL,
                                                                 BA_BUILTINARGUMENTS_LOG_LEVEL_SHORT, 0, &results) != 0) {
@@ -90,6 +103,13 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                         printf("Invalid log type: %s\n", *results.value);
                     }
                 }
+
+#ifdef BA_LOGGER_INITIALIZER_DEBUG_LOGS
+                if (baLoggerCurrentLogLevel != original)
+                    BA_LOGGER_INITIALIZER_DEBUG("Log type: %i (from: %i)\n", baLoggerCurrentLogLevel, original);
+                else
+                    BA_LOGGER_INITIALIZER_DEBUG("Log type: %i\n", baLoggerCurrentLogLevel);
+#endif
             }
 
             initialized = BA_BOOLEAN_TRUE;
