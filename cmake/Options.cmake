@@ -32,7 +32,7 @@ macro(ba_apply_compiler_options TARGET)
         target_compile_definitions("${TARGET}" PUBLIC BA_ASAN_ENABLED)
     endif()
 
-    if("${CMAKE_BUILD_TYPE}" STREQUAL "Native" AND NOT MSVC)
+    if(("${CMAKE_BUILD_TYPE}" STREQUAL "Native" OR "${CMAKE_BUILD_TYPE}" STREQUAL "NatWithDebInfo") AND NOT MSVC)
         target_compile_options("${TARGET}" PUBLIC "-march=native")
     endif()
 
