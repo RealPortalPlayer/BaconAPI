@@ -87,4 +87,17 @@ BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData) {
     
     return results;
 }
+
+// NOTE: This doesn't use any getter functions from DynamicDictionary, since DynamicDictionary assumes each key has the same size
+
+char* BA_Configuration_GetValue(const BA_DynamicDictionary* parsedConfiguration, const char* key, BA_Boolean caseless) {
+    for (int i = 0; i < parsedConfiguration->keys.used; i++) {
+        if (!BA_String_Equals(BA_DYNAMICARRAY_GET_ELEMENT(char, parsedConfiguration->keys, i), key, caseless))
+            continue;
+
+        return BA_DYNAMICARRAY_GET_ELEMENT(char, parsedConfiguration->values, i);
+    }
+
+    return NULL;
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()

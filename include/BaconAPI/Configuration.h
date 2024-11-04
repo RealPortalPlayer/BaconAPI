@@ -14,4 +14,5 @@
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 BA_DynamicDictionary* BA_Configuration_ParseFromFile(FILE* configurationFile);
 BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData);
+char* BA_Configuration_GetValue(const BA_DynamicDictionary* parsedConfiguration, const char* key, BA_Boolean caseless);
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
