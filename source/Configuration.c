@@ -55,7 +55,7 @@ BA_DynamicDictionary* BA_Configuration_ParseFromFile(FILE* configurationFile) {
     BA_DynamicDictionary* results = malloc(sizeof(BA_DynamicDictionary));
     char* line;
     intmax_t length;
-    
+
     BA_ASSERT(results != NULL, "Failed to allocate memory for configuration results\n");
     BA_DynamicDictionary_Create(results, 100);
     
@@ -72,6 +72,7 @@ BA_DynamicDictionary* BA_Configuration_ParseFromFile(FILE* configurationFile) {
 BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData) {
     BA_DynamicDictionary* results = malloc(sizeof(BA_DynamicDictionary));
     BA_DynamicArray* unparsedKeysValues = BA_String_SplitCharacter(configurationData, '\n');
+    BA_Boolean failed = BA_BOOLEAN_FALSE;
 
     BA_ASSERT(results != NULL, "Failed to allocate memory for configuration results\n");
     BA_DynamicDictionary_Create(results, 100);
@@ -79,13 +80,19 @@ BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData) {
     for (int i = 0; i < unparsedKeysValues->used; i++) {
         char* line = BA_DYNAMICARRAY_GET_ELEMENT_POINTER(char, unparsedKeysValues, i);
 
-        if (BA_Configuration_AddLine(results, line, (intmax_t) strlen(line)))
+        if (!failed && BA_Configuration_AddLine(results, line, (intmax_t) strlen(line))) {
+            free(line);
             continue;
+        }
 
-        return NULL;
+        failed = BA_BOOLEAN_TRUE;
+
+        free(line);
     }
-    
-    return results;
+
+    free(unparsedKeysValues->internalArray);
+    free(unparsedKeysValues);
+    return !failed ? results : NULL;
 }
 
 // NOTE: This doesn't use any getter functions from DynamicDictionary, since DynamicDictionary assumes each key has the same size
