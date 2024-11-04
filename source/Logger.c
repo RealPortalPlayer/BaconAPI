@@ -30,14 +30,21 @@
 #endif
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
-#ifndef BA_LOGGER_DISABLED
+#if !defined(BA_LOGGER_FORCE_ENABLE_ALL_LEVELS) && !defined(BA_LOGGER_DISABLED)
 static BA_Logger_LogLevels baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
+#endif
+
+#ifndef BA_LOGGER_DISABLED
 static BA_Thread_Lock baLoggerLock;
 #endif
 
 BA_Logger_LogLevels BA_Logger_GetLogLevel(void) {
 #ifndef BA_LOGGER_DISABLED
+#   ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
     return baLoggerCurrentLogLevel;
+#   else
+    return BA_LOGGER_LOG_LEVEL_TRACE;
+#   endif
 #else
     return BA_LOGGER_LOG_LEVEL_NULL;
 #endif
@@ -128,10 +135,12 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
     BA_Thread_UseLock(&baLoggerLock);
 
+#ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
     if (!BA_Logger_IsLevelEnabled(logLevel)) {
         BA_Thread_Unlock(&baLoggerLock);
         return;
     }
+#endif
 
     static BA_Boolean antiRecursiveLog = BA_BOOLEAN_FALSE;
     FILE* output = stdout;
@@ -166,8 +175,10 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
 void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
 #ifndef BA_LOGGER_DISABLED
+#   ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
     if (!BA_Logger_IsLevelEnabled(logLevel))
         return;
+#   endif
 
     {
         static int dontLogHeader = -1;
@@ -251,7 +262,7 @@ BA_Boolean BA_Logger_IsLevelEnabled(BA_Logger_LogLevels logLevel) {
 }
 
 void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {
-#ifndef BA_LOGGER_DISABLED
+#if !defined(BA_LOGGER_FORCE_ENABLE_ALL_LEVELS) && !defined(BA_LOGGER_DISABLED)
     static int dontChangeLogLevels = -1;
 
     if (dontChangeLogLevels == -1)
