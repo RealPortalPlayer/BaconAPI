@@ -149,7 +149,6 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
     va_start(arguments, message);
     vfprintf(output, message, arguments);
-    fflush(output); // HACK
     va_end(arguments);
 
     antiRecursiveLog = BA_BOOLEAN_FALSE;
