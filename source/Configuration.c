@@ -100,4 +100,15 @@ char* BA_Configuration_GetValue(const BA_DynamicDictionary* parsedConfiguration,
 
     return NULL;
 }
+
+void BA_Configuration_Free(BA_DynamicDictionary* parsedConfiguration) {
+    for (int i = 0; i < parsedConfiguration->keys.used; i++) {
+        free(parsedConfiguration->keys.internalArray[i]);
+        free(parsedConfiguration->values.internalArray[i]);
+    }
+
+    free(parsedConfiguration->keys.internalArray);
+    free(parsedConfiguration->values.internalArray);
+    free(parsedConfiguration);
+}
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
