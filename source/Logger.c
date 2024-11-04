@@ -113,10 +113,12 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                     else if (BA_String_Equals(*results.value, "fatal", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "ftl", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_FATAL;
+#ifndef BA_LOGGER_DISABLE_INVALID_TYPE_MESSAGE
                     else if (BA_Logger_IsLevelEnabled(BA_LOGGER_LOG_LEVEL_ERROR)) {
                         BA_Logger_LogHeader(stderr, BA_LOGGER_LOG_LEVEL_ERROR);
                         printf("Invalid log type: %s\n", *results.value);
                     }
+#endif
                 }
 
 #       ifdef BA_LOGGER_INITIALIZER_DEBUG_LOGS
