@@ -56,6 +56,30 @@ STRING_HELPER_COPY_STRING_HEADER(name, STRING_HELPER_PARSE_STRING(name, string1)
     results = STRING_HELPER_GET_FUNCTION(name, functionName)(__VA_ARGS__);         \
 STRING_HELPER_COPY_STRING_FOOTER(name, STRING_HELPER_PARSE_STRING(name, string1), STRING_HELPER_PARSE_STRING(name, expected), BA_BOOLEAN_TRUE)
 
+#define STRING_HELPER_SPLIT_HEADER(name, string1, splitBy, functionName) \
+STRING_HELPER_HEADER()                                        \
+    BA_DynamicArray* results = STRING_HELPER_GET_FUNCTION(name, functionName)(STRING_HELPER_PARSE_STRING(name, string1), STRING_HELPER_PARSE_STRING(name, splitBy))
+
+#define STRING_HELPER_SPLIT_FOOTER() \
+    free(results->internalArray[0]); \
+    free(results->internalArray[1]); \
+    free(results->internalArray);    \
+    free(results);                   \
+STRING_HELPER_FOOTER()
+
+#define STRING_HELPER_SPLIT_BASE(name, string1, splitBy, functionName, expected1, expected2) \
+STRING_HELPER_SPLIT_HEADER(name, string1, splitBy, functionName);                            \
+    BA_ASSERT(STRING_HELPER_GET_FUNCTION(name, Equals)(results->internalArray[0], STRING_HELPER_PARSE_STRING(name, expected1), BA_BOOLEAN_FALSE), "Failed to split string\n"); \
+    BA_ASSERT(STRING_HELPER_GET_FUNCTION(name, Equals)(results->internalArray[1], STRING_HELPER_PARSE_STRING(name, expected2), BA_BOOLEAN_FALSE), "Failed to split string\n"); \
+STRING_HELPER_SPLIT_FOOTER()
+
+#define STRING_HELPER_JOIN_BASE(name, string1, splitBy, splitFunctionName, functionName) \
+STRING_HELPER_SPLIT_HEADER(name, string1, splitBy, splitFunctionName);                   \
+    STRING_HELPER_TYPE(name)* joined = STRING_HELPER_GET_FUNCTION(name, functionName)(results, STRING_HELPER_PARSE_STRING(name, splitBy)); \
+    BA_ASSERT(STRING_HELPER_GET_FUNCTION(name, Equals)(STRING_HELPER_PARSE_STRING(name, string1), joined, BA_BOOLEAN_FALSE), "Failed to join string\n"); \
+    free(joined);                                                                         \
+STRING_HELPER_SPLIT_FOOTER()
+
 #define STRING_HELPER_OPPOSITE_PARSE_STRING_WideString(string) STRING_HELPER_PARSE_STRING(String, string)
 #define STRING_HELPER_OPPOSITE_PARSE_STRING_String(string) STRING_HELPER_PARSE_STRING(WideString, string)
 #define STRING_HELPER_OPPOSITE_PARSE_STRING(name, string) STRING_HELPER_OPPOSITE_PARSE_STRING_ ## name(string)
@@ -76,11 +100,13 @@ STRING_HELPER_COPY_STRING_FOOTER(name, STRING_HELPER_PARSE_STRING(name, string1)
 #define STRING_HELPER_TEST_APPEND_CHARACTER(name, string1, character, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, AppendCharacter, results, STRING_HELPER_PARSE_STRING(name, character))
 #define STRING_HELPER_TEST_PREPEND_CHARACTER(name, string1, character, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, PrependCharacter, results, STRING_HELPER_PARSE_STRING(name, character))
 #define STRING_HELPER_TEST_FORMAT(name, string1, string2, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, Format, results, STRING_HELPER_PARSE_STRING(name, string2))
-// TODO: BA_String_Split, BA_String_SplitCharacter
+#define STRING_HELPER_TEST_SPLIT(name, string1, splitBy, expected1, expected2) STRING_HELPER_SPLIT_BASE(name, string1, splitBy, Split, expected1, expected2)
+#define STRING_HELPER_TEST_SPLIT_CHARACTER(name, string1, splitByCharacter, expected1, expected2) STRING_HELPER_SPLIT_BASE(name, string1, splitByCharacter, SplitCharacter, expected1, expected2)
 #define STRING_HELPER_TEST_FORMAT_SAFE(name, string1, string2, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, FormatSafe, results, 1, string2)
 #define STRING_HELPER_TEST_REPLACE(name, string1, string2, string3, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, Replace, results, STRING_HELPER_PARSE_STRING(name, string2), STRING_HELPER_PARSE_STRING(name, string3))
 #define STRING_HELPER_TEST_REPLACE_CHARACTER(name, string1, character1, character2, expected) STRING_HELPER_COPY_STRING_BASE(name, string1, expected, ReplaceCharacter, results, STRING_HELPER_PARSE_STRING(name, character1), STRING_HELPER_PARSE_STRING(name, character2))
-// TODO: BA_String_Join, BA_String_JoinCharacter
+#define STRING_HELPER_JOIN(name, string1, splitBy) STRING_HELPER_JOIN_BASE(name, string1, splitBy, Split, Join)
+#define STRING_HELPER_JOIN_CHARACTER(name, string1, splitByCharacter) STRING_HELPER_JOIN_BASE(name, string1, splitByCharacter, SplitCharacter, JoinCharacter)
 #define STRING_HELPER_TEST_CONVERT(name, string1) \
 STRING_HELPER_HEADER()                            \
     STRING_HELPER_TYPE(name)* results = STRING_HELPER_GET_FUNCTION(name, Convert)(STRING_HELPER_OPPOSITE_PARSE_STRING(name, string1)); \
@@ -113,6 +139,8 @@ STRING_HELPER_TEST_TO_UPPER(name, "Goodbye, Moon!", "GOODBYE, MOON!"); \
 STRING_HELPER_TEST_APPEND_CHARACTER(name, "Hello, World", '!', "Hello, World!"); \
 STRING_HELPER_TEST_PREPEND_CHARACTER(name, "oodbye, Moon!", 'G', "Goodbye, Moon!"); \
 STRING_HELPER_TEST_FORMAT(name, "Hello, " STRING_HELPER_FORMATTER_CODE(name), "World!", "Hello, World!"); \
+STRING_HELPER_TEST_SPLIT(name, "Goodbye, Moon!", " ", "Goodbye,", "Moon!"); \
+STRING_HELPER_TEST_SPLIT_CHARACTER(name, "Hello, World!", ' ', "Hello,", "World!"); \
 STRING_HELPER_TEST_FORMAT_SAFE(name, "%s Moon! % %s %i %% %", BA_STRINGSAFEFORMAT_ARGUMENT_STRING("Goodbye,"), "Goodbye, Moon! % %s %i %% %"); \
 BA_ASSERT(BA_StringSafeFormat_AddCustomSafeFormatter(1, &BooleanSafeFormat), "Failed to add custom safe formatter\n"); \
 STRING_HELPER_TEST_FORMAT_SAFE(name, "Said hello to world? %s", STRING_HELPER_ARGUMENT_BOOLEAN(BA_BOOLEAN_TRUE), "Said hello to world? Yes"); \
@@ -121,4 +149,6 @@ BA_ASSERT(empty != NULL, "Failed to create an empty string\n"); \
 free(empty);                       \
 STRING_HELPER_TEST_REPLACE(name, "Hello, Moon!", "Hello", "Goodbye", "Goodbye, Moon!"); \
 STRING_HELPER_TEST_REPLACE_CHARACTER(name, "Hello, World?", '?', '!', "Hello, World!"); \
+STRING_HELPER_JOIN(name, "Goodbye, Moon!", " "); \
+STRING_HELPER_JOIN_CHARACTER(name, "Goodbye, Moon!", ' '); \
 STRING_HELPER_TEST_CONVERT(name, "Goodbye, Moon!")
