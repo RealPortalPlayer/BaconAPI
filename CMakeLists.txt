@@ -14,6 +14,7 @@ option(BA_NATIVE_SHUT_UP "Don't show the native binary warning, does nothing on 
 option(BA_FAST_MATH "Use fast math" OFF)
 option(BA_LOGGER_INITIALIZER_DEBUG_LOGS "Show debug logs on initialization" OFF)
 option(BA_LOGGER_FORCE_ENABLE_ALL_LEVELS "Allow printing all log types" OFF)
+option(BA_LOGGER_DISABLED "Disable the logging system" OFF)
 
 if(("${CMAKE_BUILD_TYPE}" STREQUAL "Native" OR "${CMAKE_BUILD_TYPE}" STREQUAL "NatWithDebInfo" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeNat") AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
     message(WARNING "Build type is native. Output binaries might only work on your computer")

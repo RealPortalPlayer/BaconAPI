@@ -30,14 +30,21 @@
 #endif
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
+#ifndef BA_LOGGER_DISABLED
 static BA_Logger_LogLevels baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
 static BA_Thread_Lock baLoggerLock;
+#endif
 
 BA_Logger_LogLevels BA_Logger_GetLogLevel(void) {
+#ifndef BA_LOGGER_DISABLED
     return baLoggerCurrentLogLevel;
+#else
+    return BA_LOGGER_LOG_LEVEL_NULL;
+#endif
 }
 
 void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel, const char* message, ...) {
+#ifndef BA_LOGGER_DISABLED
     static int alwaysUseStdout = -1;
 
     if (alwaysUseStdout == -1)
@@ -68,7 +75,7 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
 
             initializing = BA_BOOLEAN_TRUE;
 
-#ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
+#   ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
             BA_LOGGER_INITIALIZER_DEBUG("Getting log type\n");
 
             {
@@ -79,14 +86,14 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                                                                 BA_BUILTINARGUMENTS_LOG_LEVEL_SHORT, 0, &results) != 0) {
                     if (BA_String_Equals(*results.value, "null", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_NULL;
-#ifdef BA_ALLOW_DEBUG_LOGS
+#       ifdef BA_ALLOW_DEBUG_LOGS
                     else if (BA_String_Equals(*results.value, "trace", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "trc", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_TRACE;
                     else if (BA_String_Equals(*results.value, "debug", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "dbg", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_DEBUG;
-#endif
+#       endif
                     else if (BA_String_Equals(*results.value, "info", BA_BOOLEAN_TRUE) ||
                              BA_String_Equals(*results.value, "inf", BA_BOOLEAN_TRUE))
                         baLoggerCurrentLogLevel = BA_LOGGER_LOG_LEVEL_INFO;
@@ -105,14 +112,14 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
                     }
                 }
 
-#ifdef BA_LOGGER_INITIALIZER_DEBUG_LOGS
+#       ifdef BA_LOGGER_INITIALIZER_DEBUG_LOGS
                 if (baLoggerCurrentLogLevel != original)
                     BA_LOGGER_INITIALIZER_DEBUG("Log type: %i (from: %i)\n", baLoggerCurrentLogLevel, original);
                 else
                     BA_LOGGER_INITIALIZER_DEBUG("Log type: %i\n", baLoggerCurrentLogLevel);
-#endif
+#       endif
             }
-#endif
+#   endif
 
             initialized = BA_BOOLEAN_TRUE;
             initializing = BA_BOOLEAN_FALSE;
@@ -154,9 +161,11 @@ void BA_Logger_LogImplementation(int includeHeader, BA_Logger_LogLevels logLevel
     antiRecursiveLog = BA_BOOLEAN_FALSE;
 
     BA_Thread_Unlock(&baLoggerLock);
+#endif
 }
 
 void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
+#ifndef BA_LOGGER_DISABLED
     if (!BA_Logger_IsLevelEnabled(logLevel))
         return;
 
@@ -170,9 +179,9 @@ void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
             return;
     }
 
-#define BA_LOGGER_SAFE_PUTS(message) write(fileno(output), message, strlen(message))
+#   define BA_LOGGER_SAFE_PUTS(message) write(fileno(output), message, strlen(message))
     switch (logLevel) {
-#ifdef BA_ALLOW_DEBUG_LOGS
+#   ifdef BA_ALLOW_DEBUG_LOGS
         case BA_LOGGER_LOG_LEVEL_TRACE:
             if (BA_ANSI_IsEnabled())
                 BA_LOGGER_SAFE_PUTS(BA_ANSI_ConvertCodeToString(BA_ANSI_CODE_BRIGHT_FOREGROUND_BLUE));
@@ -186,7 +195,7 @@ void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
 
             BA_LOGGER_SAFE_PUTS("[DBG] ");
             break;
-#endif
+#   endif
 
         case BA_LOGGER_LOG_LEVEL_INFO:
             if (BA_ANSI_IsEnabled())
@@ -225,18 +234,24 @@ void BA_Logger_LogHeader(FILE* output, BA_Logger_LogLevels logLevel) {
 
     if (BA_ANSI_IsEnabled())
         BA_LOGGER_SAFE_PUTS(BA_ANSI_ConvertCodeToString(BA_ANSI_CODE_RESET));
-#undef BA_LOGGER_SAFE_PUTS
+#   undef BA_LOGGER_SAFE_PUTS
+#endif
 }
 
 BA_Boolean BA_Logger_IsLevelEnabled(BA_Logger_LogLevels logLevel) {
-#ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
+#ifndef BA_LOGGER_DISABLED
+#   ifndef BA_LOGGER_FORCE_ENABLE_ALL_LEVELS
     return baLoggerCurrentLogLevel != BA_LOGGER_LOG_LEVEL_NULL && logLevel <= baLoggerCurrentLogLevel;
-#else
+#   else
     return BA_BOOLEAN_TRUE;
+#   endif
+#else
+    return BA_BOOLEAN_FALSE;
 #endif
 }
 
 void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {
+#ifndef BA_LOGGER_DISABLED
     static int dontChangeLogLevels = -1;
 
     if (dontChangeLogLevels == -1)
@@ -246,5 +261,6 @@ void BA_Logger_SetLogLevel(BA_Logger_LogLevels logLevel) {
         return;
 
     baLoggerCurrentLogLevel = logLevel;
+#endif
 }
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
