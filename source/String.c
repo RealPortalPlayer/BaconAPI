@@ -94,7 +94,8 @@ intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
         *line = buffer;
         return length;
     }
-    
+
+    free(buffer);
     return -1;
 }
 
