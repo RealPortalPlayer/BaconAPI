@@ -35,6 +35,10 @@ void Test(void) {
 
     BA_ASSERT(dictionary != NULL, "Failed to allocate memory for a dictionary\n");
     BA_ASSERT(dictionary->keys.used == 2, "Dictionary used does not match expected\n");
+    BA_ASSERT(BA_Configuration_GetIndex(dictionary, "test.hello", BA_BOOLEAN_FALSE) == 0, "Index did not match expected\n");
+    BA_ASSERT(BA_Configuration_GetIndex(dictionary, "test.goodbye", BA_BOOLEAN_FALSE) == 1, "Index did not match expected\n");
+    BA_ASSERT(BA_Configuration_GetIndex(dictionary, "test.hello2", BA_BOOLEAN_FALSE) == -1, "Got index for commented out key\n");
+    BA_ASSERT(BA_Configuration_GetIndex(dictionary, "test.goodbye2", BA_BOOLEAN_FALSE) == -1, "Got index for non-existent key\n");
     BA_ASSERT(BA_String_Equals(BA_Configuration_GetValue(dictionary, "test.hello", BA_BOOLEAN_FALSE), "Hello, World!", BA_BOOLEAN_FALSE), "Value does not match expected\n");
     BA_ASSERT(BA_String_Equals(BA_Configuration_GetValue(dictionary, "test.goodbye", BA_BOOLEAN_FALSE), "Goodbye, Moon!", BA_BOOLEAN_FALSE), "Value does not match expected\n");
     BA_ASSERT(BA_Configuration_GetValue(dictionary, "test.hello2", BA_BOOLEAN_FALSE) == NULL, "Found commented out key\n");

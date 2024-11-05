@@ -60,12 +60,15 @@ BA_DynamicDictionary* BA_Configuration_ParseFromFile(FILE* configurationFile) {
     BA_DynamicDictionary_Create(results, 100);
     
     while ((length = BA_String_GetLine(configurationFile, &line, NULL)) != -1) {
-        if (BA_Configuration_AddLine(results, line, length))
+        if (BA_Configuration_AddLine(results, line, length)) {
+            free(line);
             continue;
-        
-        return NULL;
+        }
+
+        free(line);
+        break;
     }
-    
+
     return results;
 }
 
@@ -98,14 +101,20 @@ BA_DynamicDictionary* BA_Configuration_Parse(const char* configurationData) {
 // NOTE: This doesn't use any getter functions from DynamicDictionary, since DynamicDictionary assumes each key has the same size
 
 char* BA_Configuration_GetValue(const BA_DynamicDictionary* parsedConfiguration, const char* key, BA_Boolean caseless) {
+    int index = BA_Configuration_GetIndex(parsedConfiguration, key, caseless);
+
+    return index != -1 ? BA_DYNAMICARRAY_GET_ELEMENT(char, parsedConfiguration->values, index) : NULL;
+}
+
+int BA_Configuration_GetIndex(const BA_DynamicDictionary* parsedConfiguration, const char* key, BA_Boolean caseless) {
     for (int i = 0; i < parsedConfiguration->keys.used; i++) {
         if (!BA_String_Equals(BA_DYNAMICARRAY_GET_ELEMENT(char, parsedConfiguration->keys, i), key, caseless))
             continue;
 
-        return BA_DYNAMICARRAY_GET_ELEMENT(char, parsedConfiguration->values, i);
+        return i;
     }
 
-    return NULL;
+    return -1;
 }
 
 void BA_Configuration_Free(BA_DynamicDictionary* parsedConfiguration) {
