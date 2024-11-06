@@ -33,7 +33,7 @@ static BA_Boolean baStringManagerInitialized = BA_BOOLEAN_FALSE;
 void* BA_StringManager_Get(int index) {
     BA_STRINGMANAGER_CHECK_INITIALIZED();
 
-    if (baStringManagerArray.used <= index)
+    if (baStringManagerArray.used <= index || index < 0)
         return NULL;
 
     BA_StringManager_Implementation* implementation = BA_DYNAMICARRAY_GET_ELEMENT(BA_StringManager_Implementation, baStringManagerArray, index);
