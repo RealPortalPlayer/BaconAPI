@@ -11,6 +11,10 @@
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 const char* BA_Translations_GetLanguageCode(const char* code);
+
+/**
+ * @note This function can be slow. Cache the returned ID
+ */
 int BA_Translations_GetTranslationId(const char* key);
 
 void BA_Translations_LoadLanguage(const char* code, const char* buffer);
@@ -19,8 +23,8 @@ BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
 #define BA_TRANSLATIONS_PRELOAD(functionName, key) \
 const char* functionName(void) {                   \
-static int translationId = -1;                 \
-if (translationId == -1)                       \
-translationId = BA_Translations_GetTranslationId(key); \
-return BA_StringManager_Get(translationId);    \
+    static int translationId = -1;                 \
+    if (translationId == -1)                       \
+        translationId = BA_Translations_GetTranslationId(key); \
+    return BA_StringManager_Get(translationId);    \
 }
