@@ -93,7 +93,13 @@ void BA_StringManager_Deallocate(int index) {
 
     BA_StringManager_Implementation* element = BA_DYNAMICARRAY_GET_ELEMENT(BA_StringManager_Implementation, baStringManagerArray, index);
 
-    BA_DynamicArray_RemoveElementAt(&baStringManagerArray, index);
+    // FIXME: This line sucks. Removing it will offset the indexes after it, but not removing it will leave gaps in the array.
+    //        Just replacing those gaps isn't a good idea, because some function could still be referencing it. Sad.
+    //        Also, yes, this is another memory leak
+    // TODO: This whole system is crap and flawed. Find a better approach
+    // BA_DynamicArray_RemoveElementAt(&baStringManagerArray, index);
+
+    baStringManagerArray.internalArray[index] = NULL;
 
     if (element->isWideString)
         free(element->wideString);
