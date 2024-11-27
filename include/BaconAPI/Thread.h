@@ -8,6 +8,7 @@
 
 #include "Internal/CPlusPlusSupport.h"
 #include "Internal/Boolean.h"
+#include "OperatingSystem.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
