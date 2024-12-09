@@ -178,13 +178,12 @@ BA_Boolean BA_StringImplementation_Equals(const BA_StringImplementation* string,
     BA_StringImplementation* heapString = (BA_StringImplementation*) string;
     BA_StringImplementation* heapCompare = (BA_StringImplementation*) compare;
     BA_Boolean allocated = BA_BOOLEAN_FALSE;
-    
-    if (!caseless)
-        goto check;
-        
     size_t stringLength;
 
     BA_STRINGIMPLEMENTATION_GET_LENGTH(string);
+
+    if (!caseless)
+        goto check;
 
     {
         size_t compareLength;
