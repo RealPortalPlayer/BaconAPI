@@ -9,8 +9,17 @@
 #include "CPlusPlusSupport.h"
 
 BA_CPLUSPLUS_SUPPORT_GUARD_START()
+#ifndef __cplusplus
 typedef int BA_Boolean;
+#else
+typedef bool BA_Boolean;
+#endif
 BA_CPLUSPLUS_SUPPORT_GUARD_END()
 
-#define BA_BOOLEAN_FALSE 0
-#define BA_BOOLEAN_TRUE 1
+#ifndef __cplusplus
+#   define BA_BOOLEAN_FALSE 0
+#   define BA_BOOLEAN_TRUE 1
+#else
+#   define BA_BOOLEAN_FALSE false
+#   define BA_BOOLEAN_TRUE true
+#endif
