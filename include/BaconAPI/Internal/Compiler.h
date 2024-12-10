@@ -52,6 +52,8 @@
 #       define BA_COMPILER_STANDARD_VERSION 2011
 #   elif __STDC_VERSION__ == 201710L
 #       define BA_COMPILER_STANDARD_VERSION 2018
+#   elif __STDC_VERSION__ == 202311L
+#       define BA_COMPILER_STANDARD_VERSION 2023
 #   else
 #       define BA_COMPILER_STANDARD_VERSION 2018
 #       warning "Unknown Standard Libraray version. Treating as C18"
