@@ -11,11 +11,7 @@
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
 #   include <unistd.h>
-#   include <fcntl.h>
 #   include <termios.h>
-#elif BA_OPERATINGSYSTEM_WINDOWS
-#   define fileno _fileno
-#   include <Windows.h>
 #endif
 
 #define BA_PROMPT_INPUT_SIZE 4024
@@ -49,46 +45,32 @@ char* BA_Prompt_Show(void) {
     tcgetattr(0, &baPromptOldCapabilities);
 
     baPromptNewCapabilities = baPromptOldCapabilities;
-    baPromptNewCapabilities.c_cflag &= ~ICANON;
-    baPromptNewCapabilities.c_lflag &= ECHO;
+    baPromptNewCapabilities.c_lflag &= ~ICANON;
+    baPromptNewCapabilities.c_lflag &= ~ECHO;
 
     tcsetattr(0, TCSANOW, &baPromptNewCapabilities);
 #endif
 
-    {
-        int inputFileNumber = fileno(stdin);
-
-        if (inputFileNumber >= 0) {
-#if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
-            fcntl(inputFileNumber, F_SETFL, O_NONBLOCK);
-#elif BA_OPERATINGSYSTEM_WINDOWS
-            ULONG enable = 1;
-
-            ioctlsocket(inputFileNumber, FIONBIO, &enable);
-#endif
-        }
-    }
-
     baPromptRunning = BA_BOOLEAN_TRUE;
 
     while (baPromptRunning) {
-        {
-            if (!printed) {
-                BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_INFO, "%s", baPrompt);
+        if (!printed) {
+            BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_INFO, "%s", baPrompt);
+            fflush(stdout);
 
-                printed = BA_BOOLEAN_TRUE;
-            }
-
-            char character = getc(stdin);
-
-            if (character == EOF)
-                continue;
-
-            if (written >= BA_PROMPT_INPUT_SIZE || character == '\n')
-                break;
-
-            input[written++] = character;
+            printed = BA_BOOLEAN_TRUE;
         }
+
+        char character;
+
+        read(0, &character, 1);
+        BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_INFO, "%c", character);
+        fflush(stdout);
+
+        if (written >= BA_PROMPT_INPUT_SIZE || character == '\n')
+            break;
+
+        input[written++] = character;
     }
 
 #if BA_OPERATINGSYSTEM_POSIX_COMPLIANT
