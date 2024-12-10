@@ -137,7 +137,7 @@ if (BA_BITWISE_IS_BIT_SET(flags, bit)) {           \
 
             while (lineLength > 0) {
                 size_t toDraw = lineLength < maxCharacters ? lineLength : maxCharacters;
-                char* newString = calloc(sizeof(char) * (toDraw + 1), 1);
+                char* newString = calloc(1, sizeof(char) * (toDraw + 1));
 
                 strncpy(newString, target, toDraw);
                 BA_DynamicArray_AddElementToLast(&lines, newString);

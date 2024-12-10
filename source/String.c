@@ -32,7 +32,7 @@ char* BA_String_ReadFile(FILE* file, size_t lengthLimit, size_t* lineLength) {
     if (lengthLimit != 0 && numberOfBytes > lengthLimit)
         numberOfBytes = lengthLimit;
     
-    char* buffer = calloc(sizeof(char) * numberOfBytes, 1);
+    char* buffer = calloc(1, sizeof(char) * numberOfBytes);
     
     if (buffer == NULL)
         return NULL;
@@ -63,7 +63,7 @@ intmax_t BA_String_GetLine(FILE* file, char** line, const char* splitString) {
     }
     
     while (!feof(file)) {
-        char* contents = calloc(splitStringLength + 1, 1);
+        char* contents = calloc(1, splitStringLength + 1);
 
         contents[0] = '\0';
         contents[splitStringLength] = '\0';

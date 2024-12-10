@@ -37,13 +37,13 @@ do {                                                                     \
     if (variable != NULL) {                                              \
         variable->isWideString = makeItWideString;                       \
         if (makeItWideString) {                                          \
-            variable->wideString = calloc(sizeof(wchar_t) * (size + 1), 1); \
+            variable->wideString = calloc(1, sizeof(wchar_t) * (size + 1)); \
             if (variable->wideString == NULL) {                          \
                 free(variable);                                          \
                 variable = NULL;                                         \
             }                                                            \
         } else {                                                         \
-            variable->string = calloc(sizeof(char) * (size + 1), 1);     \
+            variable->string = calloc(1, sizeof(char) * (size + 1));     \
             if (variable->string == NULL) {                              \
                 free(variable);                                          \
                 variable = NULL;                                         \
@@ -467,7 +467,7 @@ BA_StringImplementation* BA_StringImplementation_FormatPremadeList(BA_StringImpl
     
     if (target->isWideString) {
         size_t length = wcslen(target->wideString);
-        newBuffer->wideString = calloc(sizeof(wchar_t) * (newLength + length), 1);
+        newBuffer->wideString = calloc(1, sizeof(wchar_t) * (newLength + length));
         
         if (newBuffer->wideString == NULL) {
             free(newBuffer);
@@ -478,7 +478,7 @@ BA_StringImplementation* BA_StringImplementation_FormatPremadeList(BA_StringImpl
     } else {
         size_t length = strlen(target->string);
         
-        newBuffer->string = calloc(sizeof(char) * (newLength + length), 1);
+        newBuffer->string = calloc(1, sizeof(char) * (newLength + length));
 
         if (newBuffer->string == NULL) {
             free(newBuffer);
@@ -603,13 +603,13 @@ do {                                                                      \
     size_t bufferSize;                                                    \
     if (target->isWideString) {                                           \
         bufferSize = swprintf(NULL, 0, L ## formatSpecifier, value);      \
-        wchar_t* buffer = calloc(bufferSize, 1);                          \
+        wchar_t* buffer = calloc(1, bufferSize);                          \
         swprintf(buffer, bufferSize + 1, L ## formatSpecifier, value);    \
         newBuffer->wideString = BA_WideString_Append(newBuffer->wideString, buffer); \
         free(buffer);                                                     \
     } else {                                                              \
         bufferSize = snprintf(NULL, 0, formatSpecifier, value);           \
-        char* buffer = calloc(bufferSize, 1);                             \
+        char* buffer = calloc(1, bufferSize);                             \
         snprintf(buffer, bufferSize + 1, formatSpecifier, value);         \
         newBuffer->string = BA_String_Append(newBuffer->string, buffer);  \
         free(buffer);                                                     \
