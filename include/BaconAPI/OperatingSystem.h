@@ -19,6 +19,7 @@ typedef struct {
 
     /**
      * Is the host 64-bits. Will obviously always be true on 64-bit binaries.
+     * @note Unrelated to the architecture of the binary. Checkout Architecture.h for that
      */
     BA_Boolean is64bits;
 } BA_OperatingSystem_Version;
