@@ -49,7 +49,7 @@ int BA_ArgumentHandler_GetIndex(const char* argument, BA_Boolean ignoreDontParse
     return ignoreDontParse || dontParse == -1 || index < dontParse ? index : -1;
 }
 
-const char* BA_ArgumentHandler_GetValue(const char* argument, int ignoreDontParse) {
+const char* BA_ArgumentHandler_GetValue(const char* argument, BA_Boolean ignoreDontParse) {
     int index = BA_ArgumentHandler_GetIndex(argument, ignoreDontParse);
 
     return index != -1 && index != baArgumentHandlerAddedArgumentsCount - 1 ? baArgumentHandlerArgumentVector[index + 1] : NULL;
