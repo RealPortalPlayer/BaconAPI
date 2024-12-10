@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "BaconAPI/Prompt.h"
 #include "BaconAPI/OperatingSystem.h"
@@ -64,6 +65,19 @@ char* BA_Prompt_Show(void) {
         char character;
 
         read(0, &character, 1);
+
+        if (character == 127) {
+            if (written == 0)
+                continue;
+
+            memmove(input + written - 1, input + written, BA_PROMPT_INPUT_SIZE - written);
+            BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_INFO, "\b \b"); // HACK: This is stupid
+            fflush(stdout);
+
+            written--;
+            continue;
+        }
+
         BA_Logger_LogImplementation(BA_BOOLEAN_FALSE, BA_LOGGER_LOG_LEVEL_INFO, "%c", character);
         fflush(stdout);
 
