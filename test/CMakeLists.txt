@@ -5,7 +5,8 @@ foreach(file ${files})
 
     project("${filename}Test")
 
-    add_executable("${filename}Test" Internal/Entry.c "${file}")
+    add_executable("${filename}Test" Internal/Entry.c "${file}"
+            Prompt.c)
 
     target_link_libraries("${filename}Test" PRIVATE BaconAPI)
     target_include_directories("${filename}Test" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")

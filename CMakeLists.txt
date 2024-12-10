@@ -16,6 +16,7 @@ option(BA_LOGGER_INITIALIZER_DEBUG_LOGS "Show debug logs on initialization" OFF)
 option(BA_LOGGER_FORCE_ENABLE_ALL_LEVELS "Allow printing all log types" OFF)
 option(BA_LOGGER_DISABLED "Disable the logging system" OFF)
 option(BA_LOGGER_DISABLE_INVALID_TYPE_MESSAGE "Don't print 'invalid log type'" OFF)
+option(BA_UNSTABLE_OPTIMIZATION "Enables O3 optimizations" OFF)
 
 if(("${CMAKE_BUILD_TYPE}" STREQUAL "Native" OR "${CMAKE_BUILD_TYPE}" STREQUAL "NatWithDebInfo" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeNat") AND NOT MSVC AND NOT BA_NATIVE_SHUT_UP)
     message(WARNING "Build type is native. Output binaries might only work on your computer")
@@ -50,7 +51,9 @@ set(BA_SOURCE_FILES)
 
 if(NOT BA_DISABLE_HACKS)
     if(WIN32)
-        set(BA_SOURCE_FILES source/Hacks/Windows.c)
+        set(BA_SOURCE_FILES source/Hacks/Windows.c
+                include/BaconAPI/Prompt.h
+                source/Prompt.c)
     endif()
 endif()
 
@@ -76,7 +79,8 @@ add_library(BaconAPI STATIC
         source/StringImplementation.c
         source/WideString.c
         source/StringManager.c
-        source/Translations.c)
+        source/Translations.c
+        source/Prompt.c)
 
 target_include_directories(BaconAPI PUBLIC include)
 ba_strip_static(BaconAPI)
